@@ -1,0 +1,11 @@
+output   = "entities"
+wipe     = true
+no_tests = false
+
+[mysql]
+  dbname  = "gforum"
+  host    = "localhost"
+  port    = 3306
+  user    = "root"
+  pass    = "secret"
+  sslmode = "false"

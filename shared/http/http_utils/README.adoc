@@ -1,0 +1,67 @@
+= http-utils
+
+Package contains commonly used utilities and constants related to HTTP communication
+
+== Usage
+
+=== headers
+
+Utility functions that returns common HTTP headers
+
+[source,golang]
+----
+  import (
+    "http-utils"
+  )
+)
+
+var headers = append(httpUtils.GetInternalForwardedHeaders(), httpUtils.GetTracingHeaders()...)
+
+func setHeaders(ctx context.Context, req *http.Request) {
+	headersFromContext := ctx.Value("forwardedHeaders").(map[string]string)
+
+	for _, h := range headers {
+		val := headersFromContext[h]
+		if val == "" {
+			continue
+		}
+
+		req.Header.Set(headers, val)
+	}
+}
+----
+
+=== middleware
+
+[source,golang]
+----
+  import (
+     "http-utils"
+  )
+)
+
+func cookieAdder(next http.Handler) http.Handler {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+    r.AddCookie("x-cookie", "123456")
+    next.ServeHTTP(w, r)
+  })
+}
+
+func headerAdder(next http.Handler) http.Handler {
+  return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+     w.Header().Set("Application", "Awesome App")
+
+    next.ServeHTTP(w, r)
+  })
+}
+
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+    fmt.Fprintf(w, "Hi!")
+}
+
+
+func main() {
+  http.HandleFunc("/", httpUtils.CombineMiddlewares(homeHandler, cookieAdder, headerAdder))
+  http.ListenAndServe(":8080", nil)
+}
+----

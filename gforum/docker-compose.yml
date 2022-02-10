@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "50051:50051"
+    env_file:
+      - "env/local.env"
+    volumes:
+      - ".:/go/app:cached"
+    links:
+      - db
+      - db-test
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    ports:
+      - "3000:3000"
+    links:
+      - app
+    volumes:
+      - ".:/go/app"
+
+  db:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: app
+    ports:
+      - "3306:3306"
+
+  db-test:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: app_test
+    ports:
+      - "3340:3306"
