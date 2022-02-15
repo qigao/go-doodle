@@ -4,8 +4,9 @@ import (
 	"errors"
 	"forum/entity"
 	"forum/handler"
-	"forum/model"
+	"forum/service/article"
 	"github.com/labstack/echo/v4"
+	"github.com/volatiletech/null/v8"
 	"http/http_error"
 	"net/http"
 	"strconv"
@@ -35,7 +36,7 @@ func (h *Handler) GetArticle(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
 
-	return c.JSON(http.StatusOK, model.NewArticleResponse(c, a))
+	return c.JSON(http.StatusOK, article.NewArticleResponse(c, a))
 }
 
 // Articles godoc
@@ -89,13 +90,13 @@ func (h *Handler) Articles(c echo.Context) error {
 			return c.JSON(http.StatusInternalServerError, nil)
 		}
 	} else {
-		articles, count, err = h.article.ListArticles(offset, limit)
+		articles, count, err = h.article.List(offset, limit)
 		if err != nil {
 			return c.JSON(http.StatusInternalServerError, nil)
 		}
 	}
 
-	return c.JSON(http.StatusOK, model.NewArticleListResponse(handler.UserIDFromToken(c), articles, count))
+	return c.JSON(http.StatusOK, article.NewArticleListResponse(handler.UserIDFromToken(c), articles, count))
 }
 
 // Feed godoc
@@ -132,7 +133,7 @@ func (h *Handler) Feed(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, nil)
 	}
-	return c.JSON(http.StatusOK, model.NewArticleListResponse(handler.UserIDFromToken(c), articles, count))
+	return c.JSON(http.StatusOK, article.NewArticleListResponse(handler.UserIDFromToken(c), articles, count))
 }
 
 // CreateArticle godoc
@@ -152,19 +153,19 @@ func (h *Handler) Feed(c echo.Context) error {
 func (h *Handler) CreateArticle(c echo.Context) error {
 	var a entity.Article
 
-	req := &model.CreateRequest{}
+	req := &article.CreateRequest{}
 	if err := req.Bind(c, &a); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
-	a.AuthorID = handler.UserIDFromToken(c)
+	a.AuthorID = null.NewUint64(uint64(handler.UserIDFromToken(c)), true)
 
 	err := h.article.CreateArticle(&a)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
-	return c.JSON(http.StatusCreated, model.NewArticleResponse(c, &a))
+	return c.JSON(http.StatusCreated, article.NewArticleResponse(c, &a))
 }
 
 // UpdateArticle godoc
@@ -187,7 +188,7 @@ func (h *Handler) CreateArticle(c echo.Context) error {
 func (h *Handler) UpdateArticle(c echo.Context) error {
 	slug := c.Param("slug")
 
-	a, err := h.article.FindArticleByUserIDAndSlug(handler.UserIDFromToken(c), slug)
+	a, err := h.article.FindArticleByUserIDAndSlug(uint64(handler.UserIDFromToken(c)), slug)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -196,18 +197,18 @@ func (h *Handler) UpdateArticle(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
 
-	req := &model.UpdateRequest{}
+	req := &article.UpdateRequest{}
 	req.Populate(a)
 
 	if err := req.Bind(c, a); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
-	if err = h.article.UpdateArticle(a, req.Article.Tags); err != nil {
+	if err = h.article.Update(a, req.Article.Tags); err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 
-	return c.JSON(http.StatusOK, model.NewArticleResponse(c, a))
+	return c.JSON(http.StatusOK, article.NewArticleResponse(c, a))
 }
 
 // DeleteArticle godoc
@@ -227,7 +228,7 @@ func (h *Handler) UpdateArticle(c echo.Context) error {
 func (h *Handler) DeleteArticle(c echo.Context) error {
 	slug := c.Param("slug")
 
-	a, err := h.article.FindArticleByUserIDAndSlug(handler.UserIDFromToken(c), slug)
+	a, err := h.article.FindArticleByUserIDAndSlug(uint64(handler.UserIDFromToken(c)), slug)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -236,7 +237,7 @@ func (h *Handler) DeleteArticle(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
 
-	err = h.article.DeleteArticle(a)
+	err = h.article.Delete(a)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -275,7 +276,7 @@ func (h *Handler) AddComment(c echo.Context) error {
 
 	var cm entity.Comment
 
-	req := &model.CommentRequest{}
+	req := &article.CommentRequest{}
 	if err := req.Bind(c, &cm); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
@@ -284,7 +285,7 @@ func (h *Handler) AddComment(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 
-	return c.JSON(http.StatusCreated, model.NewCommentResponse(c, &cm))
+	return c.JSON(http.StatusCreated, article.NewCommentResponse(c, &cm))
 }
 
 // GetComments godoc
@@ -307,7 +308,7 @@ func (h *Handler) GetComments(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 
-	return c.JSON(http.StatusOK, model.NewCommentListResponse(c, cm))
+	return c.JSON(http.StatusOK, article.NewCommentListResponse(c, cm))
 }
 
 // DeleteComment godoc
@@ -387,7 +388,7 @@ func (h *Handler) Favorite(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
-	return c.JSON(http.StatusOK, model.NewArticleResponse(c, a))
+	return c.JSON(http.StatusOK, article.NewArticleResponse(c, a))
 }
 
 // Unfavorite godoc
@@ -422,7 +423,7 @@ func (h *Handler) Unfavorite(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
-	return c.JSON(http.StatusOK, model.NewArticleResponse(c, a))
+	return c.JSON(http.StatusOK, article.NewArticleResponse(c, a))
 }
 
 // Tags godoc
@@ -445,5 +446,5 @@ func (h *Handler) Tags(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, model.NewTagListResponse(tags))
+	return c.JSON(http.StatusOK, article.NewTagListResponse(tags))
 }

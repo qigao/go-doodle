@@ -2,7 +2,8 @@ package user
 
 import (
 	"forum/handler"
-	"forum/model"
+	"forum/service"
+	"forum/service/user"
 	"github.com/labstack/echo/v4"
 	"http/http_error"
 	"net/http"
@@ -25,14 +26,14 @@ import (
 // @Router /users [post]
 func (h *Handler) SignUp(c echo.Context) error {
 	var u entity.User
-	req := &model.RegisterRequest{}
+	req := &user.RegisterRequest{}
 	if err := req.Bind(c, &u); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 	if err := h.user.CreateUser(&u); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	return c.JSON(http.StatusCreated, model.NewUserResponse(&u))
+	return c.JSON(http.StatusCreated, user.NewUserResponse(&u))
 }
 
 // Login godoc
@@ -51,7 +52,7 @@ func (h *Handler) SignUp(c echo.Context) error {
 // @Failure 500 {object} utils.Error
 // @Router /users/login [post]
 func (h *Handler) Login(c echo.Context) error {
-	req := &model.LoginRequest{}
+	req := &user.LoginRequest{}
 	if err := req.Bind(c); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
@@ -62,10 +63,10 @@ func (h *Handler) Login(c echo.Context) error {
 	if u == nil {
 		return c.JSON(http.StatusForbidden, http_error.AccessForbidden())
 	}
-	if !u.CheckPassword(req.User.Password) {
+	if !service.CheckPassword(u.Password, req.User.Password) {
 		return c.JSON(http.StatusForbidden, http_error.AccessForbidden())
 	}
-	return c.JSON(http.StatusOK, model.NewUserResponse(u))
+	return c.JSON(http.StatusOK, user.NewUserResponse(u))
 }
 
 // CurrentUser godoc
@@ -91,7 +92,7 @@ func (h *Handler) CurrentUser(c echo.Context) error {
 	if u == nil {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
-	return c.JSON(http.StatusOK, model.NewUserResponse(u))
+	return c.JSON(http.StatusOK, user.NewUserResponse(u))
 }
 
 // UpdateUser godoc
@@ -118,7 +119,7 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 	if u == nil {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
-	req := model.NewUserUpdateRequest()
+	req := user.NewUserUpdateRequest()
 	req.Populate(u)
 	if err := req.Bind(c, u); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
@@ -126,7 +127,7 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 	if err := h.user.UpdateUser(u); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	return c.JSON(http.StatusOK, model.NewUserResponse(u))
+	return c.JSON(http.StatusOK, user.NewUserResponse(u))
 }
 
 // GetProfile godoc
@@ -154,7 +155,7 @@ func (h *Handler) GetProfile(c echo.Context) error {
 	if u == nil {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
-	return c.JSON(http.StatusOK, model.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
+	return c.JSON(http.StatusOK, user.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
 }
 
 // Follow godoc
@@ -187,7 +188,7 @@ func (h *Handler) Follow(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
-	return c.JSON(http.StatusOK, model.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
+	return c.JSON(http.StatusOK, user.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
 }
 
 // Unfollow godoc
@@ -219,5 +220,5 @@ func (h *Handler) Unfollow(c echo.Context) error {
 	if err := h.user.RemoveFollower(u, followerID); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	return c.JSON(http.StatusOK, model.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
+	return c.JSON(http.StatusOK, user.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
 }

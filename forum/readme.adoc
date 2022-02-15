@@ -1,0 +1,43 @@
+== Getting started
+
+=== Install Golang (go1.11+)
+
+Please check the official golang installation guide before you start. https://golang.org/doc/install[Official Documentation]
+Also make sure you have installed a go1.11+ version.
+
+=== Environment Config
+
+For more info and detailed instructions please check this guide: https://github.com/golang/go/wiki/SettingGOPATH[Setting GOPATH]
+
+=== Install dependencies
+
+[source,bash]
+----
+➜  go install github.com/volatiletech/sqlboiler/v4@latest
+➜  go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
+➜  go mod download
+
+----
+
+=== Run
+
+[source,bash]
+----
+➜ go run main.go
+
+----
+
+=== Build
+
+[source,bash]
+----
+➜ go build
+
+----
+
+=== Tests
+
+[source,bash]
+----
+➜ go test ./...
+----

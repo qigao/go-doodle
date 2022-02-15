@@ -2,11 +2,12 @@ package mysql
 
 import (
 	mysqlC "containers/db"
-	models "forum/entities"
+	"forum/entity"
 	sql "forum/repository/mysql"
 	migrate "github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"github.com/volatiletech/null/v8"
 	"os"
 	"testing"
 )
@@ -32,20 +33,20 @@ func TestMain(m *testing.M) {
 }
 
 var (
-	userFoo = &models.User{
+	userFoo = &entity.User{
 		Username: "foo",
 		Email:    "foo@foo.com",
 		Password: "123456",
 	}
-	userBar = &models.User{
+	userBar = &entity.User{
 		Username: "bar",
 		Email:    "bar@bar.com",
 		Password: "123456",
 	}
-	//articleFoo = &models.Article{
-	//	Title:       "foo Title",
-	//	Description: "foo Description",
-	//	Body:        "foo Body",
-	//	Slug:        "foo-title",
-	//}
+	articleFoo = &entity.Article{
+		Title:       "foo Title",
+		Description: null.NewString("foo Description", false),
+		Body:        null.NewString("foo Body", false),
+		Slug:        "foo-title",
+	}
 )

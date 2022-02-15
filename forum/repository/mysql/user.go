@@ -3,7 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"forum/entities"
+	"forum/entity"
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -20,31 +20,31 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 		Db: db,
 	}
 }
-func (u *UserRepo) FindByID(u2 uint) (*models.User, error) {
-	user, err := models.Users(Where("id = ?", u2)).One(context.Background(), u.Db)
+func (u *UserRepo) FindByID(u2 uint) (*entity.User, error) {
+	user, err := entity.Users(Where("id = ?", u2)).One(context.Background(), u.Db)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (u *UserRepo) FindByEmail(s string) (*models.User, error) {
-	user, err := models.Users(Where("email = ?", s)).One(context.Background(), u.Db)
+func (u *UserRepo) FindByEmail(s string) (*entity.User, error) {
+	user, err := entity.Users(Where("email = ?", s)).One(context.Background(), u.Db)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (u *UserRepo) FindByUsername(s string) (*models.User, error) {
-	user, err := models.Users(Where("username = ?", s)).One(context.Background(), u.Db)
+func (u *UserRepo) FindByUsername(s string) (*entity.User, error) {
+	user, err := entity.Users(Where("username = ?", s)).One(context.Background(), u.Db)
 	if err != nil {
 		return nil, err
 	}
 	return user, nil
 }
 
-func (u *UserRepo) CreateUser(user *models.User) error {
+func (u *UserRepo) CreateUser(user *entity.User) error {
 	tx, err := u.Db.BeginTx(context.Background(), nil)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to start transaction")
@@ -59,7 +59,7 @@ func (u *UserRepo) CreateUser(user *models.User) error {
 	return nil
 }
 
-func (u *UserRepo) UpdateUser(user *models.User) error {
+func (u *UserRepo) UpdateUser(user *entity.User) error {
 	tx, err := u.Db.BeginTx(context.Background(), nil)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to start transaction")
@@ -73,10 +73,13 @@ func (u *UserRepo) UpdateUser(user *models.User) error {
 	}
 	log.Info().Msgf("%d rows updated", rows)
 	tx.Commit()
+	if rows == 0 {
+		return sql.ErrNoRows
+	}
 	return nil
 }
 
-func (u *UserRepo) AddFollower(user *models.User, follower *models.User) error {
+func (u *UserRepo) AddFollower(user *entity.User, follower *entity.User) error {
 	tx, err := u.Db.BeginTx(context.Background(), nil)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to start transaction")
@@ -92,7 +95,7 @@ func (u *UserRepo) AddFollower(user *models.User, follower *models.User) error {
 	return nil
 }
 
-func (u *UserRepo) RemoveFollower(user *models.User, follower *models.User) error {
+func (u *UserRepo) RemoveFollower(user *entity.User, follower *entity.User) error {
 	tx, err := u.Db.BeginTx(context.Background(), nil)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to start transaction")
@@ -108,7 +111,7 @@ func (u *UserRepo) RemoveFollower(user *models.User, follower *models.User) erro
 	return nil
 }
 
-func (u *UserRepo) IsFollower(user, follower *models.User) (bool, error) {
+func (u *UserRepo) IsFollower(user, follower *entity.User) (bool, error) {
 	cnts, err := user.FollowerUsers(Where("id = ?", follower.ID)).Count(context.Background(), u.Db)
 	if cnts > 0 {
 		return true, nil

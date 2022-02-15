@@ -1,16 +1,16 @@
 package repository
 
 import (
-	models "forum/entities"
+	entity "forum/entity"
 )
 
 type User interface {
-	FindByID(u2 uint) (*models.User, error)
-	FindByEmail(s string) (*models.User, error)
-	FindByUsername(s string) (*models.User, error)
-	CreateUser(user *models.User) error
-	UpdateUser(user *models.User) error
-	AddFollower(user *models.User, follower *models.User) error
-	RemoveFollower(user *models.User, follower *models.User) error
-	IsFollower(user, follower *models.User) (bool, error)
+	FindByID(u2 uint) (*entity.User, error)
+	FindByEmail(s string) (*entity.User, error)
+	FindByUsername(s string) (*entity.User, error)
+	CreateUser(user *entity.User) error
+	UpdateUser(user *entity.User) error
+	AddFollower(user *entity.User, follower *entity.User) error
+	RemoveFollower(user *entity.User, follower *entity.User) error
+	IsFollower(user, follower *entity.User) (bool, error)
 }

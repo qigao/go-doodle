@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"forum/entity"
@@ -52,6 +53,17 @@ func NewMysqlORM() (*gorm.DB, error) {
 	}
 
 	return d, nil
+}
+func NewMysqlManager() (*sql.DB, error) {
+	s, err := dsn()
+	if err != nil {
+		return nil, err
+	}
+	db, err := sql.Open("mysql", s)
+	if err != nil {
+		return nil, err
+	}
+	return db, nil
 }
 func dsn() (string, error) {
 	host := os.Getenv("DB_HOST")

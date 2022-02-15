@@ -1,25 +1,32 @@
 package repository
 
-import "forum/entities"
+import "forum/entity"
 
 type Article interface {
-	FindBySlug(string) (*models.Article, error)
-	FindArticleByUserIDAndSlug(userID uint, slug string) (*models.Article, error)
-	CreateArticle(*models.Article) error
-	UpdateArticle(*models.Article, []string) error
-	DeleteArticle(*models.Article) error
-	ListArticles(offset, limit int) ([]*models.Article, int64, error)
-	ListByTag(tag string, offset, limit int) ([]models.Article, int64, error)
-	ListByAuthor(username string, offset, limit int) ([]models.Article, int64, error)
-	ListByWhoFavorited(username string, offset, limit int) ([]models.Article, int64, error)
-	ListFeed(userID uint, offset, limit int) ([]models.Article, int64, error)
+	FindBySlug(string) (*entity.Article, error)
+	FindArticleByUserIDAndSlug(userID uint64, slug string) (*entity.Article, error)
+	Create(*entity.Article) error
+	Update(*entity.Article) error
+	Delete(*entity.Article) error
 
-	AddComment(*models.Article, *models.Comment) error
-	FindCommentsBySlug(string) ([]models.Comment, error)
-	FindCommentByID(uint) (*models.Comment, error)
-	DeleteComment(*models.Comment) error
+	List(offset, limit int) ([]*entity.Article, int64, error)
+	ListByTag(tag string, offset, limit int) ([]*entity.Article, int64, error)
+	ListByAuthor(username string, offset, limit int) ([]*entity.Article, int64, error)
+	ListByWhoFavorited(username string, offset, limit int) ([]*entity.Article, int64, error)
+	ListFeed(userID uint, offset, limit int) ([]*entity.Article, int64, error)
 
-	AddFavorite(*models.Article, uint) error
-	RemoveFavorite(*models.Article, uint) error
-	ListTags() ([]models.Tag, error)
+	AddComment(*entity.Article, *entity.Comment) error
+	FindCommentByID(commentID uint64) (*entity.Comment, error)
+	FindCommentsBySlug(string) ([]*entity.Comment, error)
+	FindCommentsByArticleID(uint) ([]*entity.Comment, error)
+	DeleteComment(*entity.Comment) error
+
+	AddFavorite(*entity.Article, uint) error
+	RemoveFavorite(*entity.Article, uint) error
+
+	CreateTag(*entity.Tag) error
+	AddTag(*entity.Article, *entity.Tag) error
+	RemoveTag(*entity.Article, *entity.Tag) error
+	FindTagsByArticleID(article *entity.Article) ([]*entity.Tag, error)
+	ListTags() ([]*entity.Tag, error)
 }

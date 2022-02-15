@@ -52,6 +52,11 @@ func TestUserRepo_User(t *testing.T) {
 		assert.Error(t, sql.ErrNoRows, err)
 		assert.Nil(t, user)
 	})
+	t.Run("Create a user return error", func(t *testing.T) {
+		userFoo.ID = 7
+		err := userRepo.CreateUser(userFoo)
+		assert.Error(t, err)
+	})
 }
 func TestUserRepo_UpdateUser(t *testing.T) {
 	t.Run("Create a user", func(t *testing.T) {

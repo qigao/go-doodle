@@ -1,7 +1,7 @@
 package sqlmock
 
 import (
-	models "forum/entities"
+	"forum/models"
 	"forum/repository/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
