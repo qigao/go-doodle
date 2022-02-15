@@ -1,6 +1,6 @@
 package main
 
-//go:generate sqlboiler -o entity -p entity --no-tests mysql
+//go:generate sqlboiler -o entity -p entity mysql
 
 import (
 	"forum/handler/article"
@@ -42,7 +42,7 @@ func setupRouter(r *echo.Echo) {
 
 	r.GET("/swagger/*", webSwagger.WrapHandler)
 
-	v1 := r.Group("/api")
+	v1 := r.Group("/api/v1")
 
 	d, _ := utils.NewMysqlManager()
 

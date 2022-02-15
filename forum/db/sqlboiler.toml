@@ -1,6 +1,6 @@
-output   = "entity"
+output   = "../entity"
 wipe     = true
-no_tests = true
+pkgname  = "entity"
 
 [mysql]
 dbname = "gforum"

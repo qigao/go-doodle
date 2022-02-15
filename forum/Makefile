@@ -4,7 +4,10 @@ export DEBUG=true
 export APP=forum
 export LDFLAGS="-w -s"
 
-all: build test
+all: gen build test
+
+gen:
+	cd $(ROOT)/db && sqlboiler mysql
 
 build:
 	go build -race  .

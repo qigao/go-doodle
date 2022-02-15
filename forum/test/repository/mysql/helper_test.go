@@ -21,7 +21,7 @@ func TestMain(m *testing.M) {
 	defer container.CloseContainer()
 	db := container.SqlDbManager()
 	driver, _ := mysql.WithInstance(db, &mysql.Config{})
-	mg, err := migrate.NewWithDatabaseInstance("file://../../../sql", "mysql", driver)
+	mg, err := migrate.NewWithDatabaseInstance("file://../../../db/sql", "mysql", driver)
 	if err != nil {
 		println(err.Error())
 	}

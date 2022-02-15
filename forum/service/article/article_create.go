@@ -8,11 +8,11 @@ import (
 	"github.com/volatiletech/null/v8"
 )
 
-type CreateRequest struct {
+type CreateArticleRequest struct {
 	Article model.CreateArticle `json:"article"`
 }
 
-func (r *CreateRequest) Bind(c echo.Context, a *entity.Article) error {
+func (r *CreateArticleRequest) Bind(c echo.Context, a *entity.Article) error {
 	if err := c.Bind(r); err != nil {
 		return err
 	}

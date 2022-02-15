@@ -143,7 +143,7 @@ func (h *Handler) Feed(c echo.Context) error {
 // @Tags article
 // @Accept  json
 // @Produce  json
-// @Param article body CreateRequest true "Article to create"
+// @Param article body CreateArticleRequest true "Article to create"
 // @Success 201 {object} singleArticleResponse
 // @Failure 401 {object} utils.Error
 // @Failure 422 {object} utils.Error
@@ -153,14 +153,14 @@ func (h *Handler) Feed(c echo.Context) error {
 func (h *Handler) CreateArticle(c echo.Context) error {
 	var a entity.Article
 
-	req := &article.CreateRequest{}
+	req := &article.CreateArticleRequest{}
 	if err := req.Bind(c, &a); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
 	a.AuthorID = null.NewUint64(uint64(handler.UserIDFromToken(c)), true)
 
-	err := h.article.CreateArticle(&a)
+	err := h.article.Create(&a)
 	if err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
@@ -176,7 +176,7 @@ func (h *Handler) CreateArticle(c echo.Context) error {
 // @Accept  json
 // @Produce  json
 // @Param slug path string true "Slug of the article to update"
-// @Param article body UpdateRequest true "Article to update"
+// @Param article body UpdateArticleRequest true "Article to update"
 // @Success 200 {object} singleArticleResponse
 // @Failure 400 {object} utils.Error
 // @Failure 401 {object} utils.Error
@@ -197,7 +197,7 @@ func (h *Handler) UpdateArticle(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
 
-	req := &article.UpdateRequest{}
+	req := &article.UpdateArticleRequest{}
 	req.Populate(a)
 
 	if err := req.Bind(c, a); err != nil {
@@ -336,7 +336,7 @@ func (h *Handler) DeleteComment(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, http_error.NewError(err))
 	}
 
-	cm, err := h.article.FindCommentByID(id)
+	cm, err := h.article.FindCommentByID(uint64(id))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
