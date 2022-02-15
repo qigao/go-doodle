@@ -1,7 +1,6 @@
 create table if not exists users
 (
-    id         bigint unsigned auto_increment
-        primary key,
+    id         bigint unsigned auto_increment primary key,
     created_at datetime(3) null,
     updated_at datetime(3) null,
     deleted_at datetime(3) null,
@@ -14,8 +13,7 @@ create table if not exists users
 
 create table if not exists articles
 (
-    id          bigint unsigned auto_increment
-        primary key,
+    id          bigint unsigned auto_increment primary key,
     created_at  datetime(3)     null,
     updated_at  datetime(3)     null,
     deleted_at  datetime(3)     null,
@@ -29,8 +27,7 @@ create table if not exists articles
 );
 create table if not exists tags
 (
-    id         bigint unsigned auto_increment
-        primary key,
+    id         bigint unsigned auto_increment primary key,
     created_at datetime(3) null,
     updated_at datetime(3) null,
     deleted_at datetime(3) null,
@@ -49,8 +46,7 @@ create table if not exists article_tags
 
 create table if not exists comments
 (
-    id         bigint unsigned auto_increment
-        primary key,
+    id         bigint unsigned auto_increment primary key,
     created_at datetime(3)     null,
     updated_at datetime(3)     null,
     deleted_at datetime(3)     null,

@@ -1,11 +1,15 @@
-output   = "entities"
+output   = "entity"
 wipe     = true
-no_tests = false
+no_tests = true
 
 [mysql]
-  dbname  = "gforum"
-  host    = "localhost"
-  port    = 3306
-  user    = "root"
-  pass    = "secret"
-  sslmode = "false"
+dbname = "gforum"
+host = "localhost"
+port = 3306
+user = "root"
+pass = "secret"
+sslmode = "false"
+[auto-columns]
+created = "createdAt"
+updated = "updatedAt"
+

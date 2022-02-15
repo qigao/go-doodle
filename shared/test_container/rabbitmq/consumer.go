@@ -11,7 +11,7 @@ func (broker *RabbitMq) Consume(queueName string, prefetchCount int, onConsumed 
 		return err
 	}
 
-	consumerChannel, err := broker.channel.Consume(queueName,"",true,false,false,false,nil)
+	consumerChannel, err := broker.channel.Consume(queueName, "", true, false, false, false, nil)
 	if err != nil {
 		return err
 	}

@@ -1203,7 +1203,7 @@ var doc = `{
         }
     },
     "definitions": {
-        "article.CreateArticle": {
+        "article.Create": {
             "type": "object",
             "required": [
                 "body",
@@ -1248,11 +1248,11 @@ var doc = `{
             "type": "object",
             "properties": {
                 "article": {
-                    "$ref": "#/definitions/article.CreateArticle"
+                    "$ref": "#/definitions/article.Create"
                 }
             }
         },
-        "article.UpdateArticle": {
+        "article.Update": {
             "type": "object",
             "properties": {
                 "body": {
@@ -1276,7 +1276,7 @@ var doc = `{
             "type": "object",
             "properties": {
                 "article": {
-                    "$ref": "#/definitions/article.UpdateArticle"
+                    "$ref": "#/definitions/article.Update"
                 }
             }
         },

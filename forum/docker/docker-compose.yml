@@ -10,7 +10,7 @@ services:
     environment:
       - LANG=C.UTF-8
       - MYSQL_ROOT_PASSWORD=secret
-      - MYSQL_DATABASE=music
+      - MYSQL_DATABASE=gforum
   # app:
     # image: core/music:latest
     # container_name: app

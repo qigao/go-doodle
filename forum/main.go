@@ -1,6 +1,6 @@
 package main
 
-//go:generate sqlboiler mysql
+//go:generate sqlboiler -o entity -p entity --no-tests mysql
 
 import (
 	"forum/handler/article"
@@ -44,11 +44,10 @@ func setupRouter(r *echo.Echo) {
 
 	v1 := r.Group("/api")
 
-	d, _ := utils.NewMysqlORM()
-	utils.AutoMigrate(d)
+	d, _ := utils.NewMysqlManager()
 
-	us := mysql.NewUserRepository(d)
-	as := mysql.NewArticleRepository(d)
+	us := mysql.NewUserRepo(d)
+	as := mysql.NewArticleRepo(d)
 
 	uh := user.NewUserHandler(us)
 	ah := article.NewArticleHandler(as)
