@@ -5,11 +5,11 @@ import (
 )
 
 type Handler struct {
-	user repository.User
+	userRepo repository.User
 }
 
 func NewUserHandler(us repository.User) *Handler {
 	return &Handler{
-		user: us,
+		userRepo: us,
 	}
 }

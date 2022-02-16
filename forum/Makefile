@@ -4,7 +4,13 @@ export DEBUG=true
 export APP=forum
 export LDFLAGS="-w -s"
 
-all: build test
+all: gen-db gen-mock build test
+
+gen-db:
+	cd $(ROOT)/db && sqlboiler mysql
+
+gen-mock:
+	mockery --config test/mockery.yaml
 
 build:
 	go build -race  .

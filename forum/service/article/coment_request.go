@@ -4,6 +4,7 @@ import (
 	"forum/entity"
 	"forum/handler"
 	"github.com/labstack/echo/v4"
+	"github.com/volatiletech/null/v8"
 )
 
 type CommentRequest struct {
@@ -20,6 +21,6 @@ func (r *CommentRequest) Bind(c echo.Context, cm *entity.Comment) error {
 		return err
 	}
 	cm.Body = r.Comment.Body
-	cm.UserID = handler.UserIDFromToken(c)
+	cm.UserID = null.Uint64From(uint64(handler.UserIDFromToken(c)))
 	return nil
 }

@@ -8,11 +8,11 @@ import (
 	"github.com/volatiletech/null/v8"
 )
 
-type CreateRequest struct {
+type CreateArticleRequest struct {
 	Article model.CreateArticle `json:"article"`
 }
 
-func (r *CreateRequest) Bind(c echo.Context, a *entity.Article) error {
+func (r *CreateArticleRequest) Bind(c echo.Context, a *entity.Article, tags []*entity.Tag) error {
 	if err := c.Bind(r); err != nil {
 		return err
 	}
@@ -25,7 +25,7 @@ func (r *CreateRequest) Bind(c echo.Context, a *entity.Article) error {
 	a.Body = null.StringFrom(r.Article.Body)
 	if r.Article.Tags != nil {
 		for _, t := range r.Article.Tags {
-			a.Tags = append(a.Tags, entity.Tag{Tag: t})
+			tags = append(tags, &entity.Tag{Tag: null.StringFrom(t)})
 		}
 	}
 	return nil

@@ -5,8 +5,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-func (h *Handler) Register(v1 *echo.Group) {
-	articles := v1.Group("/articles", utils.JWTWithConfig(
+func (h *Handler) Register(v *echo.Group) {
+	articles := v.Group("/articles", utils.JWTWithConfig(
 		utils.JWTConfig{
 			Skipper: func(c echo.Context) bool {
 				if c.Request().Method == "GET" && c.Path() != "/api/articles/feed" {
@@ -29,6 +29,6 @@ func (h *Handler) Register(v1 *echo.Group) {
 	articles.GET("/:slug", h.GetArticle)
 	articles.GET("/:slug/comments", h.GetComments)
 
-	tags := v1.Group("/tags")
+	tags := v.Group("/tags")
 	tags.GET("", h.Tags)
 }

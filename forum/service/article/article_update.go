@@ -8,11 +8,11 @@ import (
 	"github.com/volatiletech/null/v8"
 )
 
-type UpdateRequest struct {
+type UpdateArticleRequest struct {
 	Article model.UpdateArticle `json:"article"`
 }
 
-func (r *UpdateRequest) Populate(a *entity.Article) {
+func (r *UpdateArticleRequest) Populate(a *entity.Article) {
 	r.Article.Title = a.Title
 	if a.Description.Valid {
 		r.Article.Description = a.Description.String
@@ -22,7 +22,7 @@ func (r *UpdateRequest) Populate(a *entity.Article) {
 	}
 }
 
-func (r *UpdateRequest) Bind(c echo.Context, a *entity.Article) error {
+func (r *UpdateArticleRequest) Bind(c echo.Context, a *entity.Article) error {
 	if err := c.Bind(r); err != nil {
 		return err
 	}

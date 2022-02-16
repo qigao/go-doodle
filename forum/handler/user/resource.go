@@ -5,6 +5,7 @@ import (
 	"forum/service"
 	"forum/service/user"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 	"http/http_error"
 	"net/http"
 
@@ -30,7 +31,7 @@ func (h *Handler) SignUp(c echo.Context) error {
 	if err := req.Bind(c, &u); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	if err := h.user.CreateUser(&u); err != nil {
+	if err := h.userRepo.CreateUser(&u); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusCreated, user.NewUserResponse(&u))
@@ -56,17 +57,14 @@ func (h *Handler) Login(c echo.Context) error {
 	if err := req.Bind(c); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	u, err := h.user.FindByEmail(req.User.Email)
+	userInfo, err := h.userRepo.FindByEmail(req.User.Email)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
+		return c.JSON(http.StatusUnauthorized, http_error.NewError(err))
 	}
-	if u == nil {
-		return c.JSON(http.StatusForbidden, http_error.AccessForbidden())
+	if !service.CheckPassword(userInfo.Password, req.User.Password) {
+		return c.JSON(http.StatusUnauthorized, http_error.NewError(err))
 	}
-	if !service.CheckPassword(u.Password, req.User.Password) {
-		return c.JSON(http.StatusForbidden, http_error.AccessForbidden())
-	}
-	return c.JSON(http.StatusOK, user.NewUserResponse(u))
+	return c.JSON(http.StatusOK, user.NewUserResponse(userInfo))
 }
 
 // CurrentUser godoc
@@ -85,14 +83,12 @@ func (h *Handler) Login(c echo.Context) error {
 // @Security ApiKeyAuth
 // @Router /user [get]
 func (h *Handler) CurrentUser(c echo.Context) error {
-	u, err := h.user.FindByID(handler.UserIDFromToken(c))
+	uId := handler.UserIDFromToken(c)
+	userInfo, err := h.userRepo.FindByID(uId)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
+		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
-	if u == nil {
-		return c.JSON(http.StatusNotFound, http_error.NotFound())
-	}
-	return c.JSON(http.StatusOK, user.NewUserResponse(u))
+	return c.JSON(http.StatusOK, user.NewUserResponse(userInfo))
 }
 
 // UpdateUser godoc
@@ -112,19 +108,18 @@ func (h *Handler) CurrentUser(c echo.Context) error {
 // @Security ApiKeyAuth
 // @Router /user [put]
 func (h *Handler) UpdateUser(c echo.Context) error {
-	u, err := h.user.FindByID(handler.UserIDFromToken(c))
+	uid := handler.UserIDFromToken(c)
+	req := &user.UpdateRequest{}
+	u, err := h.userRepo.FindByID(uid)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
+		log.Error().Err(err).Msg("error finding user")
+		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
-	if u == nil {
-		return c.JSON(http.StatusNotFound, http_error.NotFound())
-	}
-	req := user.NewUserUpdateRequest()
 	req.Populate(u)
 	if err := req.Bind(c, u); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	if err := h.user.UpdateUser(u); err != nil {
+	if err := h.userRepo.UpdateUser(u); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusOK, user.NewUserResponse(u))
@@ -148,14 +143,11 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 // @Router /profiles/{username} [get]
 func (h *Handler) GetProfile(c echo.Context) error {
 	username := c.Param("username")
-	u, err := h.user.FindByUsername(username)
+	u, err := h.userRepo.FindByUsername(username)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
+		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
-	if u == nil {
-		return c.JSON(http.StatusNotFound, http_error.NotFound())
-	}
-	return c.JSON(http.StatusOK, user.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
+	return c.JSON(http.StatusOK, user.NewProfileResponse(h.userRepo, handler.UserIDFromToken(c), u))
 }
 
 // Follow godoc
@@ -176,19 +168,20 @@ func (h *Handler) GetProfile(c echo.Context) error {
 // @Router /profiles/{username}/follow [post]
 func (h *Handler) Follow(c echo.Context) error {
 	followerID := handler.UserIDFromToken(c)
-	username := c.Param("username")
-	u, err := h.user.FindByUsername(username)
+	follower, err := h.userRepo.FindByID(followerID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
+		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	if u == nil {
-		return c.JSON(http.StatusNotFound, http_error.NotFound())
+	username := c.Param("username")
+	u, err := h.userRepo.FindByUsername(username)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
-	if err := h.user.AddFollower(u, followerID); err != nil {
+	if err := h.userRepo.AddFollower(u, follower); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
-	return c.JSON(http.StatusOK, user.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
+	return c.JSON(http.StatusOK, user.NewProfileResponse(h.userRepo, handler.UserIDFromToken(c), u))
 }
 
 // Unfollow godoc
@@ -209,16 +202,20 @@ func (h *Handler) Follow(c echo.Context) error {
 // @Router /profiles/{username}/follow [delete]
 func (h *Handler) Unfollow(c echo.Context) error {
 	followerID := handler.UserIDFromToken(c)
-	username := c.Param("username")
-	u, err := h.user.FindByUsername(username)
+	follower, err := h.userRepo.FindByID(followerID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
+		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
+	}
+	username := c.Param("username")
+	u, err := h.userRepo.FindByUsername(username)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
 	if u == nil {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
-	if err := h.user.RemoveFollower(u, followerID); err != nil {
+	if err := h.userRepo.RemoveFollower(u, follower); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	return c.JSON(http.StatusOK, user.NewProfileResponse(h.user, handler.UserIDFromToken(c), u))
+	return c.JSON(http.StatusOK, user.NewProfileResponse(h.userRepo, handler.UserIDFromToken(c), u))
 }

@@ -8,15 +8,11 @@ import (
 	"github.com/volatiletech/null/v8"
 )
 
-type userUpdateRequest struct {
+type UpdateRequest struct {
 	User model.UpdateUser `json:"user"`
 }
 
-func NewUserUpdateRequest() *userUpdateRequest {
-	return new(userUpdateRequest)
-}
-
-func (r *userUpdateRequest) Populate(u *entity.User) {
+func (r *UpdateRequest) Populate(u *entity.User) {
 	r.User.Username = u.Username
 	r.User.Email = u.Email
 	r.User.Password = u.Password
@@ -28,7 +24,7 @@ func (r *userUpdateRequest) Populate(u *entity.User) {
 	}
 }
 
-func (r *userUpdateRequest) Bind(c echo.Context, u *entity.User) error {
+func (r *UpdateRequest) Bind(c echo.Context, u *entity.User) error {
 	if err := c.Bind(r); err != nil {
 		return err
 	}

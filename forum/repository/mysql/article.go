@@ -269,7 +269,7 @@ func (a *ArticleRepo) ListByWhoFavorited(username string, offset, limit int) ([]
 		log.Error().Err(err).Msg("failed to find user")
 		return nil, 0, err
 	}
-	articles, err := user.Articles().All(context.Background(), a.Db)
+	articles, err := user.Articles(Offset(offset), Limit(limit)).All(context.Background(), a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to find articles")
 		return nil, 0, err
