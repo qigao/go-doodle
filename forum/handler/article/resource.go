@@ -56,7 +56,7 @@ func (h *Handler) GetArticle(c echo.Context) error {
 // @Router /articles [get]
 func (h *Handler) Articles(c echo.Context) error {
 	var (
-		articles []entity.Article
+		articles []*entity.Article
 		count    int64
 	)
 
@@ -115,7 +115,7 @@ func (h *Handler) Articles(c echo.Context) error {
 // @Router /articles/feed [get]
 func (h *Handler) Feed(c echo.Context) error {
 	var (
-		articles []entity.Article
+		articles []*entity.Article
 		count    int64
 	)
 
@@ -204,7 +204,7 @@ func (h *Handler) UpdateArticle(c echo.Context) error {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
-	if err = h.article.Update(a, req.Article.Tags); err != nil {
+	if err = h.article.Update(a); err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 
@@ -344,8 +344,8 @@ func (h *Handler) DeleteComment(c echo.Context) error {
 	if cm == nil {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
-
-	if cm.UserID != handler.UserIDFromToken(c) {
+	uid := handler.UserIDFromToken(c)
+	if cm.UserID != null.Uint64From(uint64(uid)) {
 		return c.JSON(http.StatusUnauthorized, http_error.NewError(errors.New("unauthorized action")))
 	}
 

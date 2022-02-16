@@ -5,7 +5,6 @@ import (
 	"forum/handler"
 	"forum/model"
 	"github.com/labstack/echo/v4"
-	"github.com/volatiletech/null/v8"
 )
 
 type singleArticleResponse struct {
@@ -17,7 +16,7 @@ type articleListResponse struct {
 	ArticlesCount int64                    `json:"articlesCount"`
 }
 
-func NewArticleResponse(c echo.Context, a *entity.Article) *singleArticleResponse {
+func NewArticleResponse(c echo.Context, a *entity.Article, tags []*entity.Tag) *singleArticleResponse {
 	ar := new(model.ArticleResponse)
 	ar.TagList = make([]string, 0)
 	ar.Slug = a.Slug
@@ -35,8 +34,8 @@ func NewArticleResponse(c echo.Context, a *entity.Article) *singleArticleRespons
 		ar.UpdatedAt = a.UpdatedAt.Time
 	}
 
-	for _, t := range a.Tags {
-		ar.TagList = append(ar.TagList, t.Tag)
+	for _, t := range tags {
+		ar.TagList = append(ar.TagList, t.Tag.String)
 	}
 	for _, u := range a.Favorites {
 		if u.ID == handler.UserIDFromToken(c) {

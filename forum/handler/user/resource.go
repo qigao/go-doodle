@@ -53,7 +53,7 @@ func (h *Handler) SignUp(c echo.Context) error {
 // @Failure 500 {object} utils.Error
 // @Router /users/login [post]
 func (h *Handler) Login(c echo.Context) error {
-	req := &user.LoginRequest{Repo: h.userRepo}
+	req := &user.LoginRequest{}
 	if err := req.Bind(c); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"forum/entity"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -96,15 +95,4 @@ func dsn() (string, error) {
 	// "user:password@host:port/dbname?option1&option2"
 	return fmt.Sprintf("%s:%s@(%s:%s)/%s?%s",
 		user, password, host, port, name, options), nil
-}
-
-//TODO: err check
-func AutoMigrate(db *gorm.DB) {
-	db.AutoMigrate(
-		&entity.User{},
-		&entity.Follow{},
-		&entity.Article{},
-		&entity.Comment{},
-		&entity.Tag{},
-	)
 }
