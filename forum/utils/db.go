@@ -4,55 +4,20 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"gorm.io/driver/mysql"
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
-	"gorm.io/plugin/dbresolver"
-	gorm_logger "logger/gorm"
+	"github.com/rs/zerolog/log"
+	"github.com/spf13/viper"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"os"
-	"time"
 )
 
-func NewSqliteORM() *gorm.DB {
-	db, err := gorm.Open(sqlite.Open("../realworld.db"), &gorm.Config{})
-	if err != nil {
-		fmt.Println("storage err: ", err)
-	}
-	return db
+type DatabaseConfig struct {
+	Host   string `mapstructure:"host"`
+	Port   int    `mapstructure:"port"`
+	User   string `mapstructure:"user"`
+	Pass   string `mapstructure:"pass"`
+	DbName string `mapstructure:"dbname"`
 }
 
-func NewMysqlORM() (*gorm.DB, error) {
-	s, err := dsn()
-	if err != nil {
-		return nil, err
-	}
-
-	var d *gorm.DB
-	for i := 0; i < 10; i++ {
-		d, err = gorm.Open(mysql.Open(s), &gorm.Config{Logger: gorm_logger.New()})
-		if err == nil {
-			break
-		}
-		time.Sleep(1 * time.Second)
-	}
-
-	if err != nil {
-		return nil, err
-	}
-
-	err = d.Use(
-		dbresolver.Register(dbresolver.Config{ /* xxx */ }).
-			SetConnMaxIdleTime(time.Hour).
-			SetConnMaxLifetime(24 * time.Hour).
-			SetMaxIdleConns(100).
-			SetMaxOpenConns(200),
-	)
-	if err != nil {
-		return nil, err
-	}
-
-	return d, nil
-}
 func NewMysqlManager() (*sql.DB, error) {
 	s, err := dsn()
 	if err != nil {
@@ -90,9 +55,44 @@ func dsn() (string, error) {
 		return "", errors.New("$DB_PORT is not set")
 	}
 
-	options := "charset=utf8mb4&parseTime=True&loc=Local"
+	options := "charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"
 
 	// "user:password@host:port/dbname?option1&option2"
 	return fmt.Sprintf("%s:%s@(%s:%s)/%s?%s",
 		user, password, host, port, name, options), nil
+}
+
+type dbConfig struct {
+	Db DatabaseConfig `mapstructure:"mysql"`
+}
+
+func BuildDSNFromDbConfig(config *DatabaseConfig) string {
+	defaultDsn := "%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"
+	dsn := fmt.Sprintf(defaultDsn, config.User, config.Pass, config.Host, config.Port, config.DbName)
+	return dsn
+}
+
+//ReadDBConfigFromToml read config from sqlboiler.toml file
+func ReadDBConfigFromToml(path string) *DatabaseConfig {
+	v := viper.New()
+	v.SetConfigName("sqlboiler")
+	v.AddConfigPath(path)
+	if err := v.ReadInConfig(); err != nil {
+		log.Fatal().Err(err).Msg("Failed to read config file")
+	}
+	var c dbConfig
+	if err := v.Unmarshal(&c); err != nil {
+		log.Fatal().Err(err).Msg("Failed to unmarshal config file")
+	}
+	return &c.Db
+}
+func SqlDbManager(dsn string) *sql.DB {
+	var db *sql.DB
+	boil.DebugMode = true
+	var err error
+	db, err = sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatal().Err(err).Msgf("Failed to Open database: %s", err)
+	}
+	return db
 }

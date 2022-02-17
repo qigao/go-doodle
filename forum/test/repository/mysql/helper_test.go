@@ -2,11 +2,12 @@ package mysql
 
 import (
 	mysqlC "containers/db"
+	"fmt"
 	"forum/entity"
 	sql "forum/repository/mysql"
+	"forum/utils"
 	migrate "github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/volatiletech/null/v8"
 	"os"
 	"testing"
@@ -16,12 +17,15 @@ var userRepo *sql.UserRepo
 var articleRepo *sql.ArticleRepo
 
 func TestMain(m *testing.M) {
-	container := mysqlC.NewMysqlContainer()
+	path := "../../../"
+	config := utils.ReadDBConfigFromToml(path)
+	container := mysqlC.NewMysqlContainer(config.User, config.Pass, config.DbName)
 	container.CreateContainer()
 	defer container.CloseContainer()
-	db := container.SqlDbManager()
+	dsn := utils.BuildDSNFromDbConfig(config)
+	db := utils.SqlDbManager(dsn)
 	driver, _ := mysql.WithInstance(db, &mysql.Config{})
-	mg, err := migrate.NewWithDatabaseInstance("file://../../../db/sql", "mysql", driver)
+	mg, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s/db/sql", path), "mysql", driver)
 	if err != nil {
 		println(err.Error())
 	}

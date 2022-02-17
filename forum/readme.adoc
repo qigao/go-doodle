@@ -9,13 +9,43 @@ Also make sure you have installed a go1.11+ version.
 
 For more info and detailed instructions please check this guide: https://github.com/golang/go/wiki/SettingGOPATH[Setting GOPATH]
 
+==== Edit .env
+prepare .env for mysql server to generate db schemas
+[source,dotenv]
+----
+DB_HOST=localhost
+DB_NAME=gforum
+DB_PORT=3306
+DB_USER=forum
+DB_PASSWORD=secret
+----
+
+==== Edit sqlboiler.toml
+sqlboiler is used to generate the database models.
+[source,toml]
+----
+output   = "../entity"
+wipe     = true
+pkgname  = "entity"
+
+[mysql]
+dbname = "gforum"
+host = "localhost"
+port = 3306
+user = "forum"
+pass = "secret"
+sslmode = "false"
+----
+
+mysql connection info should be identical to the one in the database docker.
+
 === Install dependencies
 
 [source,bash]
 ----
 ➜  go install github.com/volatiletech/sqlboiler/v4@latest
 ➜  go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
-➜ go install github.com/vektra/mockery/v2@latest
+➜  go install github.com/vektra/mockery/v2@latest
 ➜  go mod download
 
 ----

@@ -1,4 +1,4 @@
-output   = "../entity"
+output   = "entity"
 wipe     = true
 pkgname  = "entity"
 
@@ -6,10 +6,8 @@ pkgname  = "entity"
 dbname = "gforum"
 host = "localhost"
 port = 3306
-user = "root"
+user = "forum"
 pass = "secret"
 sslmode = "false"
-[auto-columns]
-created = "createdAt"
-updated = "updatedAt"
+
 
