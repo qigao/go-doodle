@@ -26,14 +26,10 @@ require (
 	gorm.io/gorm v1.22.5
 	gorm.io/plugin/dbresolver v1.1.0
 	logger v1.0.0
-	test_container v0.0.0
-	mocket v0.0.0
 )
 
 replace (
 	logger => ../shared/logger
-	test_container => ./../shared/test_container
-	mocket => ./../shared/mocket
 )
 
 require (

@@ -1,7 +1,5 @@
 package containers
 
-type Opts struct {
-	User     string
-	Password string
-	Database string
-}
+const (
+  MysqlImage = "mysql:8"
+)

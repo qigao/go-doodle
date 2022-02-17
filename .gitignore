@@ -12,8 +12,8 @@
 .settings/
 
 # generate
-/entity
-
+/entity/
+/test/service/repository/
 #System Files
 .DS_Store
 Thumbs.db
@@ -22,3 +22,4 @@ vendor/
 *.db
 .vscode/
 
+.env
