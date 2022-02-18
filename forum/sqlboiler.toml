@@ -1,6 +1,6 @@
-output   = "entity"
-wipe     = true
-pkgname  = "entity"
+output = "entity"
+wipe = true
+pkgname = "entity"
 
 [mysql]
 dbname = "gforum"
@@ -9,5 +9,3 @@ port = 3306
 user = "forum"
 pass = "secret"
 sslmode = "false"
-
-

@@ -66,9 +66,9 @@ type dbConfig struct {
 	Db DatabaseConfig `mapstructure:"mysql"`
 }
 
-func BuildDSNFromDbConfig(config *DatabaseConfig) string {
+func BuildDSNFromDbConfig(config *DatabaseConfig, host string, port int) string {
 	defaultDsn := "%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local&multiStatements=true"
-	dsn := fmt.Sprintf(defaultDsn, config.User, config.Pass, config.Host, config.Port, config.DbName)
+	dsn := fmt.Sprintf(defaultDsn, config.User, config.Pass, host, port, config.DbName)
 	return dsn
 }
 
@@ -86,6 +86,7 @@ func ReadDBConfigFromToml(path string) *DatabaseConfig {
 	}
 	return &c.Db
 }
+
 func SqlDbManager(dsn string) *sql.DB {
 	var db *sql.DB
 	boil.DebugMode = true

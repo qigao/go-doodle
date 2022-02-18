@@ -3,10 +3,11 @@ package db
 import (
 	"containers"
 	"context"
+	"time"
+
 	"github.com/rs/zerolog/log"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
-	"time"
 )
 
 type MySQLContainer struct {
@@ -39,10 +40,7 @@ func (m *MySQLContainer) CreateContainer() {
 			"MYSQL_PASSWORD":      *m.password,
 			"MYSQL_DATABASE":      *m.dbName,
 		},
-		BindMounts: map[string]string{
-			"my.cnf": "/etc/mysql/my.cnf",
-		},
-		WaitingFor: wait.ForLog("port: 3306  MySQL Community Server - GPL").WithStartupTimeout(time.Minute * 2),
+		WaitingFor: wait.ForLog("port: 3306  MySQL Community Server - GPL.").WithStartupTimeout(time.Minute * 2),
 	}
 
 	mysqlC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
