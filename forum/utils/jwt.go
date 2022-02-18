@@ -2,11 +2,12 @@ package utils
 
 import (
 	"fmt"
-	"github.com/dgrijalva/jwt-go"
-	"github.com/labstack/echo/v4"
 	"http/http_error"
 	"net/http"
 	"time"
+
+	"github.com/golang-jwt/jwt"
+	"github.com/labstack/echo/v4"
 )
 
 type (
