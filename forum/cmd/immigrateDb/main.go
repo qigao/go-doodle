@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"forum/utils"
+
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -14,7 +15,7 @@ func main() {
 	dbPtr := flag.String("db", "db/sql", "a string")
 	flag.Parse()
 	config := utils.ReadDBConfigFromToml(*pathPtr)
-	dsn := utils.BuildDSNFromDbConfig(config)
+	dsn := utils.BuildDSNFromDbConfig(config, config.Host, config.Port)
 	fmt.Println(dsn)
 	db := utils.SqlDbManager(dsn)
 	driver, _ := mysql.WithInstance(db, &mysql.Config{})

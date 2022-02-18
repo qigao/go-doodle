@@ -1,16 +1,16 @@
 package main
 
-//go:generate sqlboiler -o entity -p entity mysql
-
 import (
 	"forum/handler/article"
 	"forum/handler/user"
 	"forum/repository/mysql"
 	"forum/utils"
-	"github.com/labstack/echo/v4"
 	"http/middleware"
 
+	"github.com/labstack/echo/v4"
+
 	_ "forum/docs"
+
 	webSwagger "github.com/swaggo/echo-swagger" // forum-swagger middleware
 )
 

@@ -6,7 +6,9 @@ import (
 	"forum/entity"
 	sql "forum/repository/mysql"
 	"forum/utils"
-	migrate "github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
+
 	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/volatiletech/null/v8"
 	"os"
@@ -22,7 +24,8 @@ func TestMain(m *testing.M) {
 	container := mysqlC.NewMysqlContainer(config.User, config.Pass, config.DbName)
 	container.CreateContainer()
 	defer container.CloseContainer()
-	dsn := utils.BuildDSNFromDbConfig(config)
+	host, port, _ := container.GetConnHostAndPort()
+	dsn := utils.BuildDSNFromDbConfig(config, host, port)
 	db := utils.SqlDbManager(dsn)
 	driver, _ := mysql.WithInstance(db, &mysql.Config{})
 	mg, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s/db/sql", path), "mysql", driver)
