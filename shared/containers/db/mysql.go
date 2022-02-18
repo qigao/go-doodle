@@ -1,13 +1,12 @@
 package db
 
 import (
-	"containers"
-	"context"
-	"time"
+  "containers"
+  "context"
+  "time"
 
-	"github.com/rs/zerolog/log"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/wait"
+  "github.com/testcontainers/testcontainers-go"
+  "github.com/testcontainers/testcontainers-go/wait"
 )
 
 type MySQLContainer struct {
@@ -29,7 +28,6 @@ func NewMysqlContainer(user, password, dbname string) *MySQLContainer {
 }
 
 func (m *MySQLContainer) CreateContainer() {
-	log.Info().Msg("setup MySQL Container")
 	ctx := context.Background()
 	req := testcontainers.ContainerRequest{
 		Image:        containers.MysqlImage,
@@ -49,7 +47,7 @@ func (m *MySQLContainer) CreateContainer() {
 	})
 
 	if err != nil {
-		log.Fatal().Msgf("error starting mysql container: %s", err)
+		panic("error getting mysql container: " + err.Error())
 	}
 	m.mysqlC = mysqlC
 	m.ctx = &ctx
@@ -58,19 +56,18 @@ func (m *MySQLContainer) CreateContainer() {
 func (m *MySQLContainer) GetConnHostAndPort() (string, int, error) {
 	host, err := m.mysqlC.Host(*m.ctx)
 	if err != nil {
-		return "", 0, err
+		panic("error getting host:" + err.Error())
 	}
 	p, err := m.mysqlC.MappedPort(*m.ctx, mysqlPort)
 	if err != nil {
-		return "", 0, err
+		panic("error getting port:" + err.Error())
 	}
 	return host, p.Int(), nil
 }
 
 func (m *MySQLContainer) CloseContainer() {
-	log.Info().Msg("terminating container")
 	err := m.mysqlC.Terminate(*m.ctx)
 	if err != nil {
-		log.Fatal().Msgf("error terminating mysql container: %s", err)
+		panic("error terminating container:" + err.Error())
 	}
 }
