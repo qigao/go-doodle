@@ -10,13 +10,15 @@ start-mysql:
 	cp ../shared/containers/db/my.cnf $(ROOT)/docker/my.cnf
 	docker-compose -f $(ROOT)/docker/docker-compose-schema.yml up -d
 
-immigrate-db: | start-mysql
+gen-schema:
 	@go build $(ROOT)/cmd/immigrateDb
 	sleep 5
 	$(ROOT)/immigrateDb -db $(ROOT)/db/sql -path $(ROOT)
 
 gen-orm: 
 	@sqlboiler mysql
+
+stop-mysql:
 	@docker-compose -f $(ROOT)/docker/docker-compose-schema.yml down
 	rm -rf $(ROOT)/docker/my.cnf
 	rm -rf $(ROOT)/docker/schema.env
