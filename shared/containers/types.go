@@ -1,5 +1,5 @@
 package containers
 
 const (
-	MysqlImage = "mysql:latest"
+	MysqlImage = "mysql:8"
 )

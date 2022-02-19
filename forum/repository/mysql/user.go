@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"forum/entity"
+
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	. "github.com/volatiletech/sqlboiler/v4/queries/qm"

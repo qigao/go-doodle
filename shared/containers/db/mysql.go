@@ -1,12 +1,13 @@
 package db
 
 import (
-  "containers"
-  "context"
-  "time"
+	"containers"
+	"context"
+	"os"
+	"time"
 
-  "github.com/testcontainers/testcontainers-go"
-  "github.com/testcontainers/testcontainers-go/wait"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
 type MySQLContainer struct {
@@ -29,6 +30,7 @@ func NewMysqlContainer(user, password, dbname string) *MySQLContainer {
 
 func (m *MySQLContainer) CreateContainer() {
 	ctx := context.Background()
+	seedDataPath, _ := os.Getwd()
 	req := testcontainers.ContainerRequest{
 		Image:        containers.MysqlImage,
 		ExposedPorts: []string{mysqlPort},
@@ -38,9 +40,11 @@ func (m *MySQLContainer) CreateContainer() {
 			"MYSQL_PASSWORD":      *m.password,
 			"MYSQL_DATABASE":      *m.dbName,
 		},
-		WaitingFor: wait.ForLog("port: 3306  MySQL Community Server - GPL.").WithStartupTimeout(time.Minute * 2),
+		BindMounts: map[string]string{
+			seedDataPath + "/my.cnf": "/etc/mysql/my.cnf",
+		},
+		WaitingFor: wait.ForLog("port: 3306  MySQL Community Server").WithStartupTimeout(time.Minute * 2),
 	}
-
 	mysqlC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
 		ContainerRequest: req,
 		Started:          true,
