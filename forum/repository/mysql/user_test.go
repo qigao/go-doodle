@@ -2,8 +2,9 @@ package mysql
 
 import (
 	"database/sql"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUserRepo_User(t *testing.T) {
@@ -95,7 +96,7 @@ func TestUserRepo_Follower(t *testing.T) {
 		err := userRepo.CreateUser(userFoo)
 		assert.NoError(t, err)
 	})
-	t.Run("Create a user", func(t *testing.T) {
+	t.Run("Create another user", func(t *testing.T) {
 		userFoo.ID = 28
 		err := userRepo.CreateUser(userFoo)
 		assert.NoError(t, err)
@@ -111,6 +112,18 @@ func TestUserRepo_Follower(t *testing.T) {
 		assert.NoError(t, err)
 		assert.True(t, isFollower)
 	})
+	t.Run("get followers", func(t *testing.T) {
+		users, err := userRepo.GetFollowers(userFoo)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(users))
+		assert.Equal(t, userBar.ID, users[0].ID)
+	})
+	t.Run("get following user", func(t *testing.T) {
+		users, err := userRepo.GetFollowingUsers(userBar)
+		assert.NoError(t, err)
+		assert.Equal(t, 1, len(users))
+		assert.Equal(t, userFoo.ID, users[0].ID)
+	})
 	t.Run("remove follower", func(t *testing.T) {
 		userFoo.ID = 27
 		err := userRepo.RemoveFollower(userFoo, userBar)
@@ -120,6 +133,16 @@ func TestUserRepo_Follower(t *testing.T) {
 		isFollower, err := userRepo.IsFollower(userFoo, userBar)
 		assert.Error(t, sql.ErrNoRows, err)
 		assert.False(t, isFollower)
+	})
+	t.Run("get no followers", func(t *testing.T) {
+		users, err := userRepo.GetFollowers(userFoo)
+		assert.NoError(t, err)
+		assert.Equal(t, 0, len(users))
+	})
+	t.Run("get no following user", func(t *testing.T) {
+		users, err := userRepo.GetFollowingUsers(userFoo)
+		assert.NoError(t, err)
+		assert.Equal(t, 0, len(users))
 	})
 	t.Run("user not exits is not follower", func(t *testing.T) {
 		isFollower, err := userRepo.IsFollower(userFoo, userBar)

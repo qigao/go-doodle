@@ -1,12 +1,12 @@
-package sqlmock
+package mysql
 
 import (
 	"fmt"
-	"forum/repository/mysql"
-	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/stretchr/testify/assert"
 	"regexp"
 	"testing"
+
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUserRepo_CreateUserByMock(t *testing.T) {
@@ -20,7 +20,7 @@ func TestUserRepo_CreateUserByMock(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("INSERT INTO")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectRollback()
-		repo := mysql.UserRepo{Db: db}
+		repo := UserRepo{Db: db}
 		err = repo.CreateUser(userFoo)
 		assert.Errorf(t, err, "some error")
 	})
@@ -35,7 +35,7 @@ func TestUserRepo_CreateUserByMock(t *testing.T) {
 		}
 		mock.ExpectBegin()
 		db.Begin()
-		repo := mysql.UserRepo{Db: db}
+		repo := UserRepo{Db: db}
 		err = repo.CreateUser(userFoo)
 		assert.Errorf(t, err, "failed to start transaction")
 	})
@@ -52,7 +52,7 @@ func TestUserRepo_UpdateUserByMock(t *testing.T) {
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("UPDATE")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectRollback()
-		repo := mysql.UserRepo{Db: db}
+		repo := UserRepo{Db: db}
 		err = repo.UpdateUser(userFoo)
 		assert.Errorf(t, err, "some error")
 	})
@@ -67,7 +67,7 @@ func TestUserRepo_UpdateUserByMock(t *testing.T) {
 		}
 		mock.ExpectBegin()
 		db.Begin()
-		repo := mysql.UserRepo{Db: db}
+		repo := UserRepo{Db: db}
 		err = repo.UpdateUser(userFoo)
 		assert.Errorf(t, err, "failed to start transaction")
 	})
@@ -87,7 +87,7 @@ func TestUserRepo_AddFollowerByMock(t *testing.T) {
 			AddRow(userFoo.ID, userFoo.Username, userFoo.Email, userFoo.Password))
 		mock.ExpectExec(regexp.QuoteMeta("INSERT INTO")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectCommit()
-		repo := mysql.UserRepo{Db: db}
+		repo := UserRepo{Db: db}
 		err = repo.AddFollower(userFoo, userBar)
 		assert.Errorf(t, err, "some error")
 	})
@@ -102,7 +102,7 @@ func TestUserRepo_AddFollowerByMock(t *testing.T) {
 		}
 		mock.ExpectBegin()
 		db.Begin()
-		repo := mysql.UserRepo{Db: db}
+		repo := UserRepo{Db: db}
 		err = repo.AddFollower(userFoo, userBar)
 		assert.Errorf(t, err, "failed to start transaction")
 	})
@@ -122,7 +122,7 @@ func TestUerRepo_RemoveFollowerByMock(t *testing.T) {
 			AddRow(userFoo.ID, userFoo.Username, userFoo.Email, userFoo.Password))
 		mock.ExpectExec(regexp.QuoteMeta("DELETE FROM")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectCommit()
-		repo := mysql.UserRepo{Db: db}
+		repo := UserRepo{Db: db}
 		err = repo.RemoveFollower(userFoo, userBar)
 		assert.Errorf(t, err, "some error")
 	})
@@ -137,7 +137,7 @@ func TestUerRepo_RemoveFollowerByMock(t *testing.T) {
 		}
 		mock.ExpectBegin()
 		db.Begin()
-		repo := mysql.UserRepo{Db: db}
+		repo := UserRepo{Db: db}
 		err = repo.RemoveFollower(userFoo, userBar)
 		assert.Errorf(t, err, "failed to start transaction")
 	})

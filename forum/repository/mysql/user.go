@@ -21,8 +21,8 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 		Db: db,
 	}
 }
-func (u *UserRepo) FindByID(u2 uint) (*entity.User, error) {
-	user, err := entity.Users(Where("id = ?", u2)).One(context.Background(), u.Db)
+func (u *UserRepo) FindByID(uid uint) (*entity.User, error) {
+	user, err := entity.Users(Where("id = ?", uid)).One(context.Background(), u.Db)
 	if err != nil {
 		return nil, err
 	}
@@ -113,9 +113,28 @@ func (u *UserRepo) RemoveFollower(user *entity.User, follower *entity.User) erro
 }
 
 func (u *UserRepo) IsFollower(user, follower *entity.User) (bool, error) {
-	cnts, err := user.FollowerUsers(Where("id = ?", follower.ID)).Count(context.Background(), u.Db)
-	if cnts > 0 {
-		return true, nil
+	cnts, err := user.FollowerUsers(entity.UserWhere.ID.EQ(follower.ID)).Count(context.Background(), u.Db)
+	if cnts == 0 {
+		log.Error().Err(err).Msg("failed to check if user is follower")
+		return false, nil
 	}
-	return false, err
+	return true, err
+}
+
+func (u *UserRepo) GetFollowers(user *entity.User) ([]*entity.User, error) {
+	followers, err := user.FollowerUsers().All(context.Background(), u.Db)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to get followers")
+		return nil, err
+	}
+	return followers, nil
+}
+
+func (u *UserRepo) GetFollowingUsers(user *entity.User) ([]*entity.User, error) {
+	following, err := user.FollowingUsers().All(context.Background(), u.Db)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to get following")
+		return nil, err
+	}
+	return following, nil
 }

@@ -2,13 +2,9 @@ package user
 
 import (
 	"forum/entity"
-	"forum/model"
 	"forum/repository"
+	"forum/utils"
 )
-
-type profileResponse struct {
-	Profile model.ProfileType `json:"profile"`
-}
 
 func NewProfileResponse(us repository.User, userID uint, u *entity.User) *profileResponse {
 	r := new(profileResponse)
@@ -20,5 +16,19 @@ func NewProfileResponse(us repository.User, userID uint, u *entity.User) *profil
 		r.Profile.Image = &(u.Image.String)
 	}
 	//r.Profile.Following, _ = us.IsFollower(u.ID, userID)
+	return r
+}
+
+func NewUserResponse(u *entity.User) *userResponse {
+	r := new(userResponse)
+	r.User.Username = u.Username
+	r.User.Email = u.Email
+	if u.Bio.Valid {
+		r.User.Bio = &(u.Bio.String)
+	}
+	if u.Image.Valid {
+		r.User.Image = &(u.Image.String)
+	}
+	r.User.Token = utils.GenerateJWT(uint(u.ID))
 	return r
 }

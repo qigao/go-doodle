@@ -2,14 +2,11 @@ package user
 
 import (
 	"forum/handler"
-	"forum/service"
 	"forum/service/user"
-	"github.com/labstack/echo/v4"
-	"github.com/rs/zerolog/log"
 	"http/http_error"
 	"net/http"
 
-	"forum/entity"
+	"github.com/labstack/echo/v4"
 )
 
 // SignUp godoc
@@ -26,12 +23,11 @@ import (
 // @Failure 500 {object} utils.Error
 // @Router /users [post]
 func (h *Handler) SignUp(c echo.Context) error {
-	var u entity.User
-	req := &user.RegisterRequest{}
-	if err := req.Bind(c, &u); err != nil {
+	req := &user.RegisterRequest{Repo: h.userRepo}
+	if err := req.Bind(c); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	if err := h.userRepo.CreateUser(&u); err != nil {
+	if err := req.CreateUser(); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusCreated, user.NewUserResponse(&u))
@@ -53,16 +49,13 @@ func (h *Handler) SignUp(c echo.Context) error {
 // @Failure 500 {object} utils.Error
 // @Router /users/login [post]
 func (h *Handler) Login(c echo.Context) error {
-	req := &user.LoginRequest{}
+	req := &user.RequestLogin{Repo: h.userRepo}
 	if err := req.Bind(c); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 	userInfo, err := h.userRepo.FindByEmail(req.User.Email)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, http_error.NewError(err))
-	}
-	if !service.CheckPassword(userInfo.Password, req.User.Password) {
-		return c.JSON(http.StatusUnauthorized, http_error.NewError(err))
+		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusOK, user.NewUserResponse(userInfo))
 }
@@ -84,7 +77,8 @@ func (h *Handler) Login(c echo.Context) error {
 // @Router /user [get]
 func (h *Handler) CurrentUser(c echo.Context) error {
 	uId := handler.UserIDFromToken(c)
-	userInfo, err := h.userRepo.FindByID(uId)
+	req := &user.UserProfile{Repo: h.userRepo}
+	userInfo, err := req.GetUserByID(uId)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
@@ -109,17 +103,11 @@ func (h *Handler) CurrentUser(c echo.Context) error {
 // @Router /user [put]
 func (h *Handler) UpdateUser(c echo.Context) error {
 	uid := handler.UserIDFromToken(c)
-	req := &user.UpdateRequest{}
-	u, err := h.userRepo.FindByID(uid)
-	if err != nil {
-		log.Error().Err(err).Msg("error finding user")
-		return c.JSON(http.StatusNotFound, http_error.NewError(err))
-	}
-	req.Populate(u)
-	if err := req.Bind(c, u); err != nil {
+	req := &user.UpdateRequest{Repo: h.userRepo}
+	if err := req.Bind(c); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	if err := h.userRepo.UpdateUser(u); err != nil {
+	if err := req.FindThenUpdateUser(uid); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusOK, user.NewUserResponse(u))
@@ -143,7 +131,8 @@ func (h *Handler) UpdateUser(c echo.Context) error {
 // @Router /profiles/{username} [get]
 func (h *Handler) GetProfile(c echo.Context) error {
 	username := c.Param("username")
-	u, err := h.userRepo.FindByUsername(username)
+	req := &user.UserProfile{Repo: h.userRepo}
+	u, err := req.GetUserByUsername(username)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
@@ -168,16 +157,9 @@ func (h *Handler) GetProfile(c echo.Context) error {
 // @Router /profiles/{username}/follow [post]
 func (h *Handler) Follow(c echo.Context) error {
 	followerID := handler.UserIDFromToken(c)
-	follower, err := h.userRepo.FindByID(followerID)
-	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
-	}
 	username := c.Param("username")
-	u, err := h.userRepo.FindByUsername(username)
-	if err != nil {
-		return c.JSON(http.StatusNotFound, http_error.NewError(err))
-	}
-	if err := h.userRepo.AddFollower(u, follower); err != nil {
+	req := &user.FollowRequest{Repo: h.userRepo}
+	if err := req.FllowUserByUserName(followerID, username); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 
@@ -201,20 +183,10 @@ func (h *Handler) Follow(c echo.Context) error {
 // @Security ApiKeyAuth
 // @Router /profiles/{username}/follow [delete]
 func (h *Handler) Unfollow(c echo.Context) error {
-	followerID := handler.UserIDFromToken(c)
-	follower, err := h.userRepo.FindByID(followerID)
-	if err != nil {
-		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
-	}
-	username := c.Param("username")
-	u, err := h.userRepo.FindByUsername(username)
-	if err != nil {
-		return c.JSON(http.StatusNotFound, http_error.NewError(err))
-	}
-	if u == nil {
-		return c.JSON(http.StatusNotFound, http_error.NotFound())
-	}
-	if err := h.userRepo.RemoveFollower(u, follower); err != nil {
+	uid := handler.UserIDFromToken(c)
+	userName := c.Param("username")
+	req := &user.FollowRequest{Repo: h.userRepo}
+	if err := req.UnFllowUserByUserName(uid, userName); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusOK, user.NewProfileResponse(h.userRepo, handler.UserIDFromToken(c), u))

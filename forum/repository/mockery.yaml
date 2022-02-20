@@ -1,6 +1,6 @@
 quiet: False
 all: True
 keeptree: True
-output: test/service
+output: mock
 outpkg: repository
 srcpkg: ./repository

@@ -4,22 +4,23 @@ import (
 	mysqlC "containers/db"
 	"fmt"
 	"forum/entity"
-	sql "forum/repository/mysql"
 	"forum/utils"
+
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 
-	"github.com/golang-migrate/migrate/v4/database/mysql"
-	"github.com/volatiletech/null/v8"
 	"os"
 	"testing"
+
+	"github.com/golang-migrate/migrate/v4/database/mysql"
+	"github.com/volatiletech/null/v8"
 )
 
-var userRepo *sql.UserRepo
-var articleRepo *sql.ArticleRepo
+var userRepo *UserRepo
+var articleRepo *ArticleRepo
 
 func TestMain(m *testing.M) {
-	path := "../../../"
+	path := "../../"
 	config := utils.ReadDBConfigFromToml(path)
 	container := mysqlC.NewMysqlContainer(config.User, config.Pass, config.DbName)
 	container.CreateContainer()
@@ -33,8 +34,8 @@ func TestMain(m *testing.M) {
 		println(err.Error())
 	}
 	mg.Up()
-	userRepo = sql.NewUserRepo(db)
-	articleRepo = sql.NewArticleRepo(db)
+	userRepo = NewUserRepo(db)
+	articleRepo = NewArticleRepo(db)
 	code := m.Run()
 	os.Exit(code)
 }
@@ -54,6 +55,6 @@ var (
 		Title:       "foo Title",
 		Description: null.NewString("foo Description", false),
 		Body:        null.NewString("foo Body", false),
-		Slug:        "foo-title",
+		Slug:        "foo-slug",
 	}
 )
