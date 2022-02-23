@@ -25,8 +25,8 @@ type Article interface {
 	RemoveFavorite(*entity.Article, uint) error
 
 	CreateTag(*entity.Tag) error
-	AddTag(*entity.Article, *entity.Tag) error
-	AddTags(*entity.Article, []*entity.Tag) error
+	AddTagToArticle(*entity.Article, *entity.Tag) error
+	AddTagsToArticle(*entity.Article, []*entity.Tag) error
 	RemoveTag(*entity.Article, *entity.Tag) error
 	FindTagsBySlug(slug string) ([]*entity.Tag, error)
 	ListTags() ([]*entity.Tag, error)

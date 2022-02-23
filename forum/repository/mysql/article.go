@@ -83,16 +83,12 @@ func (a *ArticleRepo) DeleteArticle(article *entity.Article) error {
 		return err
 	}
 	defer tx.Rollback()
-	rows, err := article.Delete(ctx, a.Db)
+	_, err = article.Delete(ctx, a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to delete article")
 		return err
 	}
-	log.Info().Msgf("deleted %d rows", rows)
 	tx.Commit()
-	if rows == 0 {
-		return sql.ErrNoRows
-	}
 	return nil
 }
 
@@ -305,7 +301,7 @@ func (a *ArticleRepo) CreateTag(tag *entity.Tag) error {
 	return nil
 }
 
-func (a *ArticleRepo) AddTag(article *entity.Article, tag *entity.Tag) error {
+func (a *ArticleRepo) AddTagToArticle(article *entity.Article, tag *entity.Tag) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
 	if err != nil {
@@ -322,7 +318,7 @@ func (a *ArticleRepo) AddTag(article *entity.Article, tag *entity.Tag) error {
 	return nil
 }
 
-func (a *ArticleRepo) AddTags(article *entity.Article, tag []*entity.Tag) error {
+func (a *ArticleRepo) AddTagsToArticle(article *entity.Article, tag []*entity.Tag) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
 	if err != nil {

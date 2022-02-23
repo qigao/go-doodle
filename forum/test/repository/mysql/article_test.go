@@ -1,12 +1,12 @@
 package mysql
 
 import (
-  "database/sql"
-  "forum/entity"
-  "github.com/stretchr/testify/assert"
-  "github.com/stretchr/testify/require"
-  "github.com/volatiletech/null/v8"
-  "testing"
+	"database/sql"
+	"forum/entity"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/volatiletech/null/v8"
+	"testing"
 )
 
 func TestArticleRepo_Articles(t *testing.T) {
@@ -116,7 +116,7 @@ func TestArticleRepo_Tags(t *testing.T) {
 			ID:  1,
 			Tag: null.StringFrom("tag1"),
 		}
-		err = articleRepo.AddTag(article, tag)
+		err = articleRepo.AddTagToArticle(article, tag)
 		assert.NoError(t, err)
 	})
 	t.Run("list  article by tag", func(t *testing.T) {
@@ -166,7 +166,7 @@ func TestArticleCreateArticleWithTags(t *testing.T) {
 			{Tag: null.StringFrom("tag2"), ID: 2},
 			{Tag: null.StringFrom("tag3"), ID: 3},
 		}
-		err = articleRepo.AddTags(articleFoo, tags)
+		err = articleRepo.AddTagsToArticle(articleFoo, tags)
 		assert.NoError(t, err)
 	})
 	t.Run("find tags by slug", func(t *testing.T) {

@@ -213,9 +213,9 @@ func (r *RequestArticle) AddTagToArticle(slug string, tagStr []string) error {
 			tag = append(tag, v)
 		}
 	}
-	err = r.Repo.AddTags(a, tag)
+	err = r.Repo.AddTagsToArticle(a, tag)
 	if err != nil {
-		log.Error().Err(err).Msg("AddTag error")
+		log.Error().Err(err).Msg("AddTagToArticle error")
 		return err
 	}
 	return nil
