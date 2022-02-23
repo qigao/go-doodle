@@ -33,16 +33,19 @@ type CommentResponse struct {
 	} `json:"author"`
 }
 
-type CreateArticle struct {
+type SingleArticle struct {
 	Title       string   `json:"title" validate:"required"`
 	Description string   `json:"description" validate:"required"`
 	Body        string   `json:"body" validate:"required"`
 	Tags        []string `json:"tagList,omitempty"`
 }
 
-type UpdateArticle struct {
-	Title       string   `json:"title"`
-	Description string   `json:"description"`
-	Body        string   `json:"body"`
-	Tags        []string `json:"tagList"`
+type SimpleArticle struct {
+	Slug        string    `json:"slug"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Body        string    `json:"body"`
+	TagList     []string  `json:"tagList,omitempty"`
+	CreatedAt   time.Time `json:"createdAt"`
+	UpdatedAt   time.Time `json:"updatedAt"`
 }

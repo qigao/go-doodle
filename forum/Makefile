@@ -24,7 +24,7 @@ stop-mysql:
 	rm -rf $(ROOT)/docker/schema.env
 
 gen-mock:
-	mockery --config test/mockery.yaml
+	mockery --config repository/mockery.yaml
 
 build:
 	go build -race  .
