@@ -1,13 +1,12 @@
 package mysql
 
 import (
-	"database/sql"
-	"forum/entity"
-	"testing"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"github.com/volatiletech/null/v8"
+  "database/sql"
+  "forum/entity"
+  "github.com/stretchr/testify/assert"
+  "github.com/stretchr/testify/require"
+  "github.com/volatiletech/null/v8"
+  "testing"
 )
 
 func TestArticleRepo_Articles(t *testing.T) {
@@ -156,7 +155,6 @@ func TestArticleRepo_Tags(t *testing.T) {
 		}
 		assert.ElementsMatch(t, []string{"tag1", "tag2", "tag3"}, tagArray)
 	})
-
 
 }
 func TestArticleCreateArticleWithTags(t *testing.T) {

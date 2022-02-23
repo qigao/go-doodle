@@ -1,44 +1,10 @@
 package mysql
 
 import (
-	mysqlC "containers/db"
-	"fmt"
 	"forum/entity"
-	"forum/utils"
 
-	"github.com/golang-migrate/migrate/v4"
-	_ "github.com/golang-migrate/migrate/v4/source/file"
-
-	"os"
-	"testing"
-
-	"github.com/golang-migrate/migrate/v4/database/mysql"
 	"github.com/volatiletech/null/v8"
 )
-
-var userRepo *UserRepo
-var articleRepo *ArticleRepo
-
-func TestMain(m *testing.M) {
-	path := "../../"
-	config := utils.ReadDBConfigFromToml(path)
-	container := mysqlC.NewMysqlContainer(config.User, config.Pass, config.DbName)
-	container.CreateContainer()
-	defer container.CloseContainer()
-	host, port, _ := container.GetConnHostAndPort()
-	dsn := utils.BuildDSNFromDbConfig(config, host, port)
-	db := utils.SqlDbManager(dsn)
-	driver, _ := mysql.WithInstance(db, &mysql.Config{})
-	mg, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s/db/sql", path), "mysql", driver)
-	if err != nil {
-		println(err.Error())
-	}
-	mg.Up()
-	userRepo = NewUserRepo(db)
-	articleRepo = NewArticleRepo(db)
-	code := m.Run()
-	os.Exit(code)
-}
 
 var (
 	userFoo = &entity.User{

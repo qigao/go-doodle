@@ -53,9 +53,9 @@ func (r *FollowRequest) findCurrentUserAndTargetUser(uid uint, userName string) 
 		log.Error().Err(err).Msg("FindByID error")
 		return nil, nil, err
 	}
-	targetUser, err := r.Repo.FindByUsername(userName)
+	targetUser, err := r.Repo.FindByUserName(userName)
 	if err != nil {
-		log.Error().Err(err).Msg("FindByUsername error")
+		log.Error().Err(err).Msg("FindByUserName error")
 		return nil, nil, err
 	}
 	return currentUser, targetUser, nil
