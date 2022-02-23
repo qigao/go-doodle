@@ -24,6 +24,7 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 func (u *UserRepo) FindByID(uid uint) (*entity.User, error) {
 	user, err := entity.Users(Where("id = ?", uid)).One(context.Background(), u.Db)
 	if err != nil {
+		log.Error().Err(err).Msg("error in finding user by id")
 		return nil, err
 	}
 	return user, nil
@@ -32,14 +33,16 @@ func (u *UserRepo) FindByID(uid uint) (*entity.User, error) {
 func (u *UserRepo) FindByEmail(s string) (*entity.User, error) {
 	user, err := entity.Users(Where("email = ?", s)).One(context.Background(), u.Db)
 	if err != nil {
+		log.Error().Err(err).Msg("error in finding user by email")
 		return nil, err
 	}
 	return user, nil
 }
 
-func (u *UserRepo) FindByUsername(s string) (*entity.User, error) {
+func (u *UserRepo) FindByUserName(s string) (*entity.User, error) {
 	user, err := entity.Users(Where("username = ?", s)).One(context.Background(), u.Db)
 	if err != nil {
+		log.Error().Err(err).Msg("error in finding user by username")
 		return nil, err
 	}
 	return user, nil
@@ -54,6 +57,7 @@ func (u *UserRepo) CreateUser(user *entity.User) error {
 	defer tx.Rollback()
 	err = user.Insert(context.Background(), u.Db, boil.Infer())
 	if err != nil {
+		log.Error().Err(err).Msg("failed to create user")
 		return err
 	}
 	tx.Commit()
@@ -67,16 +71,12 @@ func (u *UserRepo) UpdateUser(user *entity.User) error {
 		return err
 	}
 	defer tx.Rollback()
-	rows, err := user.Update(context.Background(), u.Db, boil.Infer())
+	_, err = user.Update(context.Background(), u.Db, boil.Infer())
 	if err != nil {
 		log.Error().Err(err).Msg("failed to update user")
 		return err
 	}
-	log.Info().Msgf("%d rows updated", rows)
 	tx.Commit()
-	if rows == 0 {
-		return sql.ErrNoRows
-	}
 	return nil
 }
 
@@ -113,9 +113,9 @@ func (u *UserRepo) RemoveFollower(user *entity.User, follower *entity.User) erro
 }
 
 func (u *UserRepo) IsFollower(user, follower *entity.User) (bool, error) {
-	cnts, err := user.FollowerUsers(entity.UserWhere.ID.EQ(follower.ID)).Count(context.Background(), u.Db)
-	if cnts == 0 {
-		log.Error().Err(err).Msg("failed to check if user is follower")
+	_, err := user.FollowerUsers(Where("follower_id=?", follower.ID)).One(context.Background(), u.Db)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to check follower")
 		return false, nil
 	}
 	return true, err

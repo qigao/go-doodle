@@ -16,7 +16,6 @@ func main() {
 	flag.Parse()
 	config := utils.ReadDBConfigFromToml(*pathPtr)
 	dsn := utils.BuildDSNFromDbConfig(config, config.Host, config.Port)
-	fmt.Println(dsn)
 	db := utils.SqlDbManager(dsn)
 	driver, _ := mysql.WithInstance(db, &mysql.Config{})
 	mg, err := migrate.NewWithDatabaseInstance(fmt.Sprintf("file://%s", *dbPtr), "mysql", driver)
@@ -24,5 +23,4 @@ func main() {
 		panic(err.Error())
 	}
 	mg.Up()
-	//TODO: execute sqlboiler
 }

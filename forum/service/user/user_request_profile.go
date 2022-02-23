@@ -30,9 +30,9 @@ func (p *UserProfile) GetUserByEmail(email string) (*entity.User, error) {
 }
 
 func (p *UserProfile) GetUserByUsername(username string) (*entity.User, error) {
-	u, err := p.Repo.FindByUsername(username)
+	u, err := p.Repo.FindByUserName(username)
 	if err != nil {
-		log.Error().Err(err).Msg("FindByUsername error")
+		log.Error().Err(err).Msg("FindByUserName error")
 		return nil, err
 	}
 	return u, nil
