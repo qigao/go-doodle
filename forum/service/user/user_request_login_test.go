@@ -1,7 +1,6 @@
 package user
 
 import (
-	user2 "forum/service/user"
 	"forum/utils"
 	"net/http"
 	"net/http/httptest"
@@ -21,7 +20,7 @@ func TestUserLogin_Bind(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		h := &user2.RequestLogin{}
+		h := &RequestLogin{}
 		// Assertions
 		assert.NoError(t, h.Bind(c))
 	})
@@ -33,7 +32,7 @@ func TestUserLogin_Bind(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		h := &user2.RequestLogin{}
+		h := &RequestLogin{}
 		// Assertions
 		err := h.Bind(c)
 		assert.Error(t, err)
@@ -46,7 +45,7 @@ func TestUserLogin_Bind(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		h := &user2.RequestLogin{}
+		h := &RequestLogin{}
 		// Assertions
 		err := h.Bind(c)
 		assert.IsType(t, &echo.HTTPError{}, err)
