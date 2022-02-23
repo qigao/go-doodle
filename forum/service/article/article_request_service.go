@@ -43,7 +43,11 @@ func (r *RequestArticle) InsertArticleWithTags(a *entity.Article, tagStr []strin
 		log.Error().Err(err).Msg("InsertArticle error")
 		return err
 	}
-	err = r.AddTagToArticle(a, tagStr)
+	err = r.AddTagToArticle(a.Slug, tagStr)
+	if err != nil {
+		log.Error().Err(err).Msg("AddTagToArticle error")
+		return err
+	}
 	return nil
 }
 
