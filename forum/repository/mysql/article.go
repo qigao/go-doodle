@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"forum/entity"
+
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -12,6 +13,10 @@ import (
 
 type ArticleRepo struct {
 	Db *sql.DB
+}
+
+func NewArticleRepo(db *sql.DB) *ArticleRepo {
+	return &ArticleRepo{Db: db}
 }
 
 func (a *ArticleRepo) FindArticleBySlug(s string) (*entity.Article, error) {
@@ -334,8 +339,4 @@ func (a *ArticleRepo) ListTags() ([]*entity.Tag, error) {
 		return nil, err
 	}
 	return tags, nil
-}
-
-func NewArticleRepo(db *sql.DB) *ArticleRepo {
-	return &ArticleRepo{Db: db}
 }
