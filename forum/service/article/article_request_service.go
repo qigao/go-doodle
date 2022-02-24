@@ -13,6 +13,13 @@ type RequestArticle struct {
 	UserRepo repository.User
 }
 
+func NewRequestArticle(r repository.Article, u repository.User) *RequestArticle {
+	return &RequestArticle{
+		Repo:     r,
+		UserRepo: u,
+	}
+}
+
 func (r *RequestArticle) InsertArticleWithTags(a *entity.Article, tagStr []string) error {
 	err := r.Repo.CreateArticle(a)
 	if err != nil {
@@ -27,27 +34,21 @@ func (r *RequestArticle) InsertArticleWithTags(a *entity.Article, tagStr []strin
 	return nil
 }
 
-func (r *RequestArticle) UpdateArticle(uid uint, slug string) error {
-	a, err := r.Repo.FindArticleByAuthorIDAndSlug(uint64(uid), slug)
-	if err != nil {
-		log.Error().Err(err).Msg("FindArticleBySlug error")
-		return err
-	}
-	err = r.Repo.UpdateArticle(a)
-	if err != nil {
-		return err
-	}
+func (r *RequestArticle) UpdateArticle(slug string, a *entity.Article) error {
+	//  TODO update article
+	//
 	return nil
 }
 
-func (r *RequestArticle) DeleteArticle(uid uint, slug string) error {
-	a, err := r.Repo.FindArticleByAuthorIDAndSlug(uint64(uid), slug)
+func (r *RequestArticle) DeleteArticle(slug string) error {
+	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
 		return err
 	}
 	err = r.Repo.DeleteArticle(a)
 	if err != nil {
+		log.Error().Err(err).Msg("DeleteArticle error")
 		return err
 	}
 	return nil
@@ -73,7 +74,7 @@ func (r *RequestArticle) FindArticle(slug string) (*entity.Article, *entity.User
 }
 
 func (r *RequestArticle) FindArticleByAuthor(userName string, offset, limit int) ([]*entity.Article, int64, error) {
-	u, err := r.UserRepo.FindByUserName(userName)
+	u, err := r.UserRepo.FindUserByUserName(userName)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
 		return nil, 0, err
@@ -87,7 +88,7 @@ func (r *RequestArticle) FindArticleByAuthor(userName string, offset, limit int)
 }
 
 func (r *RequestArticle) FindArticles(tag, author string, offset, limit int) ([]*entity.Article, int64, error) {
-	user, err := r.UserRepo.FindByUserName(author)
+	user, err := r.UserRepo.FindUserByUserName(author)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
 		return nil, 0, err
@@ -95,14 +96,14 @@ func (r *RequestArticle) FindArticles(tag, author string, offset, limit int) ([]
 	if tag != "" {
 		a, n, err := r.Repo.ListArticlesByTag(tag, offset, limit)
 		if err != nil {
-			log.Error().Err(err).Msg("FindArticleByID error")
+			log.Error().Err(err).Msg("FindArticlesByTag error")
 			return nil, 0, err
 		}
 		return a, n, nil
 	} else if author != "" {
 		a, n, err := r.Repo.ListArticlesByAuthor(user, offset, limit)
 		if err != nil {
-			log.Error().Err(err).Msg("FindArticleByID error")
+			log.Error().Err(err).Msg("FindArticleByAuthor error")
 			return nil, 0, err
 		}
 		return a, n, nil

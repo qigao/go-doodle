@@ -39,7 +39,7 @@ func (u *UserRepo) FindByEmail(s string) (*entity.User, error) {
 	return user, nil
 }
 
-func (u *UserRepo) FindByUserName(s string) (*entity.User, error) {
+func (u *UserRepo) FindUserByUserName(s string) (*entity.User, error) {
 	user, err := entity.Users(Where("username = ?", s)).One(context.Background(), u.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("error in finding user by username")

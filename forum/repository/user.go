@@ -7,7 +7,7 @@ import (
 type User interface {
 	FindByID(u uint) (*entity.User, error)
 	FindByEmail(s string) (*entity.User, error)
-	FindByUserName(s string) (*entity.User, error)
+	FindUserByUserName(s string) (*entity.User, error)
 	CreateUser(user *entity.User) error
 	UpdateUser(user *entity.User) error
 	AddFollower(user *entity.User, follower *entity.User) error
