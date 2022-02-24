@@ -76,7 +76,7 @@ func TestArticleRepo_Articles(t *testing.T) {
 		assert.Equal(t, int64(1), num)
 	})
 	t.Run("List articles by author", func(t *testing.T) {
-		articles, num, err := articleRepo.ListArticlesByAuthor(userFoo.Username, 0, 10)
+		articles, num, err := articleRepo.ListArticlesByAuthor(userFoo, 0, 10)
 		assert.NoError(t, err)
 		assert.Equal(t, 1, len(articles))
 		assert.Equal(t, int64(1), num)
@@ -170,7 +170,7 @@ func TestArticleCreateArticleWithTags(t *testing.T) {
 		assert.NoError(t, err)
 	})
 	t.Run("find tags by slug", func(t *testing.T) {
-		tags, err := articleRepo.FindTagsBySlug("foo-slug")
+		tags, err := articleRepo.FindTagsByArticle(articleFoo)
 		assert.NoError(t, err)
 		var tagArray []string
 		for _, tag := range tags {
@@ -199,7 +199,7 @@ func TestArticleRepo_Comments(t *testing.T) {
 		assert.NoError(t, err)
 	})
 	t.Run("find comments by slug", func(t *testing.T) {
-		comments, err := articleRepo.FindCommentsBySlug("simple-slug", 0, 10)
+		comments, err := articleRepo.FindCommentsByArticle(articleFoo, 0, 10)
 		assert.NoError(t, err)
 		assert.Equal(t, 2, len(comments))
 		var commArr []string
@@ -231,11 +231,11 @@ func TestArticleRepo_Favorites(t *testing.T) {
 	t.Run("Add favorite", func(t *testing.T) {
 		article, err := articleRepo.FindArticleBySlug("simple-slug")
 		require.NoError(t, err)
-		err = articleRepo.AddFavorite(article, 171)
+		err = articleRepo.AddFavorite(article, userFoo)
 		assert.NoError(t, err)
 	})
 	t.Run("find articles by favorited", func(t *testing.T) {
-		articles, num, err := articleRepo.ListArticlesByWhoFavorited("foo2", 0, 10)
+		articles, num, err := articleRepo.FindFavoriteArticlesByUser(userFoo, 0, 10)
 		assert.NoError(t, err)
 		assert.Equal(t, int64(1), num)
 		assert.Equal(t, "simple-slug", articles[0].Slug)
