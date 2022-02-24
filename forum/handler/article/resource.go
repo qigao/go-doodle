@@ -127,13 +127,13 @@ func (h *Handler) Articles(c echo.Context) error {
 // @Security ApiKeyAuth
 // @Router /articles [post]
 func (h *Handler) CreateArticle(c echo.Context) error {
-	var s *model.SingleArticle
+	var s *model.SimpleArticle
 	req := &article.RequestArticle{Repo: h.article}
-	if err := req.Bind(c, s); err != nil {
+	if err := bindJson(c, s); err != nil {
 		log.Error().Err(err).Msg("error binding article")
 		return c.JSON(http.StatusBadRequest, http_error.NewError(err))
 	}
-	a, t := req.Populate(s)
+	a, t := populateSingleArticle(s)
 
 	x := handler.UserIDFromToken(c)
 	a.AuthorID = null.Uint64From(uint64(x))
@@ -163,11 +163,11 @@ func (h *Handler) CreateArticle(c echo.Context) error {
 // @Security ApiKeyAuth
 // @Router /articles/{slug} [put]
 func (h *Handler) UpdateArticle(c echo.Context) error {
-	var s *model.SingleArticle
+	var s *model.SimpleArticle
 	slug := c.Param("slug")
 	x := handler.UserIDFromToken(c)
 	req := &article.RequestArticle{Repo: h.article}
-	if err := req.Bind(c, s); err != nil {
+	if err := bindJson(c, s); err != nil {
 		log.Error().Err(err).Msg("error binding article")
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
@@ -228,7 +228,7 @@ func (h *Handler) AddComment(c echo.Context) error {
 	var cm *entity.Comment
 
 	req := &article.RequestArticle{Repo: h.article}
-	if err := req.Bind(c, cm); err != nil {
+	if err := bindJson(c, cm); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 

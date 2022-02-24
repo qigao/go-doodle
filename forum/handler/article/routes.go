@@ -2,6 +2,7 @@ package article
 
 import (
 	"forum/utils"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -18,7 +19,7 @@ func (h *Handler) Register(v *echo.Group) {
 		},
 	))
 	articles.POST("", h.CreateArticle)
-	articles.GET("/feed", h.Feed)
+	// articles.GET("/feed", h.Feed)
 	articles.PUT("/:slug", h.UpdateArticle)
 	articles.DELETE("/:slug", h.DeleteArticle)
 	articles.POST("/:slug/comments", h.AddComment)
