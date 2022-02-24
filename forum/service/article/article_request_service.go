@@ -2,40 +2,15 @@ package article
 
 import (
 	"forum/entity"
-	"forum/model"
 	"forum/repository"
 	"sort"
 
-	"github.com/gosimple/slug"
-	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
-	"github.com/volatiletech/null/v8"
 )
 
 type RequestArticle struct {
 	Repo     repository.Article
 	UserRepo repository.User
-}
-
-func (r *RequestArticle) Bind(c echo.Context, doc interface{}) error {
-	if err := c.Bind(doc); err != nil {
-		log.Error().Err(err).Msg("Bind error")
-		return err
-	}
-	if err := c.Validate(doc); err != nil {
-		log.Error().Err(err).Msg("Validate error")
-		return err
-	}
-	return nil
-}
-
-func (r *RequestArticle) Populate(s *model.SingleArticle) (*entity.Article, []string) {
-	var a *entity.Article
-	a.Title = s.Title
-	a.Slug = slug.Make(a.Title)
-	a.Description = null.StringFrom(s.Description)
-	a.Body = null.StringFrom(s.Body)
-	return a, s.Tags
 }
 
 func (r *RequestArticle) InsertArticleWithTags(a *entity.Article, tagStr []string) error {
