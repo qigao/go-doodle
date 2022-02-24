@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"forum/entity"
-
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -63,15 +62,12 @@ func (a *ArticleRepo) UpdateArticle(article *entity.Article) error {
 		return err
 	}
 	defer tx.Rollback()
-	row, err := article.Update(ctx, a.Db, boil.Infer())
+	_, err = article.Update(ctx, a.Db, boil.Infer())
 	if err != nil {
 		log.Error().Err(err).Msg("failed to update article")
 		return err
 	}
 	tx.Commit()
-	if row == 0 {
-		return sql.ErrNoRows
-	}
 	return nil
 }
 
@@ -83,16 +79,12 @@ func (a *ArticleRepo) DeleteArticle(article *entity.Article) error {
 		return err
 	}
 	defer tx.Rollback()
-	rows, err := article.Delete(ctx, a.Db)
+	_, err = article.Delete(ctx, a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to delete article")
 		return err
 	}
-	log.Info().Msgf("deleted %d rows", rows)
 	tx.Commit()
-	if rows == 0 {
-		return sql.ErrNoRows
-	}
 	return nil
 }
 
@@ -122,12 +114,7 @@ func (a *ArticleRepo) ListArticlesByTag(tagStr string, offset, limit int) ([]*en
 	return articles, int64(len(articles)), nil
 }
 
-func (a *ArticleRepo) ListArticlesByAuthor(username string, offset, limit int) ([]*entity.Article, int64, error) {
-	user, err := entity.Users(entity.UserWhere.Username.EQ(username)).One(context.Background(), a.Db)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to find user")
-		return nil, 0, err
-	}
+func (a *ArticleRepo) ListArticlesByAuthor(user *entity.User, offset, limit int) ([]*entity.Article, int64, error) {
 	articles, err := user.AuthorArticles(Limit(limit), Offset(offset)).All(context.Background(), a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to get articles")
@@ -136,11 +123,7 @@ func (a *ArticleRepo) ListArticlesByAuthor(username string, offset, limit int) (
 	return articles, int64(len(articles)), nil
 }
 
-func (a *ArticleRepo) FindAuthorBySlug(slug string) (*entity.User, error) {
-	article, err := entity.Articles(Load(entity.ArticleRels.Author), entity.ArticleWhere.Slug.EQ(slug)).One(context.Background(), a.Db)
-	if err != nil {
-		return nil, err
-	}
+func (a *ArticleRepo) FindAuthorByArticle(article *entity.Article) (*entity.User, error) {
 	return article.Author().One(context.Background(), a.Db)
 }
 
@@ -166,15 +149,8 @@ func (a *ArticleRepo) AddComment(article *entity.Article, comment *entity.Commen
 	return nil
 }
 
-func (a *ArticleRepo) FindCommentsBySlug(s string, offset, limit int) ([]*entity.Comment, error) {
-	ctx := context.Background()
-	article, err := entity.Articles(Load(entity.ArticleRels.Comments),
-		entity.ArticleWhere.Slug.EQ(s), Offset(offset), Limit(limit)).One(ctx, a.Db)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to find comments")
-		return nil, err
-	}
-	return article.Comments().All(ctx, a.Db)
+func (a *ArticleRepo) FindCommentsByArticle(article *entity.Article, offset int, limit int) ([]*entity.Comment, error) {
+	return article.Comments(Limit(limit), Offset(offset)).All(context.Background(), a.Db)
 }
 
 func (a *ArticleRepo) FindCommentByID(commentID uint64) (*entity.Comment, error) {
@@ -195,19 +171,15 @@ func (a *ArticleRepo) DeleteComment(comment *entity.Comment) error {
 		return err
 	}
 	defer tx.Rollback()
-	rows, err := comment.Delete(ctx, a.Db)
+	_, err = comment.Delete(ctx, a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to delete comment")
 		return err
 	}
-	log.Info().Msgf("deleted %d rows", rows)
 	tx.Commit()
-	if rows == 0 {
-		return sql.ErrNoRows
-	}
 	return nil
 }
-func (a *ArticleRepo) DeleteCommentBySlugAndCommentID(slug string, commentID uint64) error {
+func (a *ArticleRepo) DeleteCommentByCommentID(commentID uint64) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
 	if err != nil {
@@ -215,28 +187,18 @@ func (a *ArticleRepo) DeleteCommentBySlugAndCommentID(slug string, commentID uin
 		return err
 	}
 	defer tx.Rollback()
-	rows, err := entity.Comments(Load(entity.ArticleRels.Comments,
-		entity.ArticleWhere.Slug.EQ(slug)),
+	_, err = entity.Comments(
 		entity.CommentWhere.ID.EQ(commentID)).DeleteAll(ctx, a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to delete comment")
 		return err
 	}
-	log.Info().Msgf("deleted %d rows", rows)
 	tx.Commit()
-	if rows == 0 {
-		return sql.ErrNoRows
-	}
 	return nil
 }
 
-func (a *ArticleRepo) AddFavorite(article *entity.Article, favoritesUserID uint) error {
+func (a *ArticleRepo) AddFavorite(article *entity.Article, user *entity.User) error {
 	ctx := context.Background()
-	user, err := entity.Users(entity.UserWhere.ID.EQ(uint64(favoritesUserID))).One(ctx, a.Db)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to find user")
-		return err
-	}
 	tx, err := a.Db.BeginTx(ctx, nil)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to start transaction")
@@ -252,7 +214,7 @@ func (a *ArticleRepo) AddFavorite(article *entity.Article, favoritesUserID uint)
 	return nil
 }
 
-func (a *ArticleRepo) RemoveFavorite(article *entity.Article, favoritesUserID uint) error {
+func (a *ArticleRepo) RemoveFavorite(article *entity.Article, user *entity.User) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
 	if err != nil {
@@ -260,11 +222,6 @@ func (a *ArticleRepo) RemoveFavorite(article *entity.Article, favoritesUserID ui
 		return err
 	}
 	defer tx.Rollback()
-	user, err := entity.Users(entity.UserWhere.ID.EQ(uint64(favoritesUserID))).One(ctx, a.Db)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to find user")
-		return err
-	}
 	err = article.RemoveUsers(ctx, a.Db, user)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to remove favorite")
@@ -274,12 +231,7 @@ func (a *ArticleRepo) RemoveFavorite(article *entity.Article, favoritesUserID ui
 	return nil
 }
 
-func (a *ArticleRepo) ListArticlesByWhoFavorited(username string, offset, limit int) ([]*entity.Article, int64, error) {
-	user, err := entity.Users(Load(entity.UserRels.Articles), entity.UserWhere.Username.EQ(username)).One(context.Background(), a.Db)
-	if err != nil {
-		log.Error().Err(err).Msg("failed to find user")
-		return nil, 0, err
-	}
+func (a *ArticleRepo) FindFavoriteArticlesByUser(user *entity.User, offset, limit int) ([]*entity.Article, int64, error) {
 	articles, err := user.Articles(Offset(offset), Limit(limit)).All(context.Background(), a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to find articles")
@@ -305,7 +257,7 @@ func (a *ArticleRepo) CreateTag(tag *entity.Tag) error {
 	return nil
 }
 
-func (a *ArticleRepo) AddTag(article *entity.Article, tag *entity.Tag) error {
+func (a *ArticleRepo) AddTagToArticle(article *entity.Article, tag *entity.Tag) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
 	if err != nil {
@@ -322,7 +274,7 @@ func (a *ArticleRepo) AddTag(article *entity.Article, tag *entity.Tag) error {
 	return nil
 }
 
-func (a *ArticleRepo) AddTags(article *entity.Article, tag []*entity.Tag) error {
+func (a *ArticleRepo) AddTagsToArticle(article *entity.Article, tag []*entity.Tag) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
 	if err != nil {
@@ -339,7 +291,7 @@ func (a *ArticleRepo) AddTags(article *entity.Article, tag []*entity.Tag) error 
 	return nil
 }
 
-func (a *ArticleRepo) RemoveTag(article *entity.Article, tag *entity.Tag) error {
+func (a *ArticleRepo) RemoveTagFromArticle(article *entity.Article, tag *entity.Tag) error {
 	tx, err := a.Db.BeginTx(context.Background(), nil)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to start transaction")
@@ -355,18 +307,28 @@ func (a *ArticleRepo) RemoveTag(article *entity.Article, tag *entity.Tag) error 
 	return nil
 }
 
-func (a *ArticleRepo) FindTagsBySlug(slug string) ([]*entity.Tag, error) {
-	ctx := context.Background()
-	article, err := entity.Articles(Load(entity.ArticleRels.Tags), entity.ArticleWhere.Slug.EQ(slug)).One(ctx, a.Db)
+func (a *ArticleRepo) RemoveTagsFromArticle(article *entity.Article, tags []*entity.Tag) error {
+	tx, err := a.Db.BeginTx(context.Background(), nil)
 	if err != nil {
-		log.Error().Err(err).Msg("failed to find tags")
-		return nil, err
+		log.Error().Err(err).Msg("failed to start transaction")
+		return err
 	}
-	return article.Tags().All(ctx, a.Db)
+	defer tx.Rollback()
+	err = article.RemoveTags(context.Background(), a.Db, tags...)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to remove tag")
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (a *ArticleRepo) FindTagsByArticle(article *entity.Article) ([]*entity.Tag, error) {
+	return article.Tags().All(context.Background(), a.Db)
 }
 
 func (a *ArticleRepo) ListTags() ([]*entity.Tag, error) {
-	tags, err := entity.Tags(Distinct(entity.TagColumns.Tag)).All(context.Background(), a.Db)
+	tags, err := entity.Tags().All(context.Background(), a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to find tags")
 		return nil, err

@@ -14,178 +14,138 @@ import (
 
 func TestUserRepo_CreateUser(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("transaction rollback when create user", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("INSERT INTO")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectRollback()
 		repo := UserRepo{Db: db}
 		err = repo.CreateUser(userFoo)
 		assert.Errorf(t, err, "some error")
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("transaction commit when create user ", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("INSERT INTO")).WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 		repo := UserRepo{Db: db}
 		err = repo.CreateUser(userFoo)
 		assert.NoError(t, err)
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("transactions begin with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin().WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		err = repo.CreateUser(userFoo)
 		assert.Errorf(t, err, "failed to start transaction")
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
 func TestUserRepo_UpdateUser(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("transaction rollback when update user", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("UPDATE")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectRollback()
 		repo := UserRepo{Db: db}
 		err = repo.UpdateUser(userFoo)
-		db.Close()
 		assert.Errorf(t, err, "some error")
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("transactions begin with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin().WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		err = repo.UpdateUser(userFoo)
-		db.Close()
 		assert.Errorf(t, err, "failed to start transaction")
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("transaction commit when update user", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("UPDATE")).WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 		repo := UserRepo{Db: db}
 		err = repo.UpdateUser(userFoo)
 		assert.NoError(t, err)
-		db.Close()
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
 func TestUserRepo_AddFollower(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("transaction rollback when add follower", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("insert into")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectRollback()
 		repo := UserRepo{Db: db}
 		err = repo.AddFollower(userFoo, userBar)
 		assert.Errorf(t, err, "some error")
-		db.Close()
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("transactions begin with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin().WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		err = repo.AddFollower(userFoo, userBar)
 		assert.Errorf(t, err, "failed to start transaction")
-		db.Close()
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("transaction commit when add follower", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("insert into")).WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
-		mock.ExpectClose()
 		repo := UserRepo{Db: db}
 		err = repo.AddFollower(userFoo, userBar)
 		assert.NoError(t, err)
-		db.Close()
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
 func TestUerRepo_RemoveFollower(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("transaction rollback when remove follower", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("delete")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectRollback()
 		repo := UserRepo{Db: db}
 		err = repo.RemoveFollower(userFoo, userBar)
 		assert.Errorf(t, err, "some error")
-		db.Close()
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
 	})
 	t.Run("transactions begin with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin().WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		err = repo.RemoveFollower(userFoo, userBar)
 		assert.Errorf(t, err, "failed to start transaction")
-		db.Close()
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("transaction commit when remove follower", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
 		mock.ExpectBegin()
 		mock.ExpectExec(regexp.QuoteMeta("delete")).WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
-		mock.ExpectClose()
 		repo := UserRepo{Db: db}
 		err = repo.RemoveFollower(userFoo, userBar)
 		assert.NoError(t, err)
-		db.Close()
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
 func TestUserRepo_IsFollower(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("when follower is true", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		rows := sqlmock.NewRows([]string{"id", "username", "email", "password", "bio", "image", "created_at", "updated_at", "deleted_at", "following_id"}).
 			AddRow(2, "foo", "foo@foo.com", "foo-password", "foo desc", "http://foo.com/foo.jpg", null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), 2)
 		userBar.ID = 2
@@ -195,14 +155,9 @@ func TestUserRepo_IsFollower(t *testing.T) {
 		result, err := repo.IsFollower(userFoo, userBar)
 		assert.NoError(t, err)
 		assert.True(t, result)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("when follower is false", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		userBar.ID = 2
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnError(fmt.Errorf("some error"))
@@ -210,17 +165,15 @@ func TestUserRepo_IsFollower(t *testing.T) {
 		result, err := repo.IsFollower(userFoo, userBar)
 		assert.NoError(t, err)
 		assert.False(t, result)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 func TestUerRepo_GetFollowers(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("when get followers", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		rows := sqlmock.NewRows([]string{"id", "username", "email", "password", "bio", "image", "created_at", "updated_at", "deleted_at", "following_id"}).
 			AddRow(2, "foo", "foo@foo.com", "foo-password", "foo desc", "http://foo.com/foo.jpg", null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), 2).
 			AddRow(2, "foo", "foo@foo.com", "foo-password", "foo desc", "http://foo.com/foo.jpg", null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), 2)
@@ -230,31 +183,24 @@ func TestUerRepo_GetFollowers(t *testing.T) {
 		result, err := repo.GetFollowers(userFoo)
 		assert.NoError(t, err)
 		assert.Equal(t, 2, len(result))
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("when get followers with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		result, err := repo.GetFollowers(userFoo)
 		assert.Errorf(t, err, "some error")
 		assert.Nil(t, result)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 func TestUerRepo_GetFollowingUsers(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("when get following users", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		rows := sqlmock.NewRows([]string{"id", "username", "email", "password", "bio", "image", "created_at", "updated_at", "deleted_at", "following_id"}).
 			AddRow(2, "foo", "foo@foo.com", "foo-password", "foo desc", "http://foo.com/foo.jpg", null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), 2).
 			AddRow(2, "foo", "foo@foo.com", "foo-password", "foo desc", "http://foo.com/foo.jpg", null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), 2)
@@ -264,31 +210,24 @@ func TestUerRepo_GetFollowingUsers(t *testing.T) {
 		result, err := repo.GetFollowingUsers(userFoo)
 		assert.NoError(t, err)
 		assert.Equal(t, 2, len(result))
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("when get following users with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		result, err := repo.GetFollowingUsers(userFoo)
 		assert.Errorf(t, err, "some error")
 		assert.Nil(t, result)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 func TestUserRepo_FindByID(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("when find by id", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		rows := sqlmock.NewRows([]string{"id", "username", "email", "password", "bio", "image", "created_at", "updated_at", "deleted_at", "following_id"}).
 			AddRow(2, "foo", "foo@foo.com", "foo-password", "foo desc", "http://foo.com/foo.jpg", null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), 2)
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
@@ -297,32 +236,25 @@ func TestUserRepo_FindByID(t *testing.T) {
 		result, err := repo.FindByID(2)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(2), result.ID)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("when find by id with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		result, err := repo.FindByID(2)
 		assert.Errorf(t, err, "some error")
 		assert.Nil(t, result)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 
 func TestUserRepo_FindByEmail(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("when find by email", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		rows := sqlmock.NewRows([]string{"id", "username", "email", "password", "bio", "image", "created_at", "updated_at", "deleted_at", "following_id"}).
 			AddRow(2, "foo", "foo@foo.com", "foo-password", "foo desc", "http://foo.com/foo.jpg", null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), 2)
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
@@ -331,31 +263,24 @@ func TestUserRepo_FindByEmail(t *testing.T) {
 		result, err := repo.FindByEmail("foo@foo.com")
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(2), result.ID)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("when find by email with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		result, err := repo.FindByEmail("foo@foo.com")
 		assert.Errorf(t, err, "some error")
 		assert.Nil(t, result)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
 func TestUserRepo_FindByUserName(t *testing.T) {
 	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
 	t.Run("when find by username", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		rows := sqlmock.NewRows([]string{"id", "username", "email", "password", "bio", "image", "created_at", "updated_at", "deleted_at", "following_id"}).
 			AddRow(2, "foo", "foo@foo.com", "foo-password", "foo desc", "http://foo.com/foo.jpg", null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), null.TimeFrom(time.Now()), 2)
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
@@ -364,22 +289,15 @@ func TestUserRepo_FindByUserName(t *testing.T) {
 		result, err := repo.FindByUserName("foo")
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(2), result.ID)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("when find by username with error", func(t *testing.T) {
-		db, mock, err := sqlmock.New()
-		require.NoError(t, err)
-		defer db.Close()
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnError(fmt.Errorf("some error"))
 		repo := UserRepo{Db: db}
 		result, err := repo.FindByUserName("foo")
 		assert.Errorf(t, err, "some error")
 		assert.Nil(t, result)
-		if err = mock.ExpectationsWereMet(); err != nil {
-			t.Errorf("there were unfulfilled expectations: %s", err)
-		}
+		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }

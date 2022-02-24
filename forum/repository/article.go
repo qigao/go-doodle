@@ -11,23 +11,23 @@ type Article interface {
 
 	ListArticles(offset, limit int) ([]*entity.Article, int64, error)
 	ListArticlesByTag(tag string, offset, limit int) ([]*entity.Article, int64, error)
-	ListArticlesByAuthor(username string, offset, limit int) ([]*entity.Article, int64, error)
-	ListArticlesByWhoFavorited(username string, offset, limit int) ([]*entity.Article, int64, error)
+	ListArticlesByAuthor(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)
+	FindFavoriteArticlesByUser(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)
 	ListFeed(userID uint, offset, limit int) ([]*entity.Article, int64, error)
-	FindAuthorBySlug(slug string) (*entity.User, error)
+	FindAuthorByArticle(article *entity.Article) (*entity.User, error)
 	AddComment(*entity.Article, *entity.Comment) error
 	FindCommentByID(commentID uint64) (*entity.Comment, error)
-	FindCommentsBySlug(string, int, int) ([]*entity.Comment, error)
+	FindCommentsByArticle(*entity.Article, int, int) ([]*entity.Comment, error)
 	DeleteComment(*entity.Comment) error
-	DeleteCommentBySlugAndCommentID(slug string, commentID uint64) error
+	DeleteCommentByCommentID(commentID uint64) error
 
-	AddFavorite(*entity.Article, uint) error
-	RemoveFavorite(*entity.Article, uint) error
+	AddFavorite(*entity.Article, *entity.User) error
+	RemoveFavorite(*entity.Article, *entity.User) error
 
 	CreateTag(*entity.Tag) error
-	AddTag(*entity.Article, *entity.Tag) error
-	AddTags(*entity.Article, []*entity.Tag) error
-	RemoveTag(*entity.Article, *entity.Tag) error
-	FindTagsBySlug(slug string) ([]*entity.Tag, error)
+	AddTagToArticle(*entity.Article, *entity.Tag) error
+	AddTagsToArticle(*entity.Article, []*entity.Tag) error
+	RemoveTagFromArticle(*entity.Article, *entity.Tag) error
+	FindTagsByArticle(artile *entity.Article) ([]*entity.Tag, error)
 	ListTags() ([]*entity.Tag, error)
 }
