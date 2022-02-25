@@ -3,10 +3,11 @@ package mysql
 import (
 	"database/sql"
 	"forum/entity"
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/volatiletech/null/v8"
-	"testing"
 )
 
 func TestArticleRepo_Articles(t *testing.T) {
@@ -231,7 +232,7 @@ func TestArticleRepo_Favorites(t *testing.T) {
 	t.Run("Add favorite", func(t *testing.T) {
 		article, err := articleRepo.FindArticleBySlug("simple-slug")
 		require.NoError(t, err)
-		err = articleRepo.AddFavorite(article, userFoo)
+		err = articleRepo.AddFavoriteArticle(article, userFoo)
 		assert.NoError(t, err)
 	})
 	t.Run("find articles by favorited", func(t *testing.T) {

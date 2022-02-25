@@ -171,6 +171,37 @@ func TestArticle_DeleteComment(t *testing.T) {
 	})
 }
 
+func TestArticle_DeleteCommentByArticle(t *testing.T) {
+	t.Parallel()
+	db, mock, err := sqlmock.New()
+	require.NoError(t, err)
+	defer db.Close()
+	t.Run("when delete comment by comment id success", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec(regexp.QuoteMeta("DELETE")).WillReturnResult(sqlmock.NewResult(1, 1))
+		mock.ExpectCommit()
+		repo := NewArticleRepo(db)
+		err := repo.DeleteCommentByCommentID(commentFoo.ID)
+		assert.NoError(t, err)
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+	t.Run("when delete comment by comment id failed", func(t *testing.T) {
+		mock.ExpectBegin()
+		mock.ExpectExec(regexp.QuoteMeta("DELETE")).WillReturnError(fmt.Errorf("some error"))
+		mock.ExpectRollback()
+		repo := NewArticleRepo(db)
+		err := repo.DeleteCommentByCommentID(commentFoo.ID)
+		assert.Errorf(t, err, "some error")
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+	t.Run("when delete comment by comment id transaction failed", func(t *testing.T) {
+		mock.ExpectBegin().WillReturnError(fmt.Errorf("some error"))
+		repo := NewArticleRepo(db)
+		err := repo.DeleteCommentByCommentID(commentFoo.ID)
+		assert.Errorf(t, err, "some error")
+		require.NoError(t, mock.ExpectationsWereMet())
+	})
+}
 func TestArticle_CreateTag(t *testing.T) {
 	t.Parallel()
 	db, mock, err := sqlmock.New()
@@ -373,7 +404,7 @@ func TestArticle_AddFavorite(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta("insert into")).WillReturnError(fmt.Errorf("some error"))
 		mock.ExpectRollback()
 		repo := NewArticleRepo(db)
-		err = repo.AddFavorite(articleFoo, userFoo)
+		err = repo.AddFavoriteArticle(articleFoo, userFoo)
 		assert.Errorf(t, err, "some error")
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
@@ -382,14 +413,14 @@ func TestArticle_AddFavorite(t *testing.T) {
 		mock.ExpectExec(regexp.QuoteMeta("insert into")).WillReturnResult(sqlmock.NewResult(1, 1))
 		mock.ExpectCommit()
 		repo := NewArticleRepo(db)
-		err = repo.AddFavorite(articleFoo, userFoo)
+		err = repo.AddFavoriteArticle(articleFoo, userFoo)
 		assert.NoError(t, err)
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 	t.Run("transaction begin with error", func(t *testing.T) {
 		mock.ExpectBegin().WillReturnError(fmt.Errorf("some error"))
 		repo := NewArticleRepo(db)
-		err = repo.AddFavorite(articleFoo, userFoo)
+		err = repo.AddFavoriteArticle(articleFoo, userFoo)
 		assert.Errorf(t, err, "some error")
 		require.NoError(t, mock.ExpectationsWereMet())
 	})

@@ -2,11 +2,12 @@ package mysql
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/require"
-	"github.com/volatiletech/null/v8"
 	"regexp"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/require"
+	"github.com/volatiletech/null/v8"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -286,7 +287,7 @@ func TestUserRepo_FindByUserName(t *testing.T) {
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnRows(rows)
 		repo := NewUserRepo(db)
-		result, err := repo.FindByUserName("foo")
+		result, err := repo.FindUserByUserName("foo")
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(2), result.ID)
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -295,7 +296,7 @@ func TestUserRepo_FindByUserName(t *testing.T) {
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnError(fmt.Errorf("some error"))
 		repo := NewUserRepo(db)
-		result, err := repo.FindByUserName("foo")
+		result, err := repo.FindUserByUserName("foo")
 		assert.Errorf(t, err, "some error")
 		assert.Nil(t, result)
 		require.NoError(t, mock.ExpectationsWereMet())

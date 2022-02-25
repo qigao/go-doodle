@@ -35,8 +35,28 @@ func (r *RequestArticle) InsertArticleWithTags(a *entity.Article, tagStr []strin
 }
 
 func (r *RequestArticle) UpdateArticle(slug string, a *entity.Article) error {
-	//  TODO update article
-	//
+	as, err := r.Repo.FindArticleBySlug(slug)
+	if err != nil {
+		log.Error().Err(err).Msg("FindArticleBySlug error")
+		return err
+	}
+	if a.Body.Valid {
+		as.Body.String = a.Body.String
+	}
+	if a.Slug != "" {
+		as.Slug = a.Slug
+	}
+	if a.Title != "" {
+		as.Title = a.Title
+	}
+	if a.Description.Valid {
+		as.Description = a.Description
+	}
+	err = r.Repo.UpdateArticle(as)
+	if err != nil {
+		log.Error().Err(err).Msg("UpdateArticle error")
+		return err
+	}
 	return nil
 }
 
@@ -125,7 +145,7 @@ func (r *RequestArticle) FindCommentsBySlug(slug string, offset, limit int) ([]*
 	}
 	c, err := r.Repo.FindCommentsByArticle(a, offset, limit)
 	if err != nil {
-		log.Error().Err(err).Msg("ListCommentsBySlug error")
+		log.Error().Err(err).Msg("FindCommentsBySlug error")
 		return nil, err
 	}
 	return c, nil
@@ -145,43 +165,68 @@ func (r *RequestArticle) FindAuthorBySlug(slug string) (*entity.User, error) {
 	return u, nil
 }
 
-func (r *RequestArticle) AddCommentToArticle(slug string, uid uint64, cm *entity.Comment) error {
-	a, err := r.Repo.FindArticleByAuthorIDAndSlug(uid, slug)
+func (r *RequestArticle) AddCommentToArticle(slug string, cm *entity.Comment) error {
+	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
 		return err
 	}
 	err = r.Repo.AddComment(a, cm)
 	if err != nil {
+		log.Error().Err(err).Msg("AddComment error")
 		return err
 	}
 	return nil
 }
 
-func (r *RequestArticle) DeleteCommentBySlugAndCommentID(slug string, commentId uint64) error {
-	err := r.Repo.DeleteCommentByCommentID(commentId)
+func (r *RequestArticle) DeleteCommentFromArticle(slug string, commentId uint64) error {
+	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
+		return err
+	}
+	c, err := r.Repo.FindCommentByID(commentId)
+	if err != nil {
+		log.Error().Err(err).Msg("FindCommentByID error")
+		return err
+	}
+	err = r.Repo.DeleteCommentByArticle(a, c)
+	if err != nil {
+		log.Error().Err(err).Msg("DeleteCommentByArticle error")
 		return err
 	}
 	return nil
 }
 
 func (r *RequestArticle) AddFavoriteArticleBySlug(slug string, uid uint) error {
-	a, u, err := r.FindUserAndArticle(slug, uid)
+	a, u, err := r.FindArticleAndUserBySlugAndUserID(slug, uid)
 	if err != nil {
-		log.Error().Err(err).Msg("FindUserAndArticle error")
+		log.Error().Err(err).Msg("FindArticleAndUserBySlugAndUserID error")
 		return err
 	}
-	err = r.Repo.AddFavorite(a, u)
+	err = r.Repo.AddFavoriteArticle(a, u)
 	if err != nil {
-		log.Error().Err(err).Msg("AddFavorite error")
+		log.Error().Err(err).Msg("AddFavoriteArticle error")
 		return err
 	}
 	return nil
 }
 
-func (r *RequestArticle) FindUserAndArticle(slug string, uid uint) (*entity.Article, *entity.User, error) {
+func (r *RequestArticle) RemoveFavoriteArticleBySlug(slug string, uid uint) error {
+	a, u, err := r.FindArticleAndUserBySlugAndUserID(slug, uid)
+	if err != nil {
+		log.Error().Err(err).Msg("FindArticleAndUserBySlugAndUserID error")
+		return err
+	}
+	err = r.Repo.RemoveFavorite(a, u)
+	if err != nil {
+		log.Error().Err(err).Msg("RemoveFavorite error")
+		return err
+	}
+	return nil
+}
+
+func (r *RequestArticle) FindArticleAndUserBySlugAndUserID(slug string, uid uint) (*entity.Article, *entity.User, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -193,25 +238,6 @@ func (r *RequestArticle) FindUserAndArticle(slug string, uid uint) (*entity.Arti
 		return nil, nil, err
 	}
 	return a, u, nil
-}
-
-func (r *RequestArticle) RemoveFavoriteArticleBySlug(slug string, uid uint) error {
-	a, err := r.Repo.FindArticleBySlug(slug)
-	if err != nil {
-		log.Error().Err(err).Msg("FindArticleBySlug error")
-		return err
-	}
-	u, err := r.UserRepo.FindByID(uid)
-	if err != nil {
-		log.Error().Err(err).Msg("FindByID error")
-		return err
-	}
-	err = r.Repo.RemoveFavorite(a, u)
-	if err != nil {
-		log.Error().Err(err).Msg("RemoveFavorite error")
-		return err
-	}
-	return nil
 }
 
 func (r *RequestArticle) AddTagToArticle(slug string, tagStr []string) error {
