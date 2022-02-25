@@ -3,7 +3,7 @@ package article
 import (
 	"fmt"
 	"forum/entity"
-	. "forum/mock/repository"
+	. "forum/repository/mock/repository"
 	"testing"
 
 	mock "github.com/stretchr/testify/mock"
