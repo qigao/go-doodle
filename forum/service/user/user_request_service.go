@@ -64,7 +64,7 @@ func (p *UserRequest) GetUserByEmail(email string) (*entity.User, error) {
 }
 
 func (p *UserRequest) GetUserByUsername(username string) (*entity.User, error) {
-	u, err := p.Repo.FindByUserName(username)
+	u, err := p.Repo.FindUserByUserName(username)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
 		return nil, err
@@ -105,7 +105,7 @@ func (r *UserRequest) findCurrentUserAndTargetUser(uid uint, userName string) (*
 		log.Error().Err(err).Msg("FindByID error")
 		return nil, nil, err
 	}
-	targetUser, err := r.Repo.FindByUserName(userName)
+	targetUser, err := r.Repo.FindUserByUserName(userName)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
 		return nil, nil, err

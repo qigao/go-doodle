@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"forum/entity"
+
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
@@ -12,6 +13,10 @@ import (
 
 type ArticleRepo struct {
 	Db *sql.DB
+}
+
+func NewArticleRepo(db *sql.DB) *ArticleRepo {
+	return &ArticleRepo{Db: db}
 }
 
 func (a *ArticleRepo) FindArticleBySlug(s string) (*entity.Article, error) {
@@ -179,6 +184,7 @@ func (a *ArticleRepo) DeleteComment(comment *entity.Comment) error {
 	tx.Commit()
 	return nil
 }
+
 func (a *ArticleRepo) DeleteCommentByCommentID(commentID uint64) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
@@ -197,7 +203,24 @@ func (a *ArticleRepo) DeleteCommentByCommentID(commentID uint64) error {
 	return nil
 }
 
-func (a *ArticleRepo) AddFavorite(article *entity.Article, user *entity.User) error {
+func (a *ArticleRepo) DeleteCommentByArticle(article *entity.Article, comment *entity.Comment) error {
+	tx, err := a.Db.BeginTx(context.Background(), nil)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to start transaction")
+		return err
+	}
+	defer tx.Rollback()
+	ctx := context.Background()
+	err = article.RemoveComments(ctx, a.Db, comment)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to add comment")
+		return err
+	}
+	tx.Commit()
+	return nil
+}
+
+func (a *ArticleRepo) AddFavoriteArticle(article *entity.Article, user *entity.User) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
 	if err != nil {
@@ -334,8 +357,4 @@ func (a *ArticleRepo) ListTags() ([]*entity.Tag, error) {
 		return nil, err
 	}
 	return tags, nil
-}
-
-func NewArticleRepo(db *sql.DB) *ArticleRepo {
-	return &ArticleRepo{Db: db}
 }

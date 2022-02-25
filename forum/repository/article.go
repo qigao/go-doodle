@@ -15,13 +15,15 @@ type Article interface {
 	FindFavoriteArticlesByUser(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)
 	ListFeed(userID uint, offset, limit int) ([]*entity.Article, int64, error)
 	FindAuthorByArticle(article *entity.Article) (*entity.User, error)
+
 	AddComment(*entity.Article, *entity.Comment) error
 	FindCommentByID(commentID uint64) (*entity.Comment, error)
 	FindCommentsByArticle(*entity.Article, int, int) ([]*entity.Comment, error)
 	DeleteComment(*entity.Comment) error
 	DeleteCommentByCommentID(commentID uint64) error
+	DeleteCommentByArticle(article *entity.Article, comment *entity.Comment) error
 
-	AddFavorite(*entity.Article, *entity.User) error
+	AddFavoriteArticle(*entity.Article, *entity.User) error
 	RemoveFavorite(*entity.Article, *entity.User) error
 
 	CreateTag(*entity.Tag) error
