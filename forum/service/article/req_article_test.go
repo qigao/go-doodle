@@ -223,7 +223,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		userMock.On("FindUserByUserName", mock.Anything).Return(nil, fmt.Errorf("FindUserByUsername error"))
 
 		// Then
-		_, n, err := mockRequestArticle.FindArticles("test-tag", "test-user", 0, 1)
+		_, n, err := mockRequestArticle.ListArticles("test-tag", "test-user", 0, 1)
 		assert.Error(t, err, "FindUserByUsername error")
 		assert.Equal(t, n, int64(0))
 	})
@@ -236,7 +236,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticlesByTag", mock.Anything, mock.Anything, mock.Anything).Return(nil, int64(0), fmt.Errorf("FindArticleByTag error"))
 		// Then
-		_, n, err := mockRequestArticle.FindArticles("test-tag", "test-user", 0, 1)
+		_, n, err := mockRequestArticle.ListArticles("test-tag", "test-user", 0, 1)
 		assert.Error(t, err, "FindArticleByTag error")
 		assert.Equal(t, n, int64(0))
 	})
@@ -249,7 +249,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticlesByTag", mock.Anything, mock.Anything, mock.Anything).Return([]*entity.Article{articleBar}, int64(1), nil)
 		// Then
-		_, n, err := mockRequestArticle.FindArticles("test-tag", "test-user", 0, 1)
+		_, n, err := mockRequestArticle.ListArticles("test-tag", "test-user", 0, 1)
 		assert.NilError(t, err)
 		assert.Equal(t, n, int64(1))
 	})
@@ -263,7 +263,7 @@ func TestArticle_FindArticles(t *testing.T) {
 
 		articleMock.On("ListArticlesByAuthor", mock.Anything, mock.Anything, mock.Anything).Return(nil, int64(0), fmt.Errorf("FindArticleByAuthor error"))
 		// Then
-		_, n, err := mockRequestArticle.FindArticles("", "test-user", 0, 1)
+		_, n, err := mockRequestArticle.ListArticles("", "test-user", 0, 1)
 		assert.Error(t, err, "FindArticleByAuthor error")
 		assert.Equal(t, n, int64(0))
 	})
@@ -277,7 +277,7 @@ func TestArticle_FindArticles(t *testing.T) {
 
 		articleMock.On("ListArticlesByAuthor", mock.Anything, mock.Anything, mock.Anything).Return([]*entity.Article{articleBar}, int64(1), nil)
 		// Then
-		_, n, err := mockRequestArticle.FindArticles("", "test-user", 0, 1)
+		_, n, err := mockRequestArticle.ListArticles("", "test-user", 0, 1)
 		assert.NilError(t, err)
 		assert.Equal(t, n, int64(1))
 	})
@@ -290,7 +290,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticles", mock.Anything, mock.Anything).Return([]*entity.Article{articleBar}, int64(1), nil)
 		// Then
-		_, n, err := mockRequestArticle.FindArticles("", "", 0, 1)
+		_, n, err := mockRequestArticle.ListArticles("", "", 0, 1)
 		assert.NilError(t, err)
 		assert.Equal(t, n, int64(1))
 	})
@@ -303,7 +303,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticles", mock.Anything, mock.Anything).Return([]*entity.Article{articleBar}, int64(1), fmt.Errorf("FindArticle error"))
 		// Then
-		_, n, err := mockRequestArticle.FindArticles("", "", 0, 1)
+		_, n, err := mockRequestArticle.ListArticles("", "", 0, 1)
 		assert.Error(t, err, "FindArticle error")
 		assert.Equal(t, n, int64(0))
 	})
@@ -504,10 +504,10 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 		mockRequestArticle := NewRequestArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		userMock.On("FindByID", mock.Anything).Return(nil, fmt.Errorf("FindByID error"))
+		userMock.On("FindUserByID", mock.Anything).Return(nil, fmt.Errorf("FindUserByID error"))
 		// Then
 		err := mockRequestArticle.AddFavoriteArticleBySlug("test-slug", 1)
-		assert.Error(t, err, "FindByID error")
+		assert.Error(t, err, "FindUserByID error")
 	})
 	t.Run("when find user by id return error", func(t *testing.T) {
 		// Given
@@ -516,7 +516,7 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 		mockRequestArticle := NewRequestArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		userMock.On("FindByID", mock.Anything).Return(userBar, nil)
+		userMock.On("FindUserByID", mock.Anything).Return(userBar, nil)
 		articleMock.On("AddFavoriteArticle", mock.Anything, mock.Anything).Return(fmt.Errorf("AddFavoriteArticle error"))
 		// Then
 		err := mockRequestArticle.AddFavoriteArticleBySlug("test-slug", 1)
@@ -529,7 +529,7 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 		mockRequestArticle := NewRequestArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		userMock.On("FindByID", mock.Anything).Return(userBar, nil)
+		userMock.On("FindUserByID", mock.Anything).Return(userBar, nil)
 		articleMock.On("AddFavoriteArticle", mock.Anything, mock.Anything).Return(nil)
 		// Then
 		err := mockRequestArticle.AddFavoriteArticleBySlug("test-slug", 1)
@@ -556,10 +556,10 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 		mockRequestArticle := NewRequestArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		userMock.On("FindByID", mock.Anything).Return(nil, fmt.Errorf("FindByID error"))
+		userMock.On("FindUserByID", mock.Anything).Return(nil, fmt.Errorf("FindUserByID error"))
 		// Then
 		err := mockRequestArticle.AddFavoriteArticleBySlug("test-slug", 1)
-		assert.Error(t, err, "FindByID error")
+		assert.Error(t, err, "FindUserByID error")
 	})
 	t.Run("when find user by id return error", func(t *testing.T) {
 		// Given
@@ -568,7 +568,7 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 		mockRequestArticle := NewRequestArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		userMock.On("FindByID", mock.Anything).Return(userBar, nil)
+		userMock.On("FindUserByID", mock.Anything).Return(userBar, nil)
 		articleMock.On("RemoveFavorite", mock.Anything, mock.Anything).Return(fmt.Errorf("RemoveFavorite error"))
 		// Then
 		err := mockRequestArticle.RemoveFavoriteArticleBySlug("test-slug", 1)
@@ -581,7 +581,7 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 		mockRequestArticle := NewRequestArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		userMock.On("FindByID", mock.Anything).Return(userBar, nil)
+		userMock.On("FindUserByID", mock.Anything).Return(userBar, nil)
 		articleMock.On("RemoveFavorite", mock.Anything, mock.Anything).Return(nil)
 		// Then
 		err := mockRequestArticle.RemoveFavoriteArticleBySlug("test-slug", 1)

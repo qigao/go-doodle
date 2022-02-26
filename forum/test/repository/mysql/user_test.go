@@ -14,7 +14,7 @@ func TestUserRepo_User(t *testing.T) {
 		assert.NoError(t, err)
 	})
 	t.Run("find user by id", func(t *testing.T) {
-		user, err := userRepo.FindByID(7)
+		user, err := userRepo.FindUserByID(7)
 		assert.NoError(t, err)
 		assert.Equal(t, userFoo.ID, user.ID)
 		assert.Equal(t, userFoo.Username, user.Username)
@@ -22,7 +22,7 @@ func TestUserRepo_User(t *testing.T) {
 		assert.Equal(t, userFoo.Password, user.Password)
 	})
 	t.Run("find user by id return nil", func(t *testing.T) {
-		user, err := userRepo.FindByID(77)
+		user, err := userRepo.FindUserByID(77)
 		assert.Error(t, sql.ErrNoRows, err)
 		assert.Nil(t, user)
 	})
@@ -41,7 +41,7 @@ func TestUserRepo_User(t *testing.T) {
 	})
 
 	t.Run("find user by username", func(t *testing.T) {
-		user, err := userRepo.FindByUserName(userFoo.Username)
+		user, err := userRepo.FindUserByUserName(userFoo.Username)
 		assert.NoError(t, err)
 		assert.Equal(t, userFoo.ID, user.ID)
 		assert.Equal(t, userFoo.Username, user.Username)
@@ -49,7 +49,7 @@ func TestUserRepo_User(t *testing.T) {
 		assert.Equal(t, userFoo.Password, user.Password)
 	})
 	t.Run("find user by username return nil", func(t *testing.T) {
-		user, err := userRepo.FindByUserName("foo1")
+		user, err := userRepo.FindUserByUserName("foo1")
 		assert.Error(t, sql.ErrNoRows, err)
 		assert.Nil(t, user)
 	})
@@ -72,7 +72,7 @@ func TestUserRepo_UpdateUser(t *testing.T) {
 		assert.NoError(t, err)
 	})
 	t.Run("find user by id", func(t *testing.T) {
-		user, err := userRepo.FindByID(17)
+		user, err := userRepo.FindUserByID(17)
 		assert.NoError(t, err)
 		assert.Equal(t, userFoo.ID, user.ID)
 		assert.Equal(t, userFoo.Username, user.Username)
@@ -85,7 +85,7 @@ func TestUserRepo_UpdateUser(t *testing.T) {
 		assert.Error(t, sql.ErrNoRows, err)
 	})
 	t.Run("find user by id", func(t *testing.T) {
-		user, err := userRepo.FindByID(77)
+		user, err := userRepo.FindUserByID(77)
 		assert.Error(t, sql.ErrNoRows, err)
 		assert.Nil(t, user)
 	})

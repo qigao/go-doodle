@@ -107,7 +107,7 @@ func (r *RequestArticle) FindArticleByAuthor(userName string, offset, limit int)
 	return a, n, nil
 }
 
-func (r *RequestArticle) FindArticles(tag, author string, offset, limit int) ([]*entity.Article, int64, error) {
+func (r *RequestArticle) ListArticles(tag, author string, offset, limit int) ([]*entity.Article, int64, error) {
 	user, err := r.UserRepo.FindUserByUserName(author)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
@@ -232,9 +232,9 @@ func (r *RequestArticle) FindArticleAndUserBySlugAndUserID(slug string, uid uint
 		log.Error().Err(err).Msg("FindArticleBySlug error")
 		return nil, nil, err
 	}
-	u, err := r.UserRepo.FindByID(uid)
+	u, err := r.UserRepo.FindUserByID(uid)
 	if err != nil {
-		log.Error().Err(err).Msg("FindByID error")
+		log.Error().Err(err).Msg("FindUserByID error")
 		return nil, nil, err
 	}
 	return a, u, nil
