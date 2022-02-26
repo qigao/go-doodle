@@ -21,7 +21,7 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 		Db: db,
 	}
 }
-func (u *UserRepo) FindByID(uid uint) (*entity.User, error) {
+func (u *UserRepo) FindUserByID(uid uint) (*entity.User, error) {
 	user, err := entity.Users(Where("id = ?", uid)).One(context.Background(), u.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("error in finding user by id")

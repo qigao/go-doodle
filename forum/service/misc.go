@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -13,7 +14,6 @@ func HashPassword(plain string) (string, error) {
 	return string(h), err
 }
 
-func CheckPassword(plain, hashedPass string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedPass), []byte(plain))
-	return err == nil
+func CheckPassword(plain, hashedPass string) error {
+	return bcrypt.CompareHashAndPassword([]byte(hashedPass), []byte(plain))
 }

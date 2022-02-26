@@ -234,7 +234,7 @@ func TestUserRepo_FindByID(t *testing.T) {
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnRows(rows)
 		repo := NewUserRepo(db)
-		result, err := repo.FindByID(2)
+		result, err := repo.FindUserByID(2)
 		assert.NoError(t, err)
 		assert.Equal(t, uint64(2), result.ID)
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -243,7 +243,7 @@ func TestUserRepo_FindByID(t *testing.T) {
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).
 			WillReturnError(fmt.Errorf("some error"))
 		repo := NewUserRepo(db)
-		result, err := repo.FindByID(2)
+		result, err := repo.FindUserByID(2)
 		assert.Errorf(t, err, "some error")
 		assert.Nil(t, result)
 		require.NoError(t, mock.ExpectationsWereMet())

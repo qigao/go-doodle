@@ -67,7 +67,7 @@ func (h *Handler) Articles(c echo.Context) error {
 	}
 
 	req := &article.RequestArticle{Repo: h.article}
-	articles, count, err := req.FindArticles(tag, author, offset, limit)
+	articles, count, err := req.ListArticles(tag, author, offset, limit)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get articles")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
