@@ -2,11 +2,10 @@ package user
 
 import (
 	"forum/entity"
-	"forum/repository"
 	"forum/utils"
 )
 
-func NewProfileResponse(us repository.User, userID uint, u *entity.User) *profileResponse {
+func NewProfileResponse(u *entity.User) *profileResponse {
 	r := new(profileResponse)
 	r.Profile.Username = u.Username
 	if u.Bio.Valid {
@@ -15,7 +14,6 @@ func NewProfileResponse(us repository.User, userID uint, u *entity.User) *profil
 	if u.Image.Valid {
 		r.Profile.Image = &(u.Image.String)
 	}
-	//r.Profile.Following, _ = us.IsFollower(u.ID, userID)
 	return r
 }
 

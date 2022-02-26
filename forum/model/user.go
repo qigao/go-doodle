@@ -29,6 +29,7 @@ type LoginUser struct {
 
 type ProfileType struct {
 	Username  string  `json:"username"`
+	Email     string  `json:"email"`
 	Bio       *string `json:"bio"`
 	Image     *string `json:"image"`
 	Following bool    `json:"following"`
