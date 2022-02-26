@@ -2,6 +2,7 @@ package user
 
 import (
 	"forum/entity"
+	"forum/model"
 
 	"github.com/volatiletech/null/v8"
 )
@@ -11,33 +12,35 @@ var (
 		Username: "foo",
 		Email:    "foo@foo.com",
 		Password: "123456",
+		Bio:      null.StringFrom("foo bio"),
+		Image:    null.StringFrom("foo image"),
 	}
-	userBar = &entity.User{
-		Username: "bar",
-		Email:    "bar@bar.com",
+	userWithoutBio = &entity.User{
+		Username: "foo",
+		Email:    "foo@foo.com",
 		Password: "123456",
+		Bio:      null.StringFromPtr(nil),
+		Image:    null.StringFromPtr(nil),
 	}
-	articleFoo = &entity.Article{
-		Title:       "foo Title",
-		Description: null.NewString("foo Description", false),
-		Body:        null.NewString("foo Body", false),
-		Slug:        "foo-slug",
+	userBio        = "foo bio"
+	userImage      = "http://foo.com/foo.png"
+	profileTypeFoo = &model.ProfileType{
+		Username: "foo",
+		Email:    "foo@foo.com",
+		Bio:      &userBio,
+		Image:    &userImage,
 	}
-	articleBar = &entity.Article{
-		Title:       "foo Title",
-		Description: null.NewString("foo Description", false),
-		Body:        null.NewString("foo Body", false),
-		Slug:        "foo-slug",
+
+	userFooResponse = &model.Response{
+		Username: "foo",
+		Email:    "foo@foo.com",
+		Bio:      &userBio,
+		Image:    &userImage,
 	}
-	commentFoo = &entity.Comment{
-		Body:      null.StringFrom("foo Body"),
-		ArticleID: null.Uint64From(1),
-		UserID:    null.Uint64From(1),
-	}
-	tagFoo = &entity.Tag{
-		Tag: null.StringFrom("foo"),
-	}
-	tagBar = &entity.Tag{
-		Tag: null.StringFrom("bar"),
+	userFooResponseWithNull = &model.Response{
+		Username: "foo",
+		Email:    "foo@foo.com",
+		Bio:      nil,
+		Image:    nil,
 	}
 )
