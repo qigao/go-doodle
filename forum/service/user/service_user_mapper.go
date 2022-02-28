@@ -2,11 +2,12 @@ package user
 
 import (
 	"forum/entity"
+	"forum/model"
 	"forum/utils"
 )
 
-func NewProfileResponse(u *entity.User) *profileResponse {
-	r := new(profileResponse)
+func NewProfileResponse(u *entity.User) *model.ProfileResponse {
+	r := new(model.ProfileResponse)
 	r.Profile.Username = u.Username
 	if u.Bio.Valid {
 		r.Profile.Bio = &(u.Bio.String)
@@ -17,8 +18,8 @@ func NewProfileResponse(u *entity.User) *profileResponse {
 	return r
 }
 
-func NewUserResponse(u *entity.User) *userResponse {
-	r := new(userResponse)
+func NewUserResponse(u *entity.User) *model.UserResponse {
+	r := new(model.UserResponse)
 	r.User.Username = u.Username
 	r.User.Email = u.Email
 	if u.Bio.Valid {

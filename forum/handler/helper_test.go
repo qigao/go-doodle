@@ -1,4 +1,4 @@
-package article
+package handler
 
 import (
 	"forum/entity"

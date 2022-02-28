@@ -8,49 +8,39 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type RequestArticle struct {
+type ServiceArticle struct {
 	Repo     repository.Article
 	UserRepo repository.User
 }
 
-func NewRequestArticle(r repository.Article, u repository.User) *RequestArticle {
-	return &RequestArticle{
+func NewServiceArticle(r repository.Article, u repository.User) *ServiceArticle {
+	return &ServiceArticle{
 		Repo:     r,
 		UserRepo: u,
 	}
 }
 
-func (r *RequestArticle) InsertArticleWithTags(a *entity.Article, tagStr []string) error {
-	err := r.Repo.CreateArticle(a)
-	if err != nil {
-		log.Error().Err(err).Msg("InsertArticle error")
-		return err
-	}
-	err = r.AddTagToArticle(a.Slug, tagStr)
-	if err != nil {
-		log.Error().Err(err).Msg("AddTagToArticle error")
-		return err
-	}
-	return nil
+func (r *ServiceArticle) CreateArticle(a *entity.Article) error {
+	return r.Repo.CreateArticle(a)
 }
 
-func (r *RequestArticle) UpdateArticle(slug string, a *entity.Article) error {
+func (r *ServiceArticle) UpdateArticle(slug string, newArticle *entity.Article) error {
 	as, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
 		return err
 	}
-	if a.Body.Valid {
-		as.Body.String = a.Body.String
+	if newArticle.Body.Valid {
+		as.Body.String = newArticle.Body.String
 	}
-	if a.Slug != "" {
-		as.Slug = a.Slug
+	if newArticle.Slug != "" {
+		as.Slug = newArticle.Slug
 	}
-	if a.Title != "" {
-		as.Title = a.Title
+	if newArticle.Title != "" {
+		as.Title = newArticle.Title
 	}
-	if a.Description.Valid {
-		as.Description = a.Description
+	if newArticle.Description.Valid {
+		as.Description = newArticle.Description
 	}
 	err = r.Repo.UpdateArticle(as)
 	if err != nil {
@@ -60,7 +50,7 @@ func (r *RequestArticle) UpdateArticle(slug string, a *entity.Article) error {
 	return nil
 }
 
-func (r *RequestArticle) DeleteArticle(slug string) error {
+func (r *ServiceArticle) DeleteArticle(slug string) error {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -74,7 +64,7 @@ func (r *RequestArticle) DeleteArticle(slug string) error {
 	return nil
 }
 
-func (r *RequestArticle) FindArticle(slug string) (*entity.Article, *entity.User, []*entity.Tag, error) {
+func (r *ServiceArticle) FindArticle(slug string) (*entity.Article, *entity.User, []*entity.Tag, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -93,7 +83,7 @@ func (r *RequestArticle) FindArticle(slug string) (*entity.Article, *entity.User
 	return a, u, t, nil
 }
 
-func (r *RequestArticle) FindArticleByAuthor(userName string, offset, limit int) ([]*entity.Article, int64, error) {
+func (r *ServiceArticle) FindArticleByAuthor(userName string, offset, limit int) ([]*entity.Article, int64, error) {
 	u, err := r.UserRepo.FindUserByUserName(userName)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
@@ -107,7 +97,7 @@ func (r *RequestArticle) FindArticleByAuthor(userName string, offset, limit int)
 	return a, n, nil
 }
 
-func (r *RequestArticle) ListArticles(tag, author string, offset, limit int) ([]*entity.Article, int64, error) {
+func (r *ServiceArticle) ListArticles(tag, author string, offset, limit int) ([]*entity.Article, int64, error) {
 	user, err := r.UserRepo.FindUserByUserName(author)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
@@ -137,7 +127,7 @@ func (r *RequestArticle) ListArticles(tag, author string, offset, limit int) ([]
 	}
 }
 
-func (r *RequestArticle) FindCommentsBySlug(slug string, offset, limit int) ([]*entity.Comment, error) {
+func (r *ServiceArticle) FindCommentsBySlug(slug string, offset, limit int) ([]*entity.Comment, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -151,7 +141,7 @@ func (r *RequestArticle) FindCommentsBySlug(slug string, offset, limit int) ([]*
 	return c, nil
 }
 
-func (r *RequestArticle) FindAuthorBySlug(slug string) (*entity.User, error) {
+func (r *ServiceArticle) FindAuthorBySlug(slug string) (*entity.User, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -165,7 +155,7 @@ func (r *RequestArticle) FindAuthorBySlug(slug string) (*entity.User, error) {
 	return u, nil
 }
 
-func (r *RequestArticle) AddCommentToArticle(slug string, cm *entity.Comment) error {
+func (r *ServiceArticle) AddCommentToArticle(slug string, cm *entity.Comment) error {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -179,7 +169,7 @@ func (r *RequestArticle) AddCommentToArticle(slug string, cm *entity.Comment) er
 	return nil
 }
 
-func (r *RequestArticle) DeleteCommentFromArticle(slug string, commentId uint64) error {
+func (r *ServiceArticle) DeleteCommentFromArticle(slug string, commentId uint64) error {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -198,7 +188,7 @@ func (r *RequestArticle) DeleteCommentFromArticle(slug string, commentId uint64)
 	return nil
 }
 
-func (r *RequestArticle) AddFavoriteArticleBySlug(slug string, uid uint) error {
+func (r *ServiceArticle) AddFavoriteArticleBySlug(slug string, uid uint) error {
 	a, u, err := r.FindArticleAndUserBySlugAndUserID(slug, uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleAndUserBySlugAndUserID error")
@@ -212,7 +202,7 @@ func (r *RequestArticle) AddFavoriteArticleBySlug(slug string, uid uint) error {
 	return nil
 }
 
-func (r *RequestArticle) RemoveFavoriteArticleBySlug(slug string, uid uint) error {
+func (r *ServiceArticle) RemoveFavoriteArticleBySlug(slug string, uid uint) error {
 	a, u, err := r.FindArticleAndUserBySlugAndUserID(slug, uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleAndUserBySlugAndUserID error")
@@ -226,7 +216,7 @@ func (r *RequestArticle) RemoveFavoriteArticleBySlug(slug string, uid uint) erro
 	return nil
 }
 
-func (r *RequestArticle) FindArticleAndUserBySlugAndUserID(slug string, uid uint) (*entity.Article, *entity.User, error) {
+func (r *ServiceArticle) FindArticleAndUserBySlugAndUserID(slug string, uid uint) (*entity.Article, *entity.User, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -240,7 +230,7 @@ func (r *RequestArticle) FindArticleAndUserBySlugAndUserID(slug string, uid uint
 	return a, u, nil
 }
 
-func (r *RequestArticle) AddTagToArticle(slug string, tagStr []string) error {
+func (r *ServiceArticle) AddTagToArticle(slug string, tagStr []string) error {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -273,4 +263,13 @@ func contains(s []string, e string) bool {
 		}
 	}
 	return false
+}
+
+func (r *ServiceArticle) GetAllTags() ([]*entity.Tag, error) {
+	t, err := r.Repo.ListTags()
+	if err != nil {
+		log.Error().Err(err).Msg("ListTags error")
+		return nil, err
+	}
+	return t, nil
 }

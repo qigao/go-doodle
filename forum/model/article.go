@@ -42,3 +42,29 @@ type SimpleArticle struct {
 	CreatedAt   time.Time `json:"createdAt"`
 	UpdatedAt   time.Time `json:"updatedAt"`
 }
+type SingleArticle struct {
+	Article *ArticleResponse `json:"article"`
+}
+
+type SimpleArticleList struct {
+	Articles      []*SimpleArticle `json:"articles"`
+	ArticlesCount int64            `json:"articlesCount"`
+}
+
+type SingleArticleResponse struct {
+	Article *ArticleResponse `json:"article"`
+}
+
+type CommentListResponse struct {
+	Comments []CommentResponse `json:"comments"`
+}
+
+type TagListResponse struct {
+	Tags []string `json:"tags"`
+}
+
+type CommentRequest struct {
+	Comment struct {
+		Body string `json:"body" validate:"required"`
+	} `json:"comment"`
+}

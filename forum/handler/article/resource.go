@@ -28,8 +28,7 @@ import (
 // @Router /articles/{slug} [get]
 func (h *Handler) GetArticle(c echo.Context) error {
 	slug := c.Param("slug")
-	req := &article.RequestArticle{Repo: h.article}
-	a, u, t, err := req.FindArticle(slug)
+	a, u, t, err := h.service.FindArticle(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get article")
 		return c.JSON(http.StatusNotFound, http_error.NewError(err))
@@ -66,8 +65,7 @@ func (h *Handler) Articles(c echo.Context) error {
 		limit = 20
 	}
 
-	req := &article.RequestArticle{Repo: h.article}
-	articles, count, err := req.ListArticles(tag, author, offset, limit)
+	articles, count, err := h.service.ListArticles(tag, author, offset, limit)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get articles")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
@@ -128,17 +126,15 @@ func (h *Handler) Articles(c echo.Context) error {
 // @Router /articles [post]
 func (h *Handler) CreateArticle(c echo.Context) error {
 	var s *model.SimpleArticle
-	req := &article.RequestArticle{Repo: h.article}
-	if err := bindJson(c, s); err != nil {
+	if err := c.Bind(s); err != nil {
 		log.Error().Err(err).Msg("error binding article")
 		return c.JSON(http.StatusBadRequest, http_error.NewError(err))
 	}
-	a, t := populateSingleArticle(s)
-
+	a := populateSingleArticle(s)
 	x := handler.UserIDFromToken(c)
 	a.AuthorID = null.Uint64From(uint64(x))
 
-	if err := req.InsertArticleWithTags(a, t); err != nil {
+	if err := h.service.CreateArticle(a); err != nil {
 		log.Error().Err(err).Msg("error inserting article")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -165,13 +161,12 @@ func (h *Handler) CreateArticle(c echo.Context) error {
 func (h *Handler) UpdateArticle(c echo.Context) error {
 	var s *model.SimpleArticle
 	slug := c.Param("slug")
-	x := handler.UserIDFromToken(c)
-	req := &article.RequestArticle{Repo: h.article}
-	if err := bindJson(c, s); err != nil {
+	if err := c.Bind(s); err != nil {
 		log.Error().Err(err).Msg("error binding article")
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
-	if err := req.UpdateArticle(x, slug); err != nil {
+	a := populateSingleArticle(s)
+	if err := h.service.UpdateArticle(slug, a); err != nil {
 		log.Error().Err(err).Msg("error updating article")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -194,9 +189,7 @@ func (h *Handler) UpdateArticle(c echo.Context) error {
 // @Router /articles/{slug} [delete]
 func (h *Handler) DeleteArticle(c echo.Context) error {
 	slug := c.Param("slug")
-	req := &article.RequestArticle{Repo: h.article}
-	x := handler.UserIDFromToken(c)
-	err := req.DeleteArticle(x, slug)
+	err := h.service.DeleteArticle(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("error deleting article")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
@@ -224,15 +217,11 @@ func (h *Handler) DeleteArticle(c echo.Context) error {
 // @Router /articles/{slug}/comments [post]
 func (h *Handler) AddComment(c echo.Context) error {
 	slug := c.Param("slug")
-	id, _ := strconv.ParseUint(c.Param("id"), 10, 32)
 	var cm *entity.Comment
-
-	req := &article.RequestArticle{Repo: h.article}
-	if err := bindJson(c, cm); err != nil {
+	if err := c.Bind(cm); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-
-	if err := req.AddCommentToArticle(slug, id, cm); err != nil {
+	if err := h.service.AddCommentToArticle(slug, cm); err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusCreated, map[string]interface{}{"result": "ok"})
@@ -252,8 +241,7 @@ func (h *Handler) AddComment(c echo.Context) error {
 // @Router /articles/{slug}/comments [get]
 func (h *Handler) GetComments(c echo.Context) error {
 	slug := c.Param("slug")
-	req := &article.RequestArticle{Repo: h.article}
-	cm, err := req.FindCommentsBySlug(slug, 0, 10)
+	cm, err := h.service.FindCommentsBySlug(slug, 0, 10)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -285,9 +273,8 @@ func (h *Handler) DeleteComment(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 	slug := c.Param("slug")
-	req := &article.RequestArticle{Repo: h.article}
 
-	if err := req.DeleteCommentBySlugAndCommentID(slug, id64); err != nil {
+	if err := h.service.DeleteCommentFromArticle(slug, id64); err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 
@@ -313,8 +300,7 @@ func (h *Handler) DeleteComment(c echo.Context) error {
 func (h *Handler) Favorite(c echo.Context) error {
 	slug := c.Param("slug")
 	x := handler.UserIDFromToken(c)
-	req := &article.RequestArticle{Repo: h.article}
-	err := req.AddFavoriteArticleBySlug(slug, x)
+	err := h.service.AddFavoriteArticleBySlug(slug, x)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -340,8 +326,7 @@ func (h *Handler) Favorite(c echo.Context) error {
 func (h *Handler) Unfavorite(c echo.Context) error {
 	slug := c.Param("slug")
 	x := handler.UserIDFromToken(c)
-	req := &article.RequestArticle{Repo: h.article}
-	err := req.RemoveFavoriteArticleBySlug(slug, x)
+	err := h.service.RemoveFavoriteArticleBySlug(slug, x)
 	if err != nil {
 		return err
 	}
@@ -363,7 +348,7 @@ func (h *Handler) Unfavorite(c echo.Context) error {
 // @Security ApiKeyAuth
 // @Router /tags [get]
 func (h *Handler) Tags(c echo.Context) error {
-	tags, err := h.article.ListTags()
+	tags, err := h.service.GetAllTags()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -392,8 +377,7 @@ func (h *Handler) Tags(c echo.Context) error {
 func (h *Handler) AddTagToArticle(c echo.Context) error {
 	slug := c.Param("slug")
 	tag := c.Param("tag")
-	req := &article.RequestArticle{Repo: h.article}
-	if err := req.AddTagToArticle(slug, []string{tag}); err != nil {
+	if err := h.service.AddTagToArticle(slug, []string{tag}); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 

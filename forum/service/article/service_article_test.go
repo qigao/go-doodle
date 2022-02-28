@@ -3,7 +3,7 @@ package article
 import (
 	"fmt"
 	"forum/entity"
-	. "forum/repository/mock/repository"
+	. "forum/mock/repository"
 	"testing"
 
 	mock "github.com/stretchr/testify/mock"
@@ -22,58 +22,18 @@ func newUserMock() *User {
 	}
 }
 
-func TestArticle_InsertArticleWithTags(t *testing.T) {
-	t.Run("When InsertArticleWithTags, CreateArticle failed with error", func(t *testing.T) {
+func TestArticle_CreateArticle(t *testing.T) {
+	t.Run("When CreateArticle, CreateArticle failed with error", func(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 
 		// When
 		articleMock.On("CreateArticle", mock.Anything).Return(fmt.Errorf("CreateArticle error"))
 		// Then
-		err := mockRequestArticle.InsertArticleWithTags(articleFoo, []string{"tag1", "tag2"})
+		err := mockRequestArticle.CreateArticle(articleFoo)
 		assert.Error(t, err, "CreateArticle error")
-	})
-	t.Run("When InsertArticleWithTags, AddTagToArticle failed with error", func(t *testing.T) {
-		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
-		tag1 := &entity.Tag{
-			Tag: null.StringFrom("tag1"),
-		}
-		tag2 := &entity.Tag{
-			Tag: null.StringFrom("tag2"),
-		}
-		// When
-		articleMock.On("CreateArticle", mock.Anything).Return(nil)
-		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		articleMock.On("ListTags").Return([]*entity.Tag{tag1, tag2}, nil)
-		articleMock.On("AddTagsToArticle", mock.Anything, mock.Anything).Return(fmt.Errorf("AddTagToArticle error"))
-		// Then
-		err := mockRequestArticle.InsertArticleWithTags(articleFoo, []string{"tag2"})
-		assert.Error(t, err, "AddTagToArticle error")
-	})
-	t.Run("When InsertArticleWithTags, without error", func(t *testing.T) {
-		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
-		tag1 := &entity.Tag{
-			Tag: null.StringFrom("tag1"),
-		}
-		tag2 := &entity.Tag{
-			Tag: null.StringFrom("tag2"),
-		}
-		// When
-		articleMock.On("CreateArticle", mock.Anything).Return(nil)
-		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		articleMock.On("ListTags").Return([]*entity.Tag{tag1, tag2}, nil)
-		articleMock.On("AddTagsToArticle", mock.Anything, mock.Anything).Return(nil)
-		// Then
-		err := mockRequestArticle.InsertArticleWithTags(articleFoo, []string{"tag2"})
-		assert.NilError(t, err)
 	})
 }
 
@@ -82,7 +42,7 @@ func TestArticle_DeleteArtile(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
 		// Then
@@ -93,7 +53,7 @@ func TestArticle_DeleteArtile(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("DeleteArticle", mock.Anything).Return(fmt.Errorf("DeleteArticle error"))
@@ -105,7 +65,7 @@ func TestArticle_DeleteArtile(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("DeleteArticle", mock.Anything).Return(nil)
@@ -120,7 +80,7 @@ func TestArticle_FindArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
 		// Then
@@ -131,7 +91,7 @@ func TestArticle_FindArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("FindAuthorByArticle", mock.Anything).Return(nil, fmt.Errorf("FindAuthorByArticle error"))
@@ -143,7 +103,7 @@ func TestArticle_FindArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("FindAuthorByArticle", mock.Anything).Return(userFoo, nil)
@@ -156,7 +116,7 @@ func TestArticle_FindArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("FindAuthorByArticle", mock.Anything).Return(userFoo, nil)
@@ -173,7 +133,7 @@ func TestArticle_FindArticleByAuthor(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(nil, fmt.Errorf("FindUserByUsername error"))
 
@@ -186,7 +146,7 @@ func TestArticle_FindArticleByAuthor(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticlesByAuthor", mock.Anything, mock.Anything, mock.Anything).Return(nil, int64(0), fmt.Errorf("FindArticleByAuthor error"))
@@ -200,7 +160,7 @@ func TestArticle_FindArticleByAuthor(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticlesByAuthor", mock.Anything, mock.Anything, mock.Anything).Return([]*entity.Article{articleFoo}, int64(1), nil)
@@ -218,7 +178,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(nil, fmt.Errorf("FindUserByUsername error"))
 
@@ -231,7 +191,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticlesByTag", mock.Anything, mock.Anything, mock.Anything).Return(nil, int64(0), fmt.Errorf("FindArticleByTag error"))
@@ -244,7 +204,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticlesByTag", mock.Anything, mock.Anything, mock.Anything).Return([]*entity.Article{articleBar}, int64(1), nil)
@@ -257,7 +217,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 
@@ -271,7 +231,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 
@@ -285,7 +245,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticles", mock.Anything, mock.Anything).Return([]*entity.Article{articleBar}, int64(1), nil)
@@ -298,7 +258,7 @@ func TestArticle_FindArticles(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
 		articleMock.On("ListArticles", mock.Anything, mock.Anything).Return([]*entity.Article{articleBar}, int64(1), fmt.Errorf("FindArticle error"))
@@ -314,7 +274,7 @@ func TestArticle_FindCommentsBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
 
@@ -326,7 +286,7 @@ func TestArticle_FindCommentsBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleBar, nil)
 		articleMock.On("FindCommentsByArticle", mock.Anything, mock.Anything, mock.Anything).
@@ -340,7 +300,7 @@ func TestArticle_FindCommentsBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleBar, nil)
 		articleMock.On("FindCommentsByArticle", mock.Anything, mock.Anything, mock.Anything).
@@ -357,7 +317,7 @@ func TestArticle_FindAuthorBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
 
@@ -369,7 +329,7 @@ func TestArticle_FindAuthorBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleBar, nil)
 		articleMock.On("FindAuthorByArticle", mock.Anything).Return(nil, fmt.Errorf("FindAuthorBySlug error"))
@@ -382,7 +342,7 @@ func TestArticle_FindAuthorBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleBar, nil)
 		articleMock.On("FindAuthorByArticle", mock.Anything).Return(userFoo, nil)
@@ -398,7 +358,7 @@ func TestArticle_AddCommentToArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
 		// Then
@@ -409,7 +369,7 @@ func TestArticle_AddCommentToArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("AddComment", mock.Anything, mock.Anything).Return(fmt.Errorf("AddComment error"))
@@ -421,7 +381,7 @@ func TestArticle_AddCommentToArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("AddComment", mock.Anything, mock.Anything).Return(nil)
@@ -437,7 +397,7 @@ func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
 		// Then
@@ -448,7 +408,7 @@ func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("FindCommentByID", mock.Anything).Return(nil, fmt.Errorf("FindCommentByID error"))
@@ -460,7 +420,7 @@ func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("FindCommentByID", mock.Anything).Return(commentFoo, nil)
@@ -473,7 +433,7 @@ func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("FindCommentByID", mock.Anything).Return(commentFoo, nil)
@@ -490,7 +450,7 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
 		// Then
@@ -501,7 +461,7 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		userMock.On("FindUserByID", mock.Anything).Return(nil, fmt.Errorf("FindUserByID error"))
@@ -513,7 +473,7 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		userMock.On("FindUserByID", mock.Anything).Return(userBar, nil)
@@ -526,7 +486,7 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		userMock.On("FindUserByID", mock.Anything).Return(userBar, nil)
@@ -542,7 +502,7 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
 		// Then
@@ -553,7 +513,7 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		userMock.On("FindUserByID", mock.Anything).Return(nil, fmt.Errorf("FindUserByID error"))
@@ -565,7 +525,7 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		userMock.On("FindUserByID", mock.Anything).Return(userBar, nil)
@@ -578,7 +538,7 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		userMock.On("FindUserByID", mock.Anything).Return(userBar, nil)
@@ -594,7 +554,7 @@ func TestArticle_AddTagToArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		tag1 := &entity.Tag{
 			Tag: null.StringFrom("tag1"),
 		}
@@ -612,7 +572,7 @@ func TestArticle_AddTagToArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		tag1 := &entity.Tag{
 			Tag: null.StringFrom("tag1"),
 		}
@@ -631,7 +591,7 @@ func TestArticle_AddTagToArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		tag1 := &entity.Tag{
 			Tag: null.StringFrom("tag1"),
 		}
@@ -650,7 +610,7 @@ func TestArticle_AddTagToArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		tag1 := &entity.Tag{
 			Tag: null.StringFrom("tag1"),
 		}
@@ -672,7 +632,7 @@ func TestArticle_UpdateArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, fmt.Errorf("FindArticleBySlug error"))
 		// Then
@@ -683,7 +643,7 @@ func TestArticle_UpdateArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("UpdateArticle", mock.Anything).Return(fmt.Errorf("Update article error"))
@@ -695,7 +655,7 @@ func TestArticle_UpdateArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
 		articleMock.On("UpdateArticle", mock.Anything).Return(nil)
@@ -707,7 +667,7 @@ func TestArticle_UpdateArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleFoo.Body = null.StringFrom("")
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -720,7 +680,7 @@ func TestArticle_UpdateArticle(t *testing.T) {
 		// Given
 		userMock := newUserMock()
 		articleMock := newArticleMock()
-		mockRequestArticle := NewRequestArticle(articleMock, userMock)
+		mockRequestArticle := NewServiceArticle(articleMock, userMock)
 		// When
 		articleFoo.Description = null.StringFrom("")
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)

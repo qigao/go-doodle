@@ -3,7 +3,8 @@ export ROOT=$(realpath $(dir $(lastword $(MAKEFILE_LIST))))
 export DEBUG=true
 export APP=forum
 export LDFLAGS="-w -s"
-
+SHELL   = /bin/bash
+ 
 all:  gen-mock build test
 start-mysql:
 	cp .env $(ROOT)/docker/schema.env
@@ -24,7 +25,11 @@ stop-mysql:
 	rm -rf $(ROOT)/docker/schema.env
 
 gen-mock:
+	@mkdir  -vp mock/{service,interface}
+	ifacemaker -f service/article/service_article.go -s ServiceArticle -i ServiceArticle -p service -c "DONT EDIT: Auto generated" -o mock/interface/article.go
+	ifacemaker -f service/user/service_user.go -s ServiceUser -i ServiceUser -p service -c "DONT EDIT: Auto generated" -o mock/interface/user.go
 	mockery --config repository/mockery.yaml
+	mockery --config service/mockery.yaml
 
 build:
 	go build -race  .

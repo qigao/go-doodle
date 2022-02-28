@@ -2,6 +2,7 @@ package user
 
 import (
 	"forum/entity"
+	"forum/model"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -14,10 +15,10 @@ func TestNewProfileResponse(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *profileResponse
+		want *model.ProfileResponse
 	}{
-		{"TestNewProfileResponse", args{userFoo}, &profileResponse{Profile: *profileTypeFoo}},
-		{"TestNewProfileResponseWithNull", args{userWithoutBio}, &profileResponse{Profile: *profileTypeFoo}},
+		{"TestNewProfileResponse", args{userFoo}, &model.ProfileResponse{Profile: *profileTypeFoo}},
+		{"TestNewProfileResponseWithNull", args{userWithoutBio}, &model.ProfileResponse{Profile: *profileTypeFoo}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -40,18 +41,18 @@ func TestNewUserResponse(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want *userResponse
+		want *model.UserResponse
 	}{
-		{"TestNewUserResponse", args{userFoo}, &userResponse{User: *userFooResponse}},
-		{"TestNewUserResponseWithNull", args{userWithoutBio}, &userResponse{User: *userFooResponseWithNull}},
+		{"TestNewUserResponse", args{userFoo}, &model.UserResponse{User: *userFooResponse}},
+		{"TestNewUserResponseWithNull", args{userWithoutBio}, &model.UserResponse{User: *userFooResponseWithNull}},
 	}
 	for _, tt := range tests {
-		got :=NewUserResponse(tt.args.u)
+		got := NewUserResponse(tt.args.u)
 		t.Run(tt.name, func(t *testing.T) {
 			if got.User.Bio != nil {
 				assert.Equal(t, tt.args.u.Bio.String, *got.User.Bio)
 				assert.Equal(t, tt.args.u.Image.String, *got.User.Image)
-			}else {
+			} else {
 				assert.Nil(t, got.User.Bio)
 				assert.Nil(t, got.User.Image)
 			}

@@ -9,17 +9,17 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-type RequestUser struct {
+type ServiceUser struct {
 	Repo repository.User
 }
 
-func NewRequestUser(r repository.User) *RequestUser {
-	return &RequestUser{
+func NewServiceUser(r repository.User) *ServiceUser {
+	return &ServiceUser{
 		Repo: r,
 	}
 }
 
-func (r *RequestUser) CheckUser(user *model.LoginUser) error {
+func (r *ServiceUser) CheckUser(user *model.LoginUser) error {
 	userInfo, err := r.Repo.FindByEmail(user.Email)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByEmail error")
@@ -29,7 +29,7 @@ func (r *RequestUser) CheckUser(user *model.LoginUser) error {
 	return service.CheckPassword(userInfo.Password, user.Password)
 }
 
-func (r *RequestUser) CreateUser(user *model.RegisterUser) error {
+func (r *ServiceUser) CreateUser(user *model.RegisterUser) error {
 	passWord, err := service.HashPassword(user.Password)
 	if err != nil {
 		log.Error().Err(err).Msg("HashPassword error")
@@ -42,7 +42,7 @@ func (r *RequestUser) CreateUser(user *model.RegisterUser) error {
 	return r.Repo.CreateUser(&u)
 }
 
-func (r *RequestUser) FllowUserByUserName(uid uint, userName string) error {
+func (r *ServiceUser) FllowUserByUserName(uid uint, userName string) error {
 	targetUser, err := r.Repo.FindUserByUserName(userName)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
@@ -56,19 +56,19 @@ func (r *RequestUser) FllowUserByUserName(uid uint, userName string) error {
 	return r.Repo.AddFollower(loggedUser, targetUser)
 }
 
-func (p *RequestUser) GetUserByID(uid uint) (*entity.User, error) {
+func (p *ServiceUser) GetUserByID(uid uint) (*entity.User, error) {
 	return p.Repo.FindUserByID(uid)
 }
 
-func (p *RequestUser) GetUserByEmail(email string) (*entity.User, error) {
+func (p *ServiceUser) GetUserByEmail(email string) (*entity.User, error) {
 	return p.Repo.FindByEmail(email)
 }
 
-func (p *RequestUser) GetUserByUserName(username string) (*entity.User, error) {
+func (p *ServiceUser) GetUserByUserName(username string) (*entity.User, error) {
 	return p.Repo.FindUserByUserName(username)
 }
 
-func (r *RequestUser) UnFollowUserByUserName(uid uint, userName string) error {
+func (r *ServiceUser) UnFollowUserByUserName(uid uint, userName string) error {
 	targetUser, err := r.Repo.FindUserByUserName(userName)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
@@ -82,7 +82,7 @@ func (r *RequestUser) UnFollowUserByUserName(uid uint, userName string) error {
 	return r.Repo.RemoveFollower(loggedUser, targetUser)
 }
 
-func (r *RequestUser) GetFollowersByUserID(uid uint) ([]*entity.User, error) {
+func (r *ServiceUser) GetFollowersByUserID(uid uint) ([]*entity.User, error) {
 	currentUser, err := r.Repo.FindUserByID(uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindUserByID error")
@@ -91,7 +91,7 @@ func (r *RequestUser) GetFollowersByUserID(uid uint) ([]*entity.User, error) {
 	return r.Repo.GetFollowers(currentUser)
 }
 
-func (r *RequestUser) GetFollowingUser(uid uint) ([]*entity.User, error) {
+func (r *ServiceUser) GetFollowingUser(uid uint) ([]*entity.User, error) {
 	currentUser, err := r.Repo.FindUserByID(uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindUserByID error")

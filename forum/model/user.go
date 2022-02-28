@@ -34,3 +34,10 @@ type ProfileType struct {
 	Image     *string `json:"image"`
 	Following bool    `json:"following"`
 }
+
+type ProfileResponse struct {
+	Profile ProfileType `json:"profile"`
+}
+type UserResponse struct {
+	User Response `json:"user"`
+}
