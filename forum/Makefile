@@ -25,9 +25,9 @@ stop-mysql:
 	rm -rf $(ROOT)/docker/schema.env
 
 gen-mock:
-	@mkdir  -vp mock/{service,interface}
-	ifacemaker -f service/article/service_article.go -s ServiceArticle -i ServiceArticle -p service -c "DONT EDIT: Auto generated" -o mock/interface/article.go
-	ifacemaker -f service/user/service_user.go -s ServiceUser -i ServiceUser -p service -c "DONT EDIT: Auto generated" -o mock/interface/user.go
+	@mkdir  -vp mock/service
+	ifacemaker -f service/article/service_article.go -s ServiceArticle -i ServiceArticle -p service -c "DONT EDIT: Auto generated" -o service/article.go
+	ifacemaker -f service/user/service_user.go -s ServiceUser -i ServiceUser -p service -c "DONT EDIT: Auto generated" -o service/user.go
 	mockery --config repository/mockery.yaml
 	mockery --config service/mockery.yaml
 

@@ -28,7 +28,7 @@ import (
 // @Router /articles/{slug} [get]
 func (h *Handler) GetArticle(c echo.Context) error {
 	slug := c.Param("slug")
-	a, u, t, err := h.service.FindArticle(slug)
+	a, u, t, err := h.Service.FindArticle(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get article")
 		return c.JSON(http.StatusNotFound, http_error.NewError(err))
@@ -57,18 +57,20 @@ func (h *Handler) Articles(c echo.Context) error {
 
 	offset, err := strconv.Atoi(c.QueryParam("offset"))
 	if err != nil {
+		log.Error().Err(err).Msg("error parsing offset,set to 0")
 		offset = 0
 	}
 
 	limit, err := strconv.Atoi(c.QueryParam("limit"))
 	if err != nil {
+		log.Error().Err(err).Msg("error parsing limit,set to 20")
 		limit = 20
 	}
 
-	articles, count, err := h.service.ListArticles(tag, author, offset, limit)
+	articles, count, err := h.Service.FindArticles(tag, author, offset, limit)
 	if err != nil {
 		log.Error().Err(err).Msg("Failed to get articles")
-		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
+		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusOK, article.SimpleArticleListMapper(articles, count))
 }
@@ -134,7 +136,7 @@ func (h *Handler) CreateArticle(c echo.Context) error {
 	x := handler.UserIDFromToken(c)
 	a.AuthorID = null.Uint64From(uint64(x))
 
-	if err := h.service.CreateArticle(a); err != nil {
+	if err := h.Service.CreateArticle(a); err != nil {
 		log.Error().Err(err).Msg("error inserting article")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -166,7 +168,7 @@ func (h *Handler) UpdateArticle(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, http_error.NotFound())
 	}
 	a := populateSingleArticle(s)
-	if err := h.service.UpdateArticle(slug, a); err != nil {
+	if err := h.Service.UpdateArticle(slug, a); err != nil {
 		log.Error().Err(err).Msg("error updating article")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -189,7 +191,7 @@ func (h *Handler) UpdateArticle(c echo.Context) error {
 // @Router /articles/{slug} [delete]
 func (h *Handler) DeleteArticle(c echo.Context) error {
 	slug := c.Param("slug")
-	err := h.service.DeleteArticle(slug)
+	err := h.Service.DeleteArticle(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("error deleting article")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
@@ -221,7 +223,7 @@ func (h *Handler) AddComment(c echo.Context) error {
 	if err := c.Bind(cm); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	if err := h.service.AddCommentToArticle(slug, cm); err != nil {
+	if err := h.Service.AddCommentToArticle(slug, cm); err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 	return c.JSON(http.StatusCreated, map[string]interface{}{"result": "ok"})
@@ -241,7 +243,7 @@ func (h *Handler) AddComment(c echo.Context) error {
 // @Router /articles/{slug}/comments [get]
 func (h *Handler) GetComments(c echo.Context) error {
 	slug := c.Param("slug")
-	cm, err := h.service.FindCommentsBySlug(slug, 0, 10)
+	cm, err := h.Service.FindCommentsBySlug(slug, 0, 10)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -274,7 +276,7 @@ func (h *Handler) DeleteComment(c echo.Context) error {
 	}
 	slug := c.Param("slug")
 
-	if err := h.service.DeleteCommentFromArticle(slug, id64); err != nil {
+	if err := h.Service.DeleteCommentFromArticle(slug, id64); err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
 
@@ -300,7 +302,7 @@ func (h *Handler) DeleteComment(c echo.Context) error {
 func (h *Handler) Favorite(c echo.Context) error {
 	slug := c.Param("slug")
 	x := handler.UserIDFromToken(c)
-	err := h.service.AddFavoriteArticleBySlug(slug, x)
+	err := h.Service.AddFavoriteArticleBySlug(slug, x)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
@@ -326,7 +328,7 @@ func (h *Handler) Favorite(c echo.Context) error {
 func (h *Handler) Unfavorite(c echo.Context) error {
 	slug := c.Param("slug")
 	x := handler.UserIDFromToken(c)
-	err := h.service.RemoveFavoriteArticleBySlug(slug, x)
+	err := h.Service.RemoveFavoriteArticleBySlug(slug, x)
 	if err != nil {
 		return err
 	}
@@ -348,7 +350,7 @@ func (h *Handler) Unfavorite(c echo.Context) error {
 // @Security ApiKeyAuth
 // @Router /tags [get]
 func (h *Handler) Tags(c echo.Context) error {
-	tags, err := h.service.GetAllTags()
+	tags, err := h.Service.GetAllTags()
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
@@ -377,7 +379,7 @@ func (h *Handler) Tags(c echo.Context) error {
 func (h *Handler) AddTagToArticle(c echo.Context) error {
 	slug := c.Param("slug")
 	tag := c.Param("tag")
-	if err := h.service.AddTagToArticle(slug, []string{tag}); err != nil {
+	if err := h.Service.AddTagToArticle(slug, []string{tag}); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
 

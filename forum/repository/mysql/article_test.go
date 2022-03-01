@@ -517,7 +517,7 @@ func TestArticle_ListArticles(t *testing.T) {
 			AddRow(articleBar.ID, articleBar.Title, articleBar.Slug, articleBar.Body, articleBar.Description, articleBar.CreatedAt, articleBar.UpdatedAt, articleBar.DeletedAt, 1)
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).WillReturnRows(rows)
 		repo := NewArticleRepo(db)
-		_, n, err := repo.ListArticles(0, 1)
+		_, n, err := repo.FindArticles(0, 1)
 		assert.NoError(t, err)
 		assert.Equal(t, int64(2), n)
 		require.NoError(t, mock.ExpectationsWereMet())
@@ -525,7 +525,7 @@ func TestArticle_ListArticles(t *testing.T) {
 	t.Run("when list articles failed", func(t *testing.T) {
 		mock.ExpectQuery(regexp.QuoteMeta("SELECT")).WillReturnError(fmt.Errorf("some error"))
 		repo := NewArticleRepo(db)
-		_, n, err := repo.ListArticles(0, 1)
+		_, n, err := repo.FindArticles(0, 1)
 		assert.Errorf(t, err, "some error")
 		assert.Equal(t, int64(0), n)
 		require.NoError(t, mock.ExpectationsWereMet())

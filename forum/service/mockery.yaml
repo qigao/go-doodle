@@ -3,4 +3,4 @@ all: True
 keeptree: False
 output: mock/service
 outpkg: service
-srcpkg: ./mock/interface
+srcpkg: ./service

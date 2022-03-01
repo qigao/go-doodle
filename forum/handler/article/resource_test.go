@@ -1,6 +1,10 @@
 package article
 
 import (
+	"fmt"
+	"forum/entity"
+	"forum/mock/service"
+	"forum/utils"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -8,41 +12,49 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
+	mock "github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-
-	"forum/model"
-	"forum/utils"
 )
 
-func TestArticleResource_CreateArticle(t *testing.T) {
-	t.Run("success", func(t *testing.T) {
+func newServiceArticleMock() *service.ServiceArticle {
+	return &service.ServiceArticle{
+		Mock: mock.Mock{},
+	}
+}
+
+func TestArticleResource_GetArticle(t *testing.T) {
+	t.Run("return Not-Found", func(t *testing.T) {
 		e := echo.New()
-		req := httptest.NewRequest(echo.POST, "/", strings.NewReader(`{"title": "hello", "content": "world"}`))
+		e.Validator = utils.NewValidator()
+		req := httptest.NewRequest(echo.GET, "/api/v1/", strings.NewReader(""))
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		req.Header.Set(echo.HeaderAuthorization, "Bearer "+utils.GenerateJWT(utils.JWTConfig, "user", "1"))
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		articleRepo := &mockArticleRepo{
-			createFunc: func(article *model.Article) error {
-				article.ID = 1
-				return nil
-			},
-		}
-		articleService := &mockArticleService{
-			createFunc: func(article *model.Article) (*model.Article, error) {
-				article.ID = 1
-				return article, nil
-			},
-		}
-		h := &Handler{
-			articleRepo:    articleRepo,
-			articleService: articleService,
-		}
-
-		err := h.CreateArticle(c)
+		c.SetPath("/articles/:slug")
+		c.SetParamNames("slug")
+		c.SetParamValues("test-slug")
+		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock.On("FindArticle", mock.Anything).Return(nil, nil, nil, fmt.Errorf("error"))
+		handler := NewArticleHandler(serviceArticleMock)
+		err := handler.GetArticle(c)
 		require.NoError(t, err)
-		assert.Equal(t, http.StatusCreated, rec.Code)
-		assert.Equal(t, `{"id":1,"title":"hello","content":"world","author_id":1}`, rec.Body.String())
+		assert.Error(t, echo.NewHTTPError(http.StatusOK, "error"))
+	})
+	t.Run("return OK", func(t *testing.T) {
+		e := echo.New()
+		e.Validator = utils.NewValidator()
+		req := httptest.NewRequest(echo.GET, "/api/v1/", strings.NewReader(""))
+		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+		rec := httptest.NewRecorder()
+		c := e.NewContext(req, rec)
+		c.SetPath("/articles/:slug")
+		c.SetParamNames("slug")
+		c.SetParamValues("test-slug")
+		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock.On("FindArticle", mock.Anything).Return(articleFoo, userFoo, []*entity.Tag{tagFoo}, nil)
+		handler := NewArticleHandler(serviceArticleMock)
+		err := handler.GetArticle(c)
+		require.NoError(t, err)
+		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 }

@@ -71,7 +71,7 @@ func TestArticleRepo_Articles(t *testing.T) {
 		assert.Error(t, err)
 	})
 	t.Run("list articles ", func(t *testing.T) {
-		articles, num, err := articleRepo.ListArticles(0, 10)
+		articles, num, err := articleRepo.FindArticles(0, 10)
 		assert.NoError(t, err)
 		assert.Equal(t, 1, len(articles))
 		assert.Equal(t, int64(1), num)
