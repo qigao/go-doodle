@@ -93,8 +93,8 @@ func (a *ArticleRepo) DeleteArticle(article *entity.Article) error {
 	return nil
 }
 
-//ListArticles all the articles with pagination
-func (a *ArticleRepo) ListArticles(offset, limit int) ([]*entity.Article, int64, error) {
+//FindArticles all the articles with pagination
+func (a *ArticleRepo) FindArticles(offset, limit int) ([]*entity.Article, int64, error) {
 	articles, err := entity.Articles(Limit(limit), Offset(offset)).All(context.Background(), a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to list articles")

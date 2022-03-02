@@ -2,9 +2,32 @@ package article
 
 import (
 	"forum/entity"
+	"forum/model"
+	"reflect"
+	"testing"
 
 	"github.com/volatiletech/null/v8"
 )
+
+func Test_populateSingleArticle(t *testing.T) {
+	type args struct {
+		s *model.SimpleArticle
+	}
+	tests := []struct {
+		name string
+		args args
+		want *entity.Article
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := populateSimpleArticle(tt.args.s); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("populateSingleArticle() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 var (
 	userFoo = &entity.User{
@@ -33,5 +56,11 @@ var (
 		Body:      null.StringFrom("foo Body"),
 		ArticleID: null.Uint64From(1),
 		UserID:    null.Uint64From(1),
+	}
+	tagFoo = &entity.Tag{
+		Tag: null.StringFrom("foo"),
+	}
+	tagBar = &entity.Tag{
+		Tag: null.StringFrom("bar"),
 	}
 )

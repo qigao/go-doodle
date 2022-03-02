@@ -9,7 +9,7 @@ type Article interface {
 	UpdateArticle(*entity.Article) error
 	DeleteArticle(*entity.Article) error
 
-	ListArticles(offset, limit int) ([]*entity.Article, int64, error)
+	FindArticles(offset, limit int) ([]*entity.Article, int64, error)
 	ListArticlesByTag(tag string, offset, limit int) ([]*entity.Article, int64, error)
 	ListArticlesByAuthor(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)
 	FindFavoriteArticlesByUser(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)
