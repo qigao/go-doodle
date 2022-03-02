@@ -13,7 +13,7 @@
 
 # generate
 /entity/
-/repository/mock/repository/
+/mock
 #System Files
 .DS_Store
 Thumbs.db

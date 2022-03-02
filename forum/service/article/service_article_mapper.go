@@ -48,12 +48,6 @@ func SimpleArticleListMapper(articles []*entity.Article, count int64) *SimpleArt
 		if a.Description.Valid {
 			ar.Description = a.Description.String
 		}
-		if a.CreatedAt.Valid {
-			ar.CreatedAt = a.CreatedAt.Time
-		}
-		if a.UpdatedAt.Valid {
-			ar.UpdatedAt = a.UpdatedAt.Time
-		}
 		r.Articles = append(r.Articles, ar)
 	}
 	r.ArticlesCount = count
@@ -69,7 +63,7 @@ func TagListResponseMapper(tags []*entity.Tag) *TagListResponse {
 }
 
 func CommentResponseMapper(cm *entity.Comment) *CommentResponse {
-	comment := new(CommentResponse)
+	comment := CommentResponse{}
 	comment.ID = uint(cm.ID)
 	comment.Body = cm.Body.String
 	if cm.CreatedAt.Valid {
@@ -78,22 +72,15 @@ func CommentResponseMapper(cm *entity.Comment) *CommentResponse {
 	if cm.UpdatedAt.Valid {
 		comment.UpdatedAt = cm.UpdatedAt.Time
 	}
-	comment.Author.Username = cm.R.User.Username
-	if cm.R.User.Bio.Valid {
-		comment.Author.Bio = &cm.R.User.Bio.String
-	}
-	if cm.R.User.Image.Valid {
-		comment.Author.Image = &cm.R.User.Image.String
-	}
-	return comment
+	return &comment
 }
 
 func CommentListResponseMapper(comments []*entity.Comment) *CommentListResponse {
-	r := new(CommentListResponse)
+	r := CommentListResponse{}
 	r.Comments = make([]CommentResponse, 0)
 	for _, i := range comments {
 		cr := CommentResponseMapper(i)
 		r.Comments = append(r.Comments, *cr)
 	}
-	return r
+	return &r
 }
