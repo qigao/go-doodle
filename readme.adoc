@@ -1,0 +1,9 @@
+== Golang Microservice ==
+
+this repo will try to build a microservice using golang
+
+== Roadmap ==
+
+* `[x]` Restful API
+* `[]` GRPC API
+* `[]` Event Bus

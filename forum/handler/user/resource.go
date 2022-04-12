@@ -2,11 +2,13 @@ package user
 
 import (
 	"forum/handler"
+	"forum/model"
 	"forum/service/user"
 	"http/http_error"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 )
 
 // SignUp godoc
@@ -23,14 +25,15 @@ import (
 // @Failure 500 {object} utils.Error
 // @Router /users [post]
 func (h *Handler) SignUp(c echo.Context) error {
-	req := &user.RegisterRequest{Repo: h.userRepo}
-	if err := req.Bind(c); err != nil {
+	var reg model.RegisterUser
+	if err := c.Bind(&reg); err != nil {
+		log.Error().Err(err).Msg("Error binding request")
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	if err := req.CreateUser(); err != nil {
+	if err := h.Service.CreateUser(&reg); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	return c.JSON(http.StatusCreated, user.NewUserResponse(&u))
+	return c.JSON(http.StatusCreated, handler.ResultOK())
 }
 
 // Login godoc
@@ -49,15 +52,15 @@ func (h *Handler) SignUp(c echo.Context) error {
 // @Failure 500 {object} utils.Error
 // @Router /users/login [post]
 func (h *Handler) Login(c echo.Context) error {
-	req := &user.RequestLogin{Repo: h.userRepo}
-	if err := req.Bind(c); err != nil {
+	var req model.LoginUser
+	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	userInfo, err := h.userRepo.FindByEmail(req.User.Email)
+	err := h.Service.CheckUser(&req)
 	if err != nil {
 		return c.JSON(http.StatusNotFound, http_error.NewError(err))
 	}
-	return c.JSON(http.StatusOK, user.NewUserResponse(userInfo))
+	return c.JSON(http.StatusOK, handler.ResultOK())
 }
 
 // CurrentUser godoc

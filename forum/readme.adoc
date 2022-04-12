@@ -9,6 +9,16 @@ Also make sure you have installed a go1.11+ version.
 
 For more info and detailed instructions please check this guide: https://github.com/golang/go/wiki/SettingGOPATH[Setting GOPATH]
 
+=== Docker Preparation
+
+install docker and docker-compose
+[source,bash]
+----
+➜  sudo apt-get install docker docker-compose
+----
+
+enable docker service  then add current user to docker group
+
 ==== Edit .env
 prepare .env for mysql server to generate db schemas
 [source,dotenv]
@@ -18,6 +28,12 @@ DB_NAME=gforum
 DB_PORT=3306
 DB_USER=forum
 DB_PASSWORD=secret
+----
+
+load .env file
+[source,bash]
+----
+export $(grep -v '^#' .env | xargs)
 ----
 
 ==== Edit sqlboiler.toml
@@ -55,7 +71,12 @@ mysql connection info should be identical to the one in the database docker.
 
 [source,bash]
 ----
-➜ go run main.go
+➜ make start-mysql
+➜ make gen-schema # for dev purpose only
+➜ make gen-orm
+➜ make stop-mysql
+➜ make gen-mock
+➜ make build
 
 ----
 

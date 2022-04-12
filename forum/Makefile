@@ -4,7 +4,7 @@ export DEBUG=true
 export APP=forum
 export LDFLAGS="-w -s"
 SHELL   = /bin/bash
- 
+
 all:  gen-mock build test
 start-mysql:
 	cp .env $(ROOT)/docker/schema.env
@@ -12,11 +12,11 @@ start-mysql:
 	docker-compose -f $(ROOT)/docker/docker-compose-schema.yml up -d
 
 gen-schema:
-	@go build $(ROOT)/cmd/immigrateDb
+	@go build -o bin/immigrateDb $(ROOT)/cmd/immigrateDb
 	sleep 5
-	$(ROOT)/immigrateDb -db $(ROOT)/db/sql -path $(ROOT)
+	bin/immigrateDb -db $(ROOT)/db/sql -path $(ROOT)
 
-gen-orm: 
+gen-orm:
 	@sqlboiler mysql
 
 stop-mysql:
@@ -32,10 +32,10 @@ gen-mock:
 	mockery --config service/mockery.yaml
 
 build:
-	go build -race  .
+	go build -o bin/forum -race  .
 
 build-static:
-	CGO_ENABLED=1 go build -race -v -o $(APP) -a -installsuffix cgo -ldflags $(LDFLAGS) .
+	CGO_ENABLED=1 go build -race -v -o bin/$(APP) -a -installsuffix cgo -ldflags $(LDFLAGS) .
 
 run:
 	go run -race .
@@ -49,10 +49,10 @@ test:
 
 container:
 	cp -R ../shared .
-	docker build  -t echo-realworld . -f docker/Dockerfile
+	docker build  -t echo-forum . -f docker/Dockerfile
 	rm -R shared
 
 run-container:
-	docker run --rm -it echo-realworld
+	docker run --rm -it echo-forum
 
 .PHONY: build run build-static test container
