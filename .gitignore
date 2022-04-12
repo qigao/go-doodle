@@ -11,15 +11,18 @@
 *.launch
 .settings/
 
-# generate
-/entity/
-/mock
+# auto generated files
+**/entity
+**/mock
+
 #System Files
 .DS_Store
 Thumbs.db
 
-vendor/
+**/vendor
 *.db
 .vscode/
 
 .env
+
+**/bin

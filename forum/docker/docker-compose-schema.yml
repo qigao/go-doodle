@@ -12,8 +12,6 @@ services:
       - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-    env_file:
-      - schema.env
     volumes:
       - ./my.cnf:/etc/my.cnf
 

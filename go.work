@@ -1,0 +1,9 @@
+go 1.18
+
+use (
+	./shared/containers
+	./shared/http
+	./shared/logger
+	./forum
+)
+

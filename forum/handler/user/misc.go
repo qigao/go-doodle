@@ -1,15 +1,15 @@
 package user
 
 import (
-	"forum/repository"
+	"forum/service"
 )
 
 type Handler struct {
-	userRepo repository.User
+	Service service.ServiceUser
 }
 
-func NewUserHandler(us repository.User) *Handler {
+func NewUserHandler(us service.ServiceUser) *Handler {
 	return &Handler{
-		userRepo: us,
+		Service: us,
 	}
 }

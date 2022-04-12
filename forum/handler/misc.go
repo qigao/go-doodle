@@ -11,3 +11,7 @@ func UserIDFromToken(c echo.Context) uint {
 	}
 	return id
 }
+
+func ResultOK() map[string]interface{} {
+	return map[string]interface{}{"status": "OK"}
+}

@@ -140,7 +140,7 @@ func (h *Handler) CreateArticle(c echo.Context) error {
 		log.Error().Err(err).Msg("error inserting article")
 		return c.JSON(http.StatusInternalServerError, http_error.NewError(err))
 	}
-	return c.JSON(http.StatusCreated, map[string]interface{}{"result": "ok"})
+	return c.JSON(http.StatusCreated, handler.ResultOK())
 }
 
 // UpdateArticle godoc
