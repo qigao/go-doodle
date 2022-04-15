@@ -40,9 +40,6 @@ func (m *MySQLContainer) CreateContainer() {
 			"MYSQL_PASSWORD":      *m.password,
 			"MYSQL_DATABASE":      *m.dbName,
 		},
-		BindMounts: map[string]string{
-			seedDataPath + "/my.cnf": "/etc/mysql/my.cnf",
-		},
 		WaitingFor: wait.ForLog("port: 3306  MySQL Community Server").WithStartupTimeout(time.Minute * 2),
 	}
 	mysqlC, err := testcontainers.GenericContainer(ctx, testcontainers.GenericContainerRequest{
