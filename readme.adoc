@@ -1,9 +1,10 @@
 == Golang Microservice ==
 
 this repo will try to build a microservice using golang in terms of DDD
+
 == How to create module ==
 
-* create a folder and init  module
+* create a folder and init module
 
 [source,bash]
 --
