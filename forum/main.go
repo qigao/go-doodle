@@ -4,10 +4,11 @@ import (
 	"forum/handler/article"
 	"forum/handler/user"
 	"forum/repository/mysql"
+	articleService "forum/service/article"
+	userService "forum/service/user"
 	"forum/utils"
-	"http/middleware"
-
 	"github.com/labstack/echo/v4"
+	"http/middleware"
 
 	_ "forum/docs"
 
@@ -46,9 +47,10 @@ func setupRouter(r *echo.Echo) {
 
 	d, _ := utils.NewMysqlManager()
 
-	us := mysql.NewUserRepo(d)
-	as := mysql.NewArticleRepo(d)
-
+	userRepo := mysql.NewUserRepo(d)
+	articleRepo := mysql.NewArticleRepo(d)
+	us := userService.NewUserService(userRepo)
+	as := articleService.NewServiceArticle(articleRepo, userRepo)
 	uh := user.NewUserHandler(us)
 	ah := article.NewArticleHandler(as)
 

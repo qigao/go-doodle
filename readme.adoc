@@ -1,9 +1,39 @@
 == Golang Microservice ==
 
-this repo will try to build a microservice using golang
+this repo will try to build a microservice using golang in terms of DDD
+== How to create module ==
+
+* create a folder and init  module
+
+[source,bash]
+--
+$ mkdir demo && cd demo
+$ go mod init  demo
+--
+
+* update go.work
+
+[source,go]
+--
+go 1.18
+use(
+	./demo
+	)
+--
+
+* use demo from another module,then import from source
+
+[source,go]
+--
+module test
+go 1.18
+require ( demo v0.0.0)
+replace (
+	demo v0.0.0 => ../demo
+	)
+--
 
 == Roadmap ==
 
 * `[x]` Restful API
-* `[]` GRPC API
 * `[]` Event Bus

@@ -1,30 +1,30 @@
 package article
 
 import (
-	"forum/entity"
 	"forum/repository"
+	"schema/entity"
 	"sort"
 
 	"github.com/rs/zerolog/log"
 )
 
-type ServiceArticle struct {
+type Service struct {
 	Repo     repository.Article
 	UserRepo repository.User
 }
 
-func NewServiceArticle(r repository.Article, u repository.User) *ServiceArticle {
-	return &ServiceArticle{
+func NewServiceArticle(r repository.Article, u repository.User) *Service {
+	return &Service{
 		Repo:     r,
 		UserRepo: u,
 	}
 }
 
-func (r *ServiceArticle) CreateArticle(a *entity.Article) error {
+func (r *Service) CreateArticle(a *entity.Article) error {
 	return r.Repo.CreateArticle(a)
 }
 
-func (r *ServiceArticle) UpdateArticle(slug string, newArticle *entity.Article) error {
+func (r *Service) UpdateArticle(slug string, newArticle *entity.Article) error {
 	as, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -50,7 +50,7 @@ func (r *ServiceArticle) UpdateArticle(slug string, newArticle *entity.Article) 
 	return nil
 }
 
-func (r *ServiceArticle) DeleteArticle(slug string) error {
+func (r *Service) DeleteArticle(slug string) error {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -64,7 +64,7 @@ func (r *ServiceArticle) DeleteArticle(slug string) error {
 	return nil
 }
 
-func (r *ServiceArticle) FindArticle(slug string) (*entity.Article, *entity.User, []*entity.Tag, error) {
+func (r *Service) FindArticle(slug string) (*entity.Article, *entity.User, []*entity.Tag, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -83,7 +83,7 @@ func (r *ServiceArticle) FindArticle(slug string) (*entity.Article, *entity.User
 	return a, u, t, nil
 }
 
-func (r *ServiceArticle) FindArticleByAuthor(userName string, offset, limit int) ([]*entity.Article, int64, error) {
+func (r *Service) FindArticleByAuthor(userName string, offset, limit int) ([]*entity.Article, int64, error) {
 	u, err := r.UserRepo.FindUserByUserName(userName)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
@@ -97,7 +97,7 @@ func (r *ServiceArticle) FindArticleByAuthor(userName string, offset, limit int)
 	return a, n, nil
 }
 
-func (r *ServiceArticle) FindArticles(tag, author string, offset, limit int) ([]*entity.Article, int64, error) {
+func (r *Service) FindArticles(tag, author string, offset, limit int) ([]*entity.Article, int64, error) {
 	user, err := r.UserRepo.FindUserByUserName(author)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
@@ -127,7 +127,7 @@ func (r *ServiceArticle) FindArticles(tag, author string, offset, limit int) ([]
 	}
 }
 
-func (r *ServiceArticle) FindCommentsBySlug(slug string, offset, limit int) ([]*entity.Comment, error) {
+func (r *Service) FindCommentsBySlug(slug string, offset, limit int) ([]*entity.Comment, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -141,7 +141,7 @@ func (r *ServiceArticle) FindCommentsBySlug(slug string, offset, limit int) ([]*
 	return c, nil
 }
 
-func (r *ServiceArticle) FindAuthorBySlug(slug string) (*entity.User, error) {
+func (r *Service) FindAuthorBySlug(slug string) (*entity.User, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -155,7 +155,7 @@ func (r *ServiceArticle) FindAuthorBySlug(slug string) (*entity.User, error) {
 	return u, nil
 }
 
-func (r *ServiceArticle) AddCommentToArticle(slug string, cm *entity.Comment) error {
+func (r *Service) AddCommentToArticle(slug string, cm *entity.Comment) error {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -169,7 +169,7 @@ func (r *ServiceArticle) AddCommentToArticle(slug string, cm *entity.Comment) er
 	return nil
 }
 
-func (r *ServiceArticle) DeleteCommentFromArticle(slug string, commentId uint64) error {
+func (r *Service) DeleteCommentFromArticle(slug string, commentId uint64) error {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -188,7 +188,7 @@ func (r *ServiceArticle) DeleteCommentFromArticle(slug string, commentId uint64)
 	return nil
 }
 
-func (r *ServiceArticle) AddFavoriteArticleBySlug(slug string, uid uint) error {
+func (r *Service) AddFavoriteArticleBySlug(slug string, uid uint) error {
 	a, u, err := r.FindArticleAndUserBySlugAndUserID(slug, uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleAndUserBySlugAndUserID error")
@@ -202,7 +202,7 @@ func (r *ServiceArticle) AddFavoriteArticleBySlug(slug string, uid uint) error {
 	return nil
 }
 
-func (r *ServiceArticle) RemoveFavoriteArticleBySlug(slug string, uid uint) error {
+func (r *Service) RemoveFavoriteArticleBySlug(slug string, uid uint) error {
 	a, u, err := r.FindArticleAndUserBySlugAndUserID(slug, uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleAndUserBySlugAndUserID error")
@@ -216,7 +216,7 @@ func (r *ServiceArticle) RemoveFavoriteArticleBySlug(slug string, uid uint) erro
 	return nil
 }
 
-func (r *ServiceArticle) FindArticleAndUserBySlugAndUserID(slug string, uid uint) (*entity.Article, *entity.User, error) {
+func (r *Service) FindArticleAndUserBySlugAndUserID(slug string, uid uint) (*entity.Article, *entity.User, error) {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -230,7 +230,7 @@ func (r *ServiceArticle) FindArticleAndUserBySlugAndUserID(slug string, uid uint
 	return a, u, nil
 }
 
-func (r *ServiceArticle) AddTagToArticle(slug string, tagStr []string) error {
+func (r *Service) AddTagToArticle(slug string, tagStr []string) error {
 	a, err := r.Repo.FindArticleBySlug(slug)
 	if err != nil {
 		log.Error().Err(err).Msg("FindArticleBySlug error")
@@ -265,7 +265,7 @@ func contains(s []string, e string) bool {
 	return false
 }
 
-func (r *ServiceArticle) GetAllTags() ([]*entity.Tag, error) {
+func (r *Service) GetAllTags() ([]*entity.Tag, error) {
 	t, err := r.Repo.ListTags()
 	if err != nil {
 		log.Error().Err(err).Msg("ListTags error")

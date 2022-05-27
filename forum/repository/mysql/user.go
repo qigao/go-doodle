@@ -3,7 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"forum/entity"
+	"schema/entity"
 
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/sqlboiler/v4/boil"

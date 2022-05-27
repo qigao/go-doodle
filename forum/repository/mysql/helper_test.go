@@ -1,7 +1,7 @@
 package mysql
 
 import (
-	"forum/entity"
+	"schema/entity"
 
 	"github.com/volatiletech/null/v8"
 )

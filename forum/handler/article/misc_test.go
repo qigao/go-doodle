@@ -1,9 +1,9 @@
 package article
 
 import (
-	"forum/entity"
 	"forum/model"
 	"reflect"
+	"schema/entity"
 	"testing"
 
 	"github.com/volatiletech/null/v8"

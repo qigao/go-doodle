@@ -11,10 +11,6 @@
 *.launch
 .settings/
 
-# auto generated files
-**/entity
-**/mock
-
 #System Files
 .DS_Store
 Thumbs.db

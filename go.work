@@ -1,9 +1,9 @@
 go 1.18
 
 use (
-	./shared/containers
 	./shared/http
 	./shared/logger
+	./shared/tools
 	./forum
+	./schema/forum
 )
-

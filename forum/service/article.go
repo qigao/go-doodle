@@ -1,13 +1,13 @@
-// DONT EDIT: Auto generated
+// DON'T EDIT: This is generated code
 
 package service
 
 import (
-	"forum/entity"
+	"schema/entity"
 )
 
-// ServiceArticle ...
-type ServiceArticle interface {
+// ArticleService ...
+type ArticleService interface {
 	CreateArticle(a *entity.Article) error
 	UpdateArticle(slug string, newArticle *entity.Article) error
 	DeleteArticle(slug string) error
