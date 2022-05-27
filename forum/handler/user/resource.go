@@ -106,13 +106,14 @@ func (h *Handler) CurrentUser(c echo.Context) error {
 // @Router /user [put]
 func (h *Handler) UpdateUser(c echo.Context) error {
 	uid := handler.UserIDFromToken(c)
-	req := &user.UpdateRequest{Repo: h.userRepo}
-	if err := req.Bind(c); err != nil {
+	var s model.ProfileType
+	if err := c.Bind(&s); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
-	if err := req.FindThenUpdateUser(uid); err != nil {
+	if u, err := h.Service.GetUserByID(uid); err != nil {
 		return c.JSON(http.StatusUnprocessableEntity, http_error.NewError(err))
 	}
+
 	return c.JSON(http.StatusOK, user.NewUserResponse(u))
 }
 

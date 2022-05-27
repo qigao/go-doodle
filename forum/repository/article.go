@@ -1,35 +1,39 @@
+// DON'T EDIT: This is generated code
+
 package repository
 
-import "forum/entity"
+import (
+	"schema/entity"
+)
 
+// Article ...
 type Article interface {
-	FindArticleBySlug(string) (*entity.Article, error)
+	FindArticleBySlug(s string) (*entity.Article, error)
 	FindArticleByAuthorIDAndSlug(userID uint64, slug string) (*entity.Article, error)
-	CreateArticle(*entity.Article) error
-	UpdateArticle(*entity.Article) error
-	DeleteArticle(*entity.Article) error
-
+	CreateArticle(article *entity.Article) error
+	//UpdateArticle  update article
+	UpdateArticle(article *entity.Article) error
+	DeleteArticle(article *entity.Article) error
+	//FindArticles all the articles with pagination
 	FindArticles(offset, limit int) ([]*entity.Article, int64, error)
-	ListArticlesByTag(tag string, offset, limit int) ([]*entity.Article, int64, error)
+	ListArticlesByTag(tagStr string, offset, limit int) ([]*entity.Article, int64, error)
 	ListArticlesByAuthor(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)
-	FindFavoriteArticlesByUser(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)
-	ListFeed(userID uint, offset, limit int) ([]*entity.Article, int64, error)
 	FindAuthorByArticle(article *entity.Article) (*entity.User, error)
-
-	AddComment(*entity.Article, *entity.Comment) error
+	ListFeed(userID uint, offset, limit int) ([]*entity.Article, int64, error)
+	AddComment(article *entity.Article, comment *entity.Comment) error
+	FindCommentsByArticle(article *entity.Article, offset int, limit int) ([]*entity.Comment, error)
 	FindCommentByID(commentID uint64) (*entity.Comment, error)
-	FindCommentsByArticle(*entity.Article, int, int) ([]*entity.Comment, error)
-	DeleteComment(*entity.Comment) error
+	DeleteComment(comment *entity.Comment) error
 	DeleteCommentByCommentID(commentID uint64) error
 	DeleteCommentByArticle(article *entity.Article, comment *entity.Comment) error
-
-	AddFavoriteArticle(*entity.Article, *entity.User) error
-	RemoveFavorite(*entity.Article, *entity.User) error
-
-	CreateTag(*entity.Tag) error
-	AddTagToArticle(*entity.Article, *entity.Tag) error
-	AddTagsToArticle(*entity.Article, []*entity.Tag) error
-	RemoveTagFromArticle(*entity.Article, *entity.Tag) error
-	FindTagsByArticle(artile *entity.Article) ([]*entity.Tag, error)
+	AddFavoriteArticle(article *entity.Article, user *entity.User) error
+	RemoveFavorite(article *entity.Article, user *entity.User) error
+	FindFavoriteArticlesByUser(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)
+	CreateTag(tag *entity.Tag) error
+	AddTagToArticle(article *entity.Article, tag *entity.Tag) error
+	AddTagsToArticle(article *entity.Article, tag []*entity.Tag) error
+	RemoveTagFromArticle(article *entity.Article, tag *entity.Tag) error
+	RemoveTagsFromArticle(article *entity.Article, tags []*entity.Tag) error
+	FindTagsByArticle(article *entity.Article) ([]*entity.Tag, error)
 	ListTags() ([]*entity.Tag, error)
 }

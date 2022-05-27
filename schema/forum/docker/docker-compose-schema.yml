@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+  db:
+    image: mysql:8
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      - LANG=C.UTF-8
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - ./my.cnf:/etc/my.cnf
+

@@ -1,7 +1,0 @@
-syntax = "proto3";
-
-package forum.v1;
-
-option go_package = "grpc/gen/proto;proto";
-
-message Empty {}

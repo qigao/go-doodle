@@ -1,9 +1,9 @@
 package article
 
 import (
-	"forum/entity"
 	. "forum/model"
 	"reflect"
+	"schema/entity"
 	"testing"
 	"time"
 

@@ -2,8 +2,8 @@ package article
 
 import (
 	"fmt"
-	"forum/entity"
 	. "forum/mock/repository"
+	"schema/entity"
 	"testing"
 
 	mock "github.com/stretchr/testify/mock"

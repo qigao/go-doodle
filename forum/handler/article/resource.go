@@ -1,12 +1,12 @@
 package article
 
 import (
-	"forum/entity"
 	"forum/handler"
 	"forum/model"
 	"forum/service/article"
 	"http/http_error"
 	"net/http"
+	"schema/entity"
 	"strconv"
 
 	"github.com/labstack/echo/v4"

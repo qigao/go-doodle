@@ -1,26 +1,26 @@
 package user
 
 import (
-	"forum/entity"
 	"forum/model"
 	"forum/repository"
 	"forum/service"
+	"schema/entity"
 
 	"github.com/rs/zerolog/log"
 )
 
-type ServiceUser struct {
+type Service struct {
 	Repo repository.User
 }
 
-func NewServiceUser(r repository.User) *ServiceUser {
-	return &ServiceUser{
+func NewUserService(r repository.User) *Service {
+	return &Service{
 		Repo: r,
 	}
 }
 
-func (r *ServiceUser) CheckUser(user *model.LoginUser) error {
-	userInfo, err := r.Repo.FindByEmail(user.Email)
+func (s *Service) CheckUser(user *model.LoginUser) error {
+	userInfo, err := s.Repo.FindByEmail(user.Email)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByEmail error")
 		return err
@@ -29,7 +29,7 @@ func (r *ServiceUser) CheckUser(user *model.LoginUser) error {
 	return service.CheckPassword(userInfo.Password, user.Password)
 }
 
-func (r *ServiceUser) CreateUser(user *model.RegisterUser) error {
+func (s *Service) CreateUser(user *model.RegisterUser) error {
 	passWord, err := service.HashPassword(user.Password)
 	if err != nil {
 		log.Error().Err(err).Msg("HashPassword error")
@@ -39,63 +39,67 @@ func (r *ServiceUser) CreateUser(user *model.RegisterUser) error {
 	u.Username = user.Username
 	u.Email = user.Email
 	u.Password = passWord
-	return r.Repo.CreateUser(&u)
+	return s.Repo.CreateUser(&u)
 }
 
-func (r *ServiceUser) FllowUserByUserName(uid uint, userName string) error {
-	targetUser, err := r.Repo.FindUserByUserName(userName)
+func (s *Service) FollowUserByUserName(uid uint, userName string) error {
+	targetUser, err := s.Repo.FindUserByUserName(userName)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
 		return err
 	}
-	loggedUser, err := r.Repo.FindUserByID(uid)
+	loggedUser, err := s.Repo.FindUserByID(uid)
 	if err != nil {
 		log.Error().Err(err).Msg("findCurrentUserAndTargetUser error")
 		return err
 	}
-	return r.Repo.AddFollower(loggedUser, targetUser)
+	return s.Repo.AddFollower(loggedUser, targetUser)
 }
 
-func (p *ServiceUser) GetUserByID(uid uint) (*entity.User, error) {
-	return p.Repo.FindUserByID(uid)
+func (s *Service) GetUserByID(uid uint) (*entity.User, error) {
+	return s.Repo.FindUserByID(uid)
 }
 
-func (p *ServiceUser) GetUserByEmail(email string) (*entity.User, error) {
-	return p.Repo.FindByEmail(email)
+func (s *Service) GetUserByEmail(email string) (*entity.User, error) {
+	return s.Repo.FindByEmail(email)
 }
 
-func (p *ServiceUser) GetUserByUserName(username string) (*entity.User, error) {
-	return p.Repo.FindUserByUserName(username)
+func (s *Service) GetUserByUserName(username string) (*entity.User, error) {
+	return s.Repo.FindUserByUserName(username)
 }
 
-func (r *ServiceUser) UnFollowUserByUserName(uid uint, userName string) error {
-	targetUser, err := r.Repo.FindUserByUserName(userName)
+func (s *Service) UnFollowUserByUserName(uid uint, userName string) error {
+	targetUser, err := s.Repo.FindUserByUserName(userName)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserName error")
 		return err
 	}
-	loggedUser, err := r.Repo.FindUserByID(uid)
+	loggedUser, err := s.Repo.FindUserByID(uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindByUserID error")
 		return err
 	}
-	return r.Repo.RemoveFollower(loggedUser, targetUser)
+	return s.Repo.RemoveFollower(loggedUser, targetUser)
 }
 
-func (r *ServiceUser) GetFollowersByUserID(uid uint) ([]*entity.User, error) {
-	currentUser, err := r.Repo.FindUserByID(uid)
+func (s *Service) GetFollowersByUserID(uid uint) ([]*entity.User, error) {
+	currentUser, err := s.Repo.FindUserByID(uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindUserByID error")
 		return nil, err
 	}
-	return r.Repo.GetFollowers(currentUser)
+	return s.Repo.GetFollowers(currentUser)
 }
 
-func (r *ServiceUser) GetFollowingUser(uid uint) ([]*entity.User, error) {
-	currentUser, err := r.Repo.FindUserByID(uid)
+func (s *Service) GetFollowingUser(uid uint) ([]*entity.User, error) {
+	currentUser, err := s.Repo.FindUserByID(uid)
 	if err != nil {
 		log.Error().Err(err).Msg("FindUserByID error")
 		return nil, err
 	}
-	return r.Repo.GetFollowingUsers(currentUser)
+	return s.Repo.GetFollowingUsers(currentUser)
+}
+
+func (s *Service) UpdateUser(user *entity.User) error {
+	return s.Repo.UpdateUser(user)
 }

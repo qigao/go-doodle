@@ -1,8 +1,8 @@
 package user
 
 import (
-	"forum/entity"
 	"forum/model"
+	"schema/entity"
 
 	"github.com/volatiletech/null/v8"
 )

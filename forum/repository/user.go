@@ -1,11 +1,14 @@
+// DON'T EDIT: This is generated code
+
 package repository
 
 import (
-	entity "forum/entity"
+	"schema/entity"
 )
 
+// User ...
 type User interface {
-	FindUserByID(u uint) (*entity.User, error)
+	FindUserByID(uid uint) (*entity.User, error)
 	FindByEmail(s string) (*entity.User, error)
 	FindUserByUserName(s string) (*entity.User, error)
 	CreateUser(user *entity.User) error

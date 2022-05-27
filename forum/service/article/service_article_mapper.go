@@ -1,7 +1,7 @@
 package article
 
 import (
-	"forum/entity"
+	"schema/entity"
 
 	. "forum/model"
 )

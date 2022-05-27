@@ -1,9 +1,9 @@
 package user
 
 import (
-	"forum/entity"
 	"forum/model"
 	"forum/utils"
+	"schema/entity"
 )
 
 func NewProfileResponse(u *entity.User) *model.ProfileResponse {

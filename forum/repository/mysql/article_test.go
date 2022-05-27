@@ -2,8 +2,8 @@ package mysql
 
 import (
 	"fmt"
-	"forum/entity"
 	"regexp"
+	"schema/entity"
 	"testing"
 	"time"
 
