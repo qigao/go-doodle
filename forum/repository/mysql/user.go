@@ -3,11 +3,11 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"schema/entity"
 
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 //UserRepo is a repository for user
@@ -22,7 +22,7 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 	}
 }
 func (u *UserRepo) FindUserByID(uid uint) (*entity.User, error) {
-	user, err := entity.Users(Where("id = ?", uid)).One(context.Background(), u.Db)
+	user, err := entity.Users(qm.Where("id = ?", uid)).One(context.Background(), u.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("error in finding user by id")
 		return nil, err
@@ -31,7 +31,7 @@ func (u *UserRepo) FindUserByID(uid uint) (*entity.User, error) {
 }
 
 func (u *UserRepo) FindByEmail(s string) (*entity.User, error) {
-	user, err := entity.Users(Where("email = ?", s)).One(context.Background(), u.Db)
+	user, err := entity.Users(qm.Where("email = ?", s)).One(context.Background(), u.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("error in finding user by email")
 		return nil, err
@@ -40,7 +40,7 @@ func (u *UserRepo) FindByEmail(s string) (*entity.User, error) {
 }
 
 func (u *UserRepo) FindUserByUserName(s string) (*entity.User, error) {
-	user, err := entity.Users(Where("username = ?", s)).One(context.Background(), u.Db)
+	user, err := entity.Users(qm.Where("username = ?", s)).One(context.Background(), u.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("error in finding user by username")
 		return nil, err
@@ -113,7 +113,7 @@ func (u *UserRepo) RemoveFollower(user *entity.User, follower *entity.User) erro
 }
 
 func (u *UserRepo) IsFollower(user, follower *entity.User) (bool, error) {
-	_, err := user.FollowerUsers(Where("follower_id=?", follower.ID)).One(context.Background(), u.Db)
+	_, err := user.FollowerUsers(qm.Where("follower_id=?", follower.ID)).One(context.Background(), u.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to check follower")
 		return false, nil

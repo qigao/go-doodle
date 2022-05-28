@@ -14,7 +14,6 @@ import (
 )
 
 func TestArticle_Create(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -45,7 +44,6 @@ func TestArticle_Create(t *testing.T) {
 	})
 }
 func TestArticle_Update(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -76,7 +74,6 @@ func TestArticle_Update(t *testing.T) {
 	})
 }
 func TestArtcile_DeleteArticle(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -108,7 +105,6 @@ func TestArtcile_DeleteArticle(t *testing.T) {
 }
 
 func TestArticle_AddComment(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -140,7 +136,6 @@ func TestArticle_AddComment(t *testing.T) {
 }
 
 func TestArticle_DeleteComment(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -172,7 +167,6 @@ func TestArticle_DeleteComment(t *testing.T) {
 }
 
 func TestArticle_DeleteCommentByArticle(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -203,7 +197,6 @@ func TestArticle_DeleteCommentByArticle(t *testing.T) {
 	})
 }
 func TestArticle_CreateTag(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -235,7 +228,6 @@ func TestArticle_CreateTag(t *testing.T) {
 }
 
 func TestArticle_AddTag(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -275,7 +267,6 @@ func TestArticle_AddTag(t *testing.T) {
 }
 
 func TestArticle_AddTags(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -308,7 +299,6 @@ func TestArticle_AddTags(t *testing.T) {
 }
 
 func TestArticle_RemoveTag(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -340,7 +330,6 @@ func TestArticle_RemoveTag(t *testing.T) {
 }
 
 func TestArticle_RemoveTags(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -372,7 +361,6 @@ func TestArticle_RemoveTags(t *testing.T) {
 }
 
 func TestArticle_ListTags(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -395,7 +383,6 @@ func TestArticle_ListTags(t *testing.T) {
 }
 
 func TestArticle_AddFavorite(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -427,7 +414,6 @@ func TestArticle_AddFavorite(t *testing.T) {
 }
 
 func TestArticle_RemoveFavorite(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -459,7 +445,6 @@ func TestArticle_RemoveFavorite(t *testing.T) {
 }
 
 func TestArticle_FindArticleBySlug(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -483,7 +468,6 @@ func TestArticle_FindArticleBySlug(t *testing.T) {
 }
 
 func TestArticle_FindArticleByAuthorIDAndSlug(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -507,7 +491,6 @@ func TestArticle_FindArticleByAuthorIDAndSlug(t *testing.T) {
 }
 
 func TestArticle_ListArticles(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -533,7 +516,6 @@ func TestArticle_ListArticles(t *testing.T) {
 }
 
 func TestArticle_ListArticlesByTag(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -576,7 +558,6 @@ func TestArticle_ListArticlesByTag(t *testing.T) {
 }
 
 func TestArticle_ListArticlesByAuthor(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -604,7 +585,6 @@ func TestArticle_ListArticlesByAuthor(t *testing.T) {
 }
 
 func TestArticle_FindAuthorBySlug(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -622,7 +602,6 @@ func TestArticle_FindAuthorBySlug(t *testing.T) {
 }
 
 func TestArticle_FindCommentsByArticle(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -638,7 +617,6 @@ func TestArticle_FindCommentsByArticle(t *testing.T) {
 }
 
 func TestArticle_FindCommentByID(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -661,7 +639,6 @@ func TestArticle_FindCommentByID(t *testing.T) {
 }
 
 func TestArticle_DeleteCommentByCommentID(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -693,7 +670,6 @@ func TestArticle_DeleteCommentByCommentID(t *testing.T) {
 }
 
 func TestArticle_FindFavoriteArticlesByUser(t *testing.T) {
-	t.Parallel()
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()

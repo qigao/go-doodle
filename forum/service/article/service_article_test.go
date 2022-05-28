@@ -2,31 +2,20 @@ package article
 
 import (
 	"fmt"
-	. "forum/mock/repository"
+	mockRepo "forum/mock/repository"
 	"schema/entity"
 	"testing"
 
-	mock "github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/mock"
 	"github.com/volatiletech/null/v8"
 	"gotest.tools/assert"
 )
 
-func newArticleMock() *Article {
-	return &Article{
-		Mock: mock.Mock{},
-	}
-}
-func newUserMock() *User {
-	return &User{
-		Mock: mock.Mock{},
-	}
-}
-
 func TestArticle_CreateArticle(t *testing.T) {
 	t.Run("When CreateArticle, CreateArticle failed with error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 
 		// When
@@ -37,11 +26,11 @@ func TestArticle_CreateArticle(t *testing.T) {
 	})
 }
 
-func TestArticle_DeleteArtile(t *testing.T) {
+func TestArticle_DeleteArticle(t *testing.T) {
 	t.Run("When Find Article get error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
@@ -51,8 +40,8 @@ func TestArticle_DeleteArtile(t *testing.T) {
 	})
 	t.Run("when delete article get error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -63,8 +52,8 @@ func TestArticle_DeleteArtile(t *testing.T) {
 	})
 	t.Run("when delete article return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -78,8 +67,8 @@ func TestArticle_DeleteArtile(t *testing.T) {
 func TestArticle_FindArticle(t *testing.T) {
 	t.Run("When Find Article get error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
@@ -89,8 +78,8 @@ func TestArticle_FindArticle(t *testing.T) {
 	})
 	t.Run("When find author get error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -101,8 +90,8 @@ func TestArticle_FindArticle(t *testing.T) {
 	})
 	t.Run("When find tag get error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -114,8 +103,8 @@ func TestArticle_FindArticle(t *testing.T) {
 	})
 	t.Run("When find article return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -131,8 +120,8 @@ func TestArticle_FindArticle(t *testing.T) {
 func TestArticle_FindArticleByAuthor(t *testing.T) {
 	t.Run("When Find user by username return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(nil, fmt.Errorf("FindUserByUsername error"))
@@ -144,8 +133,8 @@ func TestArticle_FindArticleByAuthor(t *testing.T) {
 	})
 	t.Run("When Find article by author return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
@@ -158,8 +147,8 @@ func TestArticle_FindArticleByAuthor(t *testing.T) {
 	})
 	t.Run("when find article return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
@@ -176,8 +165,8 @@ func TestArticle_FindArticleByAuthor(t *testing.T) {
 func TestArticle_FindArticles(t *testing.T) {
 	t.Run("When Find articles return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(nil, fmt.Errorf("FindUserByUsername error"))
@@ -189,8 +178,8 @@ func TestArticle_FindArticles(t *testing.T) {
 	})
 	t.Run("When Find articles by tag return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
@@ -202,8 +191,8 @@ func TestArticle_FindArticles(t *testing.T) {
 	})
 	t.Run("When Find articles by tag return OK", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
@@ -213,10 +202,10 @@ func TestArticle_FindArticles(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, n, int64(1))
 	})
-	t.Run("When find artiles by author return error", func(t *testing.T) {
+	t.Run("When find articles by author return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
@@ -227,10 +216,10 @@ func TestArticle_FindArticles(t *testing.T) {
 		assert.Error(t, err, "FindArticleByAuthor error")
 		assert.Equal(t, n, int64(0))
 	})
-	t.Run("When find artiles by author return OK", func(t *testing.T) {
+	t.Run("When find articles by author return OK", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
@@ -241,10 +230,10 @@ func TestArticle_FindArticles(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, n, int64(1))
 	})
-	t.Run("When find artiles without user return ok", func(t *testing.T) {
+	t.Run("When find articles without user return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
@@ -254,10 +243,10 @@ func TestArticle_FindArticles(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, n, int64(1))
 	})
-	t.Run("When find artiles without user get orrer", func(t *testing.T) {
+	t.Run("When find articles without user get error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		userMock.On("FindUserByUserName", mock.Anything).Return(userFoo, nil)
@@ -272,8 +261,8 @@ func TestArticle_FindArticles(t *testing.T) {
 func TestArticle_FindCommentsBySlug(t *testing.T) {
 	t.Run("When find article by slug return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
@@ -282,10 +271,10 @@ func TestArticle_FindCommentsBySlug(t *testing.T) {
 		_, err := ServiceArticleMock.FindCommentsBySlug("test-slug", 0, 1)
 		assert.Error(t, err, "FindArticleBySlug error")
 	})
-	t.Run("When find comments by artcle return error", func(t *testing.T) {
+	t.Run("When find comments by article return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleBar, nil)
@@ -298,8 +287,8 @@ func TestArticle_FindCommentsBySlug(t *testing.T) {
 	})
 	t.Run("When Find comments by slug return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleBar, nil)
@@ -313,10 +302,10 @@ func TestArticle_FindCommentsBySlug(t *testing.T) {
 }
 
 func TestArticle_FindAuthorBySlug(t *testing.T) {
-	t.Run("when find artile by slug return error", func(t *testing.T) {
+	t.Run("when find article by slug return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
@@ -327,8 +316,8 @@ func TestArticle_FindAuthorBySlug(t *testing.T) {
 	})
 	t.Run("when find author by article return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleBar, nil)
@@ -340,8 +329,8 @@ func TestArticle_FindAuthorBySlug(t *testing.T) {
 	})
 	t.Run("when find author by article return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleBar, nil)
@@ -356,8 +345,8 @@ func TestArticle_FindAuthorBySlug(t *testing.T) {
 func TestArticle_AddCommentToArticle(t *testing.T) {
 	t.Run("when Find article by slug return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
@@ -367,8 +356,8 @@ func TestArticle_AddCommentToArticle(t *testing.T) {
 	})
 	t.Run("when add comment return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -379,8 +368,8 @@ func TestArticle_AddCommentToArticle(t *testing.T) {
 	})
 	t.Run("when add comment return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -395,8 +384,8 @@ func TestArticle_AddCommentToArticle(t *testing.T) {
 func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 	t.Run("when Find article by slug return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
@@ -406,8 +395,8 @@ func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 	})
 	t.Run("when Find comment return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -418,8 +407,8 @@ func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 	})
 	t.Run("when delete comment return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -431,8 +420,8 @@ func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 	})
 	t.Run("when delete comment return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -448,8 +437,8 @@ func TestArticle_DeleteCommentFromArticle(t *testing.T) {
 func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 	t.Run("when Find article by slug return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
@@ -459,8 +448,8 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 	})
 	t.Run("when find user by id return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -471,8 +460,8 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 	})
 	t.Run("when find user by id return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -484,8 +473,8 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 	})
 	t.Run("when add favorite article return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -500,8 +489,8 @@ func TestArticle_AddFavoriteArticleBySlug(t *testing.T) {
 func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 	t.Run("when Find article by slug return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(nil, fmt.Errorf("FindArticleBySlug error"))
@@ -511,8 +500,8 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 	})
 	t.Run("when find user by id return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -523,8 +512,8 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 	})
 	t.Run("when find user by id return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -536,8 +525,8 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 	})
 	t.Run("when add favorite article return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -552,26 +541,19 @@ func TestArticle_RemoveFavoriteArticleBySlug(t *testing.T) {
 func TestArticle_AddTagToArticle(t *testing.T) {
 	t.Run("When FindArticle failed with error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
-		tag1 := &entity.Tag{
-			Tag: null.StringFrom("tag1"),
-		}
-		tag2 := &entity.Tag{
-			Tag: null.StringFrom("tag2"),
-		}
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, fmt.Errorf("FindArticleBySlug error"))
-		articleMock.On("ListTags").Return([]*entity.Tag{tag1, tag2}, nil)
 		// Then
 		err := ServiceArticleMock.AddTagToArticle("slug-test", []string{"tag2"})
 		assert.Error(t, err, "FindArticleBySlug error")
 	})
 	t.Run("When ListTags failed with error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		tag1 := &entity.Tag{
 			Tag: null.StringFrom("tag1"),
@@ -589,8 +571,8 @@ func TestArticle_AddTagToArticle(t *testing.T) {
 
 	t.Run("When AddTagToArticle failed with error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		tag1 := &entity.Tag{
 			Tag: null.StringFrom("tag1"),
@@ -608,8 +590,8 @@ func TestArticle_AddTagToArticle(t *testing.T) {
 	})
 	t.Run("When AddTagToArticle return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		tag1 := &entity.Tag{
 			Tag: null.StringFrom("tag1"),
@@ -630,8 +612,8 @@ func TestArticle_AddTagToArticle(t *testing.T) {
 func TestArticle_UpdateArticle(t *testing.T) {
 	t.Run("When FindArticleBySlug failed with error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, fmt.Errorf("FindArticleBySlug error"))
@@ -641,20 +623,20 @@ func TestArticle_UpdateArticle(t *testing.T) {
 	})
 	t.Run("When Update article failed with error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
-		articleMock.On("UpdateArticle", mock.Anything).Return(fmt.Errorf("Update article error"))
+		articleMock.On("UpdateArticle", mock.Anything).Return(fmt.Errorf("update article error"))
 		// Then
 		err := ServiceArticleMock.UpdateArticle("slug-test", articleFoo)
-		assert.Error(t, err, "Update article error")
+		assert.Error(t, err, "update article error")
 	})
 	t.Run("When update article return OK", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleMock.On("FindArticleBySlug", mock.Anything).Return(articleFoo, nil)
@@ -665,8 +647,8 @@ func TestArticle_UpdateArticle(t *testing.T) {
 	})
 	t.Run("When update article return OK, body is not valid", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleFoo.Body = null.StringFrom("")
@@ -678,8 +660,8 @@ func TestArticle_UpdateArticle(t *testing.T) {
 	})
 	t.Run("When update article return OK, description is not valid", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
-		articleMock := newArticleMock()
+		userMock := mockRepo.NewIRepoUser(t)
+		articleMock := mockRepo.NewIRepoArticle(t)
 		ServiceArticleMock := NewServiceArticle(articleMock, userMock)
 		// When
 		articleFoo.Description = null.StringFrom("")

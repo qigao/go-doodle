@@ -20,41 +20,19 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newServiceArticleMock() *service.ServiceArticle {
-	return &service.ServiceArticle{
-		Mock: mock.Mock{},
-	}
-}
-
 func TestArticleResource_GetArticle(t *testing.T) {
-	t.Run("return Not-Found", func(t *testing.T) {
-		e := echo.New()
-		e.Validator = utils.NewValidator()
-		req := httptest.NewRequest(echo.GET, "/api/v1/", nil)
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
-		c.SetPath("/articles/:slug")
-		c.SetParamNames("slug")
-		c.SetParamValues("test-slug")
-		serviceArticleMock := newServiceArticleMock()
+	t.Run("When return Not-Found", func(t *testing.T) {
+		rec, c := echoFindArticleSetup()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("FindArticle", mock.Anything).Return(nil, nil, nil, fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.GetArticle(c)
 		require.NoError(t, err)
-		assert.Error(t, echo.NewHTTPError(http.StatusOK, "error"))
+		assert.Equal(t, http.StatusNotFound, rec.Code)
 	})
-	t.Run("return OK", func(t *testing.T) {
-		e := echo.New()
-		e.Validator = utils.NewValidator()
-		req := httptest.NewRequest(echo.GET, "/api/v1/", nil)
-		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
-		rec := httptest.NewRecorder()
-		c := e.NewContext(req, rec)
-		c.SetPath("/articles/:slug")
-		c.SetParamNames("slug")
-		c.SetParamValues("test-slug")
-		serviceArticleMock := newServiceArticleMock()
+	t.Run("When return OK", func(t *testing.T) {
+		rec, c := echoFindArticleSetup()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("FindArticle", mock.Anything).Return(articleFoo, userFoo, []*entity.Tag{tagFoo}, nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.GetArticle(c)
@@ -63,43 +41,56 @@ func TestArticleResource_GetArticle(t *testing.T) {
 	})
 }
 
+func echoFindArticleSetup() (*httptest.ResponseRecorder, echo.Context) {
+	e := echo.New()
+	e.Validator = utils.NewValidator()
+	req := httptest.NewRequest(echo.GET, "/api/v1/articles", nil)
+	req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	c.SetPath("/:slug")
+	c.SetParamNames("slug")
+	c.SetParamValues("test-slug")
+	return rec, c
+}
+
 func TestArticleResource_GetArticles(t *testing.T) {
-	t.Run("return OK", func(t *testing.T) {
+	t.Run("When return OK", func(t *testing.T) {
 		// Setup
 		e := echo.New()
 		e.Validator = utils.NewValidator()
 		q := make(url.Values)
-		q.Set("tag", "newtag")
-		q.Set("author", "newauthor")
+		q.Set("tag", "newTag")
+		q.Set("author", "newAuthor")
 		q.Set("offset", "0")
 		q.Set("limit", "10")
-		req := httptest.NewRequest(echo.GET, "/api/v1/?"+q.Encode(), nil)
+		req := httptest.NewRequest(echo.GET, "/api/v1/articles?"+q.Encode(), nil)
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		c.SetPath("/articles")
 
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("FindArticles", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]*entity.Article{articleFoo}, int64(1), nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Articles(c)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
-	t.Run("when offset/limit is nil, return OK", func(t *testing.T) {
+	t.Run("When offset/limit is nil, return OK", func(t *testing.T) {
 		// Setup
 		e := echo.New()
 		e.Validator = utils.NewValidator()
 		q := make(url.Values)
-		q.Set("tag", "newtag")
-		q.Set("author", "newauthor")
-		req := httptest.NewRequest(echo.GET, "/api/v1/?"+q.Encode(), nil)
+		q.Set("tag", "newTag")
+		q.Set("author", "newAuthor")
+		q.Set("offset", "0")
+		q.Set("limit", "10")
+		req := httptest.NewRequest(echo.GET, "/api/v1/articles?"+q.Encode(), nil)
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		c.SetPath("/articles")
 
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("FindArticles", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return([]*entity.Article{articleFoo}, int64(1), nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Articles(c)
@@ -111,17 +102,16 @@ func TestArticleResource_GetArticles(t *testing.T) {
 		e := echo.New()
 		e.Validator = utils.NewValidator()
 		q := make(url.Values)
-		q.Set("tag", "newtag")
-		q.Set("author", "newauthor")
+		q.Set("tag", "newTag")
+		q.Set("author", "newAuthor")
 		q.Set("offset", "0")
 		q.Set("limit", "10")
-		req := httptest.NewRequest(echo.GET, "/api/v1/?"+q.Encode(), nil)
+		req := httptest.NewRequest(echo.GET, "/api/v1/articles?"+q.Encode(), nil)
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		c.SetPath("/articles")
 
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("FindArticles", mock.Anything, mock.Anything, mock.Anything, mock.Anything).Return(nil, int64(0), fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Articles(c)
@@ -149,8 +139,7 @@ func TestArticleResource_CreateArticle(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("CreateArticle", mock.Anything).Return(nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err = handler.CreateArticle(c)
@@ -165,9 +154,7 @@ func TestArticleResource_CreateArticle(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
-		serviceArticleMock.On("CreateArticle", mock.Anything).Return(nil)
+		serviceArticleMock := service.NewIServiceArticle(t)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.CreateArticle(c)
 		require.NoError(t, err)
@@ -191,8 +178,7 @@ func TestArticleResource_CreateArticle(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("CreateArticle", mock.Anything).Return(fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err = handler.CreateArticle(c)
@@ -201,8 +187,8 @@ func TestArticleResource_CreateArticle(t *testing.T) {
 	})
 }
 
-func TestArticleResouce_UpdateArticle(t *testing.T) {
-	t.Run("when udpate return OK", func(t *testing.T) {
+func TestArticleResource_UpdateArticle(t *testing.T) {
+	t.Run("when update return OK", func(t *testing.T) {
 		// When
 		simple := &model.SimpleArticle{
 			Title:       "test",
@@ -221,7 +207,7 @@ func TestArticleResouce_UpdateArticle(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("UpdateArticle", mock.Anything, mock.Anything).Return(nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err = handler.UpdateArticle(c)
@@ -236,15 +222,13 @@ func TestArticleResouce_UpdateArticle(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
-		serviceArticleMock.On("UpdateArticle", mock.Anything).Return(nil)
+		serviceArticleMock := service.NewIServiceArticle(t)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.UpdateArticle(c)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusBadRequest, rec.Code)
 	})
-	t.Run("when udpate return error", func(t *testing.T) {
+	t.Run("when update return error", func(t *testing.T) {
 		// When
 		simple := &model.SimpleArticle{
 			Title:       "test",
@@ -263,7 +247,7 @@ func TestArticleResouce_UpdateArticle(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("UpdateArticle", mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err = handler.UpdateArticle(c)
@@ -272,15 +256,14 @@ func TestArticleResouce_UpdateArticle(t *testing.T) {
 	})
 }
 
-func TestArticleResouce_DeleteArticle(t *testing.T) {
+func TestArticleResource_DeleteArticle(t *testing.T) {
 	t.Run("when delete return OK", func(t *testing.T) {
 		// Setup
 		e := echo.New()
 		req := httptest.NewRequest(echo.DELETE, "/api/v1/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("DeleteArticle", mock.Anything).Return(nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.DeleteArticle(c)
@@ -293,8 +276,7 @@ func TestArticleResouce_DeleteArticle(t *testing.T) {
 		req := httptest.NewRequest(echo.DELETE, "/api/v1/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("DeleteArticle", mock.Anything).Return(fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.DeleteArticle(c)
@@ -310,8 +292,7 @@ func TestArticleResource_AddComment(t *testing.T) {
 		req := httptest.NewRequest(echo.POST, "/api/v1/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("AddCommentToArticle", mock.Anything, mock.Anything).Return(nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.AddComment(c)
@@ -324,8 +305,7 @@ func TestArticleResource_AddComment(t *testing.T) {
 		req := httptest.NewRequest(echo.POST, "/api/v1/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("AddCommentToArticle", mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.AddComment(c)
@@ -340,9 +320,7 @@ func TestArticleResource_AddComment(t *testing.T) {
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-
-		serviceArticleMock := newServiceArticleMock()
-		serviceArticleMock.On("AddCommentToArticle", mock.Anything, mock.Anything).Return(nil)
+		serviceArticleMock := service.NewIServiceArticle(t)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.AddComment(c)
 		require.NoError(t, err)
@@ -358,7 +336,7 @@ func TestArticleResource_GetComments(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("FindCommentsBySlug", mock.Anything, mock.Anything, mock.Anything).Return([]*entity.Comment{commentFoo}, nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.GetComments(c)
@@ -372,7 +350,7 @@ func TestArticleResource_GetComments(t *testing.T) {
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
 
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("FindCommentsBySlug", mock.Anything, mock.Anything, mock.Anything).Return(nil, fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.GetComments(c)
@@ -391,7 +369,7 @@ func TestArticleResource_DeleteComent(t *testing.T) {
 		c.SetPath("/articles/:slug/comments/:id")
 		c.SetParamNames("slug", "id")
 		c.SetParamValues("test-slug", "1")
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("DeleteCommentFromArticle", mock.Anything, mock.Anything).Return(nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.DeleteComment(c)
@@ -407,8 +385,7 @@ func TestArticleResource_DeleteComent(t *testing.T) {
 		c.SetPath("/articles/:slug/comments/:id")
 		c.SetParamNames("id", "slug")
 		c.SetParamValues("invalid", "test-slug")
-		serviceArticleMock := newServiceArticleMock()
-		serviceArticleMock.On("DeleteCommentFromArticle", mock.Anything, mock.Anything).Return(nil)
+		serviceArticleMock := service.NewIServiceArticle(t)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.DeleteComment(c)
 		require.NoError(t, err)
@@ -423,7 +400,7 @@ func TestArticleResource_DeleteComent(t *testing.T) {
 		c.SetPath("/articles/:slug/comments/:id")
 		c.SetParamNames("slug", "id")
 		c.SetParamValues("test-slug", "1")
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("DeleteCommentFromArticle", mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.DeleteComment(c)
@@ -442,7 +419,7 @@ func TestArticleResource_Favorite(t *testing.T) {
 		c.SetPath("/articles/:slug/favorite")
 		c.SetParamNames("slug")
 		c.SetParamValues("test-slug")
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("AddFavoriteArticleBySlug", mock.Anything, mock.Anything).Return(nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Favorite(c)
@@ -458,7 +435,7 @@ func TestArticleResource_Favorite(t *testing.T) {
 		c.SetPath("/articles/:slug/favorite")
 		c.SetParamNames("slug")
 		c.SetParamValues("test-slug")
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("AddFavoriteArticleBySlug", mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Favorite(c)
@@ -466,8 +443,8 @@ func TestArticleResource_Favorite(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 	})
 }
-func TestArticleResouce_UnFavorite(t *testing.T) {
-	t.Run("when unfavorite article return ok", func(t *testing.T) {
+func TestArticleResource_UnFavorite(t *testing.T) {
+	t.Run("when unFavorite article return ok", func(t *testing.T) {
 		// Setup
 		e := echo.New()
 		req := httptest.NewRequest(echo.DELETE, "/api/v1/", nil)
@@ -476,14 +453,14 @@ func TestArticleResouce_UnFavorite(t *testing.T) {
 		c.SetPath("/articles/:slug/favorite")
 		c.SetParamNames("slug")
 		c.SetParamValues("test-slug")
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("RemoveFavoriteArticleBySlug", mock.Anything, mock.Anything).Return(nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Unfavorite(c)
 		require.NoError(t, err)
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
-	t.Run("when unfavorite article return error", func(t *testing.T) {
+	t.Run("when unFavorite article return error", func(t *testing.T) {
 		// Setup
 		e := echo.New()
 		req := httptest.NewRequest(echo.DELETE, "/api/v1/", nil)
@@ -492,7 +469,7 @@ func TestArticleResouce_UnFavorite(t *testing.T) {
 		c.SetPath("/articles/:slug/favorite")
 		c.SetParamNames("slug")
 		c.SetParamValues("test-slug")
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("RemoveFavoriteArticleBySlug", mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Unfavorite(c)
@@ -508,7 +485,7 @@ func TestArticleResource_Tags(t *testing.T) {
 		req := httptest.NewRequest(echo.GET, "/api/v1/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("GetAllTags").Return([]*entity.Tag{tagBar, tagFoo}, nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Tags(c)
@@ -521,7 +498,7 @@ func TestArticleResource_Tags(t *testing.T) {
 		req := httptest.NewRequest(echo.GET, "/api/v1/", nil)
 		rec := httptest.NewRecorder()
 		c := e.NewContext(req, rec)
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("GetAllTags").Return(nil, fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.Tags(c)
@@ -540,7 +517,7 @@ func TestArticleResource_AddTagToArticle(t *testing.T) {
 		c.SetPath("/articles/:slug/:tag")
 		c.SetParamNames("slug", "tag")
 		c.SetParamValues("test-slug", "new-tag")
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("AddTagToArticle", mock.Anything, mock.Anything).Return(nil)
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.AddTagToArticle(c)
@@ -556,7 +533,7 @@ func TestArticleResource_AddTagToArticle(t *testing.T) {
 		c.SetPath("/articles/:slug/:tag")
 		c.SetParamNames("slug", "tag")
 		c.SetParamValues("test-slug", "new-tag")
-		serviceArticleMock := newServiceArticleMock()
+		serviceArticleMock := service.NewIServiceArticle(t)
 		serviceArticleMock.On("AddTagToArticle", mock.Anything, mock.Anything).Return(fmt.Errorf("error"))
 		handler := NewArticleHandler(serviceArticleMock)
 		err := handler.AddTagToArticle(c)

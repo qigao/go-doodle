@@ -3,12 +3,12 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"schema/entity"
 
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
-	. "github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type ArticleRepo struct {
@@ -95,7 +95,7 @@ func (a *ArticleRepo) DeleteArticle(article *entity.Article) error {
 
 //FindArticles all the articles with pagination
 func (a *ArticleRepo) FindArticles(offset, limit int) ([]*entity.Article, int64, error) {
-	articles, err := entity.Articles(Limit(limit), Offset(offset)).All(context.Background(), a.Db)
+	articles, err := entity.Articles(qm.Limit(limit), qm.Offset(offset)).All(context.Background(), a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to list articles")
 		return nil, 0, err
@@ -111,7 +111,7 @@ func (a *ArticleRepo) ListArticlesByTag(tagStr string, offset, limit int) ([]*en
 		log.Error().Err(err).Msg("failed to find tag")
 		return nil, 0, err
 	}
-	articles, err := tag.Articles(Limit(limit), Offset(offset)).All(ctx, a.Db)
+	articles, err := tag.Articles(qm.Limit(limit), qm.Offset(offset)).All(ctx, a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to list articles by tag")
 		return nil, 0, err
@@ -120,7 +120,7 @@ func (a *ArticleRepo) ListArticlesByTag(tagStr string, offset, limit int) ([]*en
 }
 
 func (a *ArticleRepo) ListArticlesByAuthor(user *entity.User, offset, limit int) ([]*entity.Article, int64, error) {
-	articles, err := user.AuthorArticles(Limit(limit), Offset(offset)).All(context.Background(), a.Db)
+	articles, err := user.AuthorArticles(qm.Limit(limit), qm.Offset(offset)).All(context.Background(), a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to get articles")
 		return nil, 0, err
@@ -155,7 +155,7 @@ func (a *ArticleRepo) AddComment(article *entity.Article, comment *entity.Commen
 }
 
 func (a *ArticleRepo) FindCommentsByArticle(article *entity.Article, offset int, limit int) ([]*entity.Comment, error) {
-	return article.Comments(Limit(limit), Offset(offset)).All(context.Background(), a.Db)
+	return article.Comments(qm.Limit(limit), qm.Offset(offset)).All(context.Background(), a.Db)
 }
 
 func (a *ArticleRepo) FindCommentByID(commentID uint64) (*entity.Comment, error) {
@@ -255,7 +255,7 @@ func (a *ArticleRepo) RemoveFavorite(article *entity.Article, user *entity.User)
 }
 
 func (a *ArticleRepo) FindFavoriteArticlesByUser(user *entity.User, offset, limit int) ([]*entity.Article, int64, error) {
-	articles, err := user.Articles(Offset(offset), Limit(limit)).All(context.Background(), a.Db)
+	articles, err := user.Articles(qm.Offset(offset), qm.Limit(limit)).All(context.Background(), a.Db)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to find articles")
 		return nil, 0, err
