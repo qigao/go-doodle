@@ -1,0 +1,28 @@
+version: 3
+tasks:
+  checkDb:
+    desc: check db
+    cmds:
+      - schema/docker/wait-for-it.sh -t 5 localhost:3306
+  importSql:
+    desc: import sql script
+    cmds:
+      - bin/dbimport -db schema/sql -path schema
+  codegen:
+    desc: Schema generation
+    dir: schema
+    deps:
+      - checkDb
+    cmds:
+      - sqlboiler mysql
+  start-mysql:
+    desc: start mysql docker
+    dir: schema
+    cmds:
+      - podman-compose -f docker/docker-compose.yml  up -d
+
+  stop-mysql:
+    desc: stop mysql docker
+    dir: schema
+    cmds:
+      - podman-compose  -f docker/docker-compose.yml down

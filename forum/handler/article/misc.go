@@ -1,18 +1,19 @@
 package article
 
 import (
+	"schema/entity"
+
 	"forum/model"
 	"forum/service"
-	"schema/entity"
 
 	"github.com/volatiletech/null/v8"
 )
 
 type Handler struct {
-	Service service.ArticleService
+	Service service.IServiceArticle
 }
 
-func NewArticleHandler(as service.ArticleService) *Handler {
+func NewArticleHandler(as service.IServiceArticle) *Handler {
 	return &Handler{
 		Service: as,
 	}

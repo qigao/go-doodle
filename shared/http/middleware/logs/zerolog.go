@@ -1,12 +1,13 @@
 package logs
 
 import (
+	"io"
+	"os"
+
 	"github.com/labstack/echo/v4"
 	mw "github.com/labstack/echo/v4/middleware"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"io"
-	"os"
 )
 
 // ZeroLogConfig defines the config for ZeroLog middleware.
@@ -92,7 +93,7 @@ func ZeroLogWithConfig(cfg ZeroLogConfig) echo.MiddlewareFunc {
 	}
 }
 
-//NewZeroLogger returns a new logger logger with config
+// NewZeroLogger returns a new logger logger with config
 func NewZeroLogger(directory, filename string) zerolog.Logger {
 	config := LogCtl{
 		ConsoleLoggingEnabled: false,
@@ -107,7 +108,7 @@ func NewZeroLogger(directory, filename string) zerolog.Logger {
 	return setupZeroLogFilePolicy(config)
 }
 
-//setupZeroLogFilePolicy returns logger with grpc file controlled by LogCtl.
+// setupZeroLogFilePolicy returns logger with grpc file controlled by LogCtl.
 func setupZeroLogFilePolicy(cfg LogCtl) zerolog.Logger {
 	var writers []io.Writer
 

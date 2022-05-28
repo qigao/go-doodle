@@ -1,16 +1,19 @@
 package main
 
 import (
+	"http/middleware"
+
 	"forum/handler/article"
 	"forum/handler/user"
 	"forum/repository/mysql"
 	articleService "forum/service/article"
 	userService "forum/service/user"
-	"forum/utils"
-	"github.com/labstack/echo/v4"
-	"http/middleware"
 
+	"github.com/labstack/echo/v4"
+
+	"db"
 	_ "forum/docs"
+	"http/utils"
 
 	webSwagger "github.com/swaggo/echo-swagger" // forum-swagger middleware
 )
@@ -40,12 +43,11 @@ func main() {
 }
 
 func setupRouter(r *echo.Echo) {
-
 	r.GET("/swagger/*", webSwagger.WrapHandler)
 
 	v1 := r.Group("/api/v1")
 
-	d, _ := utils.NewMysqlManager()
+	d, _ := db.NewMysqlManager()
 
 	userRepo := mysql.NewUserRepo(d)
 	articleRepo := mysql.NewArticleRepo(d)

@@ -19,6 +19,7 @@ func UnaryInterceptorWithLogger(log *zerolog.Logger) grpc.ServerOption {
 }
 
 // NewUnaryServerInterceptor that logs gRPC Requests using Zerolog.
+//
 //	{
 //		ServiceField: "ExampleService",
 //		MethodField: "ExampleMethod",

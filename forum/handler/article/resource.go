@@ -1,13 +1,14 @@
 package article
 
 import (
-	"forum/handler"
-	"forum/model"
-	"forum/service/article"
-	"http/http_error"
+	http_error "http/error"
 	"net/http"
 	"schema/entity"
 	"strconv"
+
+	"forum/handler"
+	"forum/model"
+	"forum/service/article"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
@@ -283,7 +284,6 @@ func (h *Handler) GetComments(c echo.Context) error {
 // @Security ApiKeyAuth
 // @Router /articles/{slug}/comments/{id} [delete]
 func (h *Handler) DeleteComment(c echo.Context) error {
-
 	x := c.Param("id")
 	slug := c.Param("slug")
 	id64, err := strconv.ParseUint(x, 10, 32)

@@ -19,7 +19,7 @@ func GrpcLogSetZeroLogger(logger GrpcZeroLogger) {
 	grpclog.SetLoggerV2(logger)
 }
 
-//NewZeroLogger returns a new logger logger with config
+// NewZeroLogger returns a new logger logger with config
 func NewZeroLogger(directory, filename string) zerolog.Logger {
 	config := LogCtl{
 		ConsoleLoggingEnabled: false,

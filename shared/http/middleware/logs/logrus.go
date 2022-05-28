@@ -1,11 +1,12 @@
 package logs
 
 import (
+	"io"
+	"os"
+
 	"github.com/labstack/echo/v4"
 	mw "github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
-	"io"
-	"os"
 )
 
 // LogrusConfig defines the config for Logrus middleware.
@@ -91,6 +92,7 @@ func LogrusWithConfig(cfg LogrusConfig) echo.MiddlewareFunc {
 		}
 	}
 }
+
 func NewLogrus(directory, filename string) *logrus.Logger {
 	config := LogCtl{
 		ConsoleLoggingEnabled: false,
@@ -104,6 +106,7 @@ func NewLogrus(directory, filename string) *logrus.Logger {
 	}
 	return setupLogrusFilePolicy(config)
 }
+
 func setupLogrusFilePolicy(cfg LogCtl) *logrus.Logger {
 	var writers []io.Writer
 	logger := logrus.New()

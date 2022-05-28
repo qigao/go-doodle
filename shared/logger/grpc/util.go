@@ -65,6 +65,7 @@ var (
 )
 
 // LogIncomingCall of gRPC method.
+//
 //	{
 //		ServiceField: ExampleService,
 //		MethodField: ExampleMethod,
@@ -80,6 +81,7 @@ func LogIncomingCall(ctx context.Context, logger *zerolog.Event, method string, 
 }
 
 // LogTimestamp of call.
+//
 //	{
 //		TimestampField: Timestamp,
 //	}
@@ -90,6 +92,7 @@ func LogTimestamp(logger *zerolog.Event, t time.Time) {
 }
 
 // LogService of gRPC name.
+//
 //	{
 //		ServiceField: gRPCServiceName,
 //	}
@@ -100,6 +103,7 @@ func LogService(logger *zerolog.Event, method string) {
 }
 
 // LogMethod of gRPC call.
+//
 //	{
 //		MethodField: gRPCMethodName,
 //	}
@@ -110,6 +114,7 @@ func LogMethod(logger *zerolog.Event, method string) {
 }
 
 // LogDuration in seconds of gRPC call.
+//
 //	{
 //		DurationField: Timestamp,
 //	}
@@ -120,6 +125,7 @@ func LogDuration(logger *zerolog.Event, t time.Time) {
 }
 
 // LogIP address of gRPC client, if assigned.
+//
 //	{
 //		IpField: 127.0.0.1
 //	}
@@ -132,6 +138,7 @@ func LogIP(ctx context.Context, logger *zerolog.Event) {
 }
 
 // LogRequest in JSON of gRPC Call, given Request is smaller than MaxSize (Default=2MB).
+//
 //	{
 //		ReqField: {}
 //	}
@@ -144,6 +151,7 @@ func LogRequest(e *zerolog.Event, req interface{}) {
 }
 
 // LogResponse in JSON of gRPC Call, given Response is smaller than MaxSize (Default=2MB).
+//
 //	{
 //		RespField: {}
 //	}
@@ -167,6 +175,7 @@ func GetRawJSON(i interface{}) *bytes.Buffer {
 }
 
 // LogIncomingMetadata or UserAgent field of incoming gRPC Request, if assigned.
+//
 //	{
 //		MetadataField: {
 //			MetadataKey1: MetadataValue1,
@@ -188,6 +197,7 @@ func LogIncomingMetadata(ctx context.Context, e *zerolog.Event) {
 }
 
 // LogMetadata of gRPC Request
+//
 //	{
 //		MetadataField: {
 //			MetadataKey1: MetadataValue1,
@@ -202,6 +212,7 @@ func LogMetadata(md *metadata.MD) *zerolog.Event {
 }
 
 // LogUserAgent of gRPC Client, if assigned.
+//
 //	{
 //		UserAgentField: "Client-assigned User-Agent",
 //	}
@@ -212,6 +223,7 @@ func LogUserAgent(logger *zerolog.Event, md *metadata.MD) {
 }
 
 // LogStatusError of gRPC Error Response.
+//
 //	{
 //		Err: "An unexpected error occurred",
 //		CodeField: "Unknown",

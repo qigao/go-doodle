@@ -1,19 +1,20 @@
 package user
 
 import (
+	"schema/entity"
+
 	"forum/model"
 	"forum/repository"
 	"forum/service"
-	"schema/entity"
 
 	"github.com/rs/zerolog/log"
 )
 
 type Service struct {
-	Repo repository.User
+	Repo repository.IRepoUser
 }
 
-func NewUserService(r repository.User) *Service {
+func NewUserService(r repository.IRepoUser) *Service {
 	return &Service{
 		Repo: r,
 	}
