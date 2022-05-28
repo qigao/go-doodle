@@ -10,16 +10,10 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func newUserMock() *User {
-	return &User{
-		Mock: mock.Mock{},
-	}
-}
-
 func TestUser_CheckUser(t *testing.T) {
 	t.Run("when findbyemail return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -30,7 +24,7 @@ func TestUser_CheckUser(t *testing.T) {
 	})
 	t.Run("when find by email return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -44,7 +38,7 @@ func TestUser_CheckUser(t *testing.T) {
 func TestUser_CreateUser(t *testing.T) {
 	t.Run("when create user return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -55,21 +49,21 @@ func TestUser_CreateUser(t *testing.T) {
 	})
 	t.Run("when user password is empty", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
-		userMock.On("CreateUser", mock.Anything).Return(nil)
+		//userMock.On("CreateUser", mock.Anything).Return(nil)
 		// Then
 		err := mockRequestUser.CreateUser(&model.RegisterUser{Username: "foo", Email: "foo@foo.com", Password: ""})
-		assert.Errorf(t, err, "crypto/bcrypt: hashedSecret too short to be a bcrypted password")
+		assert.Errorf(t, err, "password should not be empty")
 	})
 }
 
 func TestUser_FollowUser(t *testing.T) {
 	t.Run("when follow user return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -82,7 +76,7 @@ func TestUser_FollowUser(t *testing.T) {
 	})
 	t.Run("when FindUserByUserName return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -93,7 +87,7 @@ func TestUser_FollowUser(t *testing.T) {
 	})
 	t.Run("when FindUserByID return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -109,7 +103,7 @@ func TestUser_FollowUser(t *testing.T) {
 func TestUser_GetUser(t *testing.T) {
 	t.Run("when get user by id return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -120,7 +114,7 @@ func TestUser_GetUser(t *testing.T) {
 	})
 	t.Run("when get user by email return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -131,7 +125,7 @@ func TestUser_GetUser(t *testing.T) {
 	})
 	t.Run("when get user by username return ok", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -146,7 +140,7 @@ func TestUser_GetUser(t *testing.T) {
 func TestUser_UnFollowUser(t *testing.T) {
 	t.Run("when FindUserByUserName return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -157,7 +151,7 @@ func TestUser_UnFollowUser(t *testing.T) {
 	})
 	t.Run("when FindUserByID return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -169,7 +163,7 @@ func TestUser_UnFollowUser(t *testing.T) {
 	})
 	t.Run("when UnFollowUser return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -186,7 +180,7 @@ func TestUser_UnFollowUser(t *testing.T) {
 func TestUser_GetFollowers(t *testing.T) {
 	t.Run("when FindUserByID return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -197,7 +191,7 @@ func TestUser_GetFollowers(t *testing.T) {
 	})
 	t.Run("when GetFollowers return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -211,7 +205,7 @@ func TestUser_GetFollowers(t *testing.T) {
 func TestUserGetFollowingUser(t *testing.T) {
 	t.Run("when FindUserByID return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When
@@ -222,7 +216,7 @@ func TestUserGetFollowingUser(t *testing.T) {
 	})
 	t.Run("when GetFollowingUsers return error", func(t *testing.T) {
 		// Given
-		userMock := newUserMock()
+		userMock := NewIRepoUser(t)
 		mockRequestUser := NewUserService(userMock)
 
 		// When

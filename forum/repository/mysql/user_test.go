@@ -14,7 +14,7 @@ import (
 )
 
 func TestUserRepo_CreateUser(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -46,7 +46,7 @@ func TestUserRepo_CreateUser(t *testing.T) {
 }
 
 func TestUserRepo_UpdateUser(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -79,7 +79,7 @@ func TestUserRepo_UpdateUser(t *testing.T) {
 }
 
 func TestUserRepo_AddFollower(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -111,7 +111,7 @@ func TestUserRepo_AddFollower(t *testing.T) {
 }
 
 func TestUerRepo_RemoveFollower(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -142,7 +142,7 @@ func TestUerRepo_RemoveFollower(t *testing.T) {
 }
 
 func TestUserRepo_IsFollower(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -170,7 +170,7 @@ func TestUserRepo_IsFollower(t *testing.T) {
 	})
 }
 func TestUerRepo_GetFollowers(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -197,7 +197,7 @@ func TestUerRepo_GetFollowers(t *testing.T) {
 	})
 }
 func TestUerRepo_GetFollowingUsers(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -224,7 +224,7 @@ func TestUerRepo_GetFollowingUsers(t *testing.T) {
 	})
 }
 func TestUserRepo_FindByID(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -251,7 +251,7 @@ func TestUserRepo_FindByID(t *testing.T) {
 }
 
 func TestUserRepo_FindByEmail(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -277,7 +277,7 @@ func TestUserRepo_FindByEmail(t *testing.T) {
 	})
 }
 func TestUserRepo_FindByUserName(t *testing.T) {
-	t.Parallel()
+
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()

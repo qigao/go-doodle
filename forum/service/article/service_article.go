@@ -9,11 +9,11 @@ import (
 )
 
 type Service struct {
-	Repo     repository.Article
-	UserRepo repository.User
+	Repo     repository.IRepoArticle
+	UserRepo repository.IRepoUser
 }
 
-func NewServiceArticle(r repository.Article, u repository.User) *Service {
+func NewServiceArticle(r repository.IRepoArticle, u repository.IRepoUser) *Service {
 	return &Service{
 		Repo:     r,
 		UserRepo: u,

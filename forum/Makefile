@@ -10,12 +10,12 @@ install-deps:
 	go install github.com/vburenin/ifacemaker@latest
 gen-mock:
 	@mkdir  -vp mock/service
-	ifacemaker -f service/article/service_article.go -s Service -i ArticleService -p service -c "DON'T EDIT: This is generated code" -o service/article.go
-	ifacemaker -f service/user/service_user.go -s Service -i UserService -p service -c "DON'T EDIT: This is generated code" -o service/user.go
-	ifacemaker -f repository/mysql/article.go -s ArticleRepo -i Article -p repository -c "DON'T EDIT: This is generated code" -o repository/article.go
-	ifacemaker -f repository/mysql/user.go -s UserRepo -i User -p repository -c "DON'T EDIT: This is generated code" -o repository/user.go
-	mockery --config repository/mockery.yaml
-	mockery --config service/mockery.yaml
+		ifacemaker -f repository/mysql/article.go -s ArticleRepo -i IRepoArticle -p repository  -o repository/article.go
+		ifacemaker -f repository/mysql/user.go -s UserRepo -i IRepoUser -p repository -o repository/user.go
+		ifacemaker -f service/article/service_article.go -s Service -i IServiceArticle -p service  -o service/article.go
+		ifacemaker -f service/user/service_user.go -s Service -i IServiceUser -p service  -o service/user.go
+		mockery --config repository/mockery.yaml
+		mockery --config service/mockery.yaml
 
 build:
 	go build -o bin/forum -race  .
@@ -26,12 +26,11 @@ build-static:
 run:
 	go run -race .
 
-############################################################
-# Test
-############################################################
-
 test:
 	go test -v -race ./...
+
+fmt:
+	go fmt  ./...
 
 container:
 	cp -R ../shared .
