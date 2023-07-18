@@ -62,26 +62,4 @@ DB_USER=forum
 DB_PASSWORD=secret
 
 ----
-
-WARNING: mysql connection info should be identical to the one in the database docker.
-
-=== Install dependencies
-
-[source,bash]
-----
-➜  go install github.com/volatiletech/sqlboiler/v4@latest
-➜  go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
-➜  go mod download
-
-----
-
-=== Run
-
-[source,bash]
-----
-➜ make start-mysql
-➜ make gen-schema # for dev purpose only
-➜ make gen-orm
-➜ make stop-mysql
-
-----
+ 

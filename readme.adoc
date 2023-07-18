@@ -1,6 +1,6 @@
-== Golang Microservice ==
+== Golang web  application==
 
-this repo will try to build a microservice using golang in terms of DDD
+Golang web multi module application by DDD/TDD
 
 == How to create module ==
 
@@ -14,10 +14,48 @@ $ go mod init  demo
 
 * update go.work
 
-[source,go]
---
-go 1.20
-use(
-	./demo
-	)
---
+
+== How to build ==
+
+* install podman/podman-compose
+* edit dotenv
+
+[source,bash]
+----
+DB_HOST=localhost
+DB_NAME=gforum
+DB_PORT=3306
+DB_USER=forum
+DB_PASSWORD=secret
+----
+
+* load .env file
+[source,bash]
+
+----
+export $(grep -v '^#' .env | xargs)
+----
+
+* install tools
+[source,bash]
+----
+task tools
+----
+
+* gen entity from sql
+
+[source,bash]
+----
+➜ task dbimport
+➜ task start-mysql
+➜ task importSql # for dev purpose only
+➜ task codegen
+➜ task stop-mysql
+
+----
+
+* build application
+[source,bash]
+----
+task forum:build
+----
