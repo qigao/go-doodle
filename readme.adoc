@@ -13,9 +13,7 @@ $ go mod init  demo
 --
 
 * update go.work
-
-<<<<<<< HEAD
-
+ 
 == How to build ==
 
 * install podman/podman-compose
@@ -49,9 +47,9 @@ task tools
 ----
 ➜ task dbimport
 ➜ task start-mysql
-➜ make importSql # for dev purpose only
-➜ make codegen
-➜ make stop-mysql
+➜ task importSql # for dev purpose only
+➜ task codegen
+➜ task stop-mysql
 
 ----
 
@@ -60,12 +58,3 @@ task tools
 ----
 task forum:build
 ----
-=======
-[source,go]
---
-go 1.20
-use(
-	./demo
-	)
---
->>>>>>> b5fc29b0b15db70dc0902a7465943ab4d1efd826

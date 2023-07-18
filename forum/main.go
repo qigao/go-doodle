@@ -1,7 +1,9 @@
 package main
 
 import (
+	"db"
 	"http/middleware"
+	"http/utils"
 
 	"forum/handler/article"
 	"forum/handler/user"
@@ -11,9 +13,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"db"
 	_ "forum/docs"
-	"http/utils"
 
 	webSwagger "github.com/swaggo/echo-swagger" // forum-swagger middleware
 )

@@ -18,15 +18,7 @@ tasks:
       - mockery --config service/mockery.yaml
   build:
     desc: build forum
-<<<<<<< HEAD
     deps:
       - ifacemaker
     cmds:
       - go build -o bin/forum forum/
-=======
-    dir: forum
-    deps:
-      - ifacemaker
-    cmds:
-      - go build -o forum
->>>>>>> b5fc29b0b15db70dc0902a7465943ab4d1efd826

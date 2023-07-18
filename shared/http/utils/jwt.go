@@ -2,9 +2,10 @@ package utils
 
 import (
 	"fmt"
-	http_error "http/error"
 	"net/http"
 	"time"
+
+	http_error "http/error"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"

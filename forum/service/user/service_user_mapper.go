@@ -1,10 +1,10 @@
 package user
 
 import (
+	"http/utils"
 	"schema/entity"
 
 	"forum/model"
-	"http/utils"
 )
 
 func NewProfileResponse(u *entity.User) *model.ProfileResponse {
