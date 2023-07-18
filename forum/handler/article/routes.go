@@ -1,7 +1,7 @@
 package article
 
 import (
-	"forum/utils"
+	"http/utils"
 
 	"github.com/labstack/echo/v4"
 )

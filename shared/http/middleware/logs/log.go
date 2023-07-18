@@ -1,12 +1,13 @@
 package logs
 
 import (
-	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"path"
 	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/natefinch/lumberjack.v2"
 
 	"github.com/labstack/echo/v4"
 )

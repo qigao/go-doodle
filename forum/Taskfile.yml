@@ -1,0 +1,25 @@
+version: 3
+tasks:
+  ifacemaker:
+    desc: generate interface
+    dir: forum
+    cmds:
+      - mkdir  -vp mock/service
+      - ifacemaker -f repository/mysql/article.go -s ArticleRepo -i IRepoArticle -p repository  -o repository/article.go
+      - ifacemaker -f repository/mysql/user.go -s UserRepo -i IRepoUser -p repository -o repository/user.go
+      - ifacemaker -f service/article/service_article.go -s Service -i IServiceArticle -p service  -o service/article.go
+      - ifacemaker -f service/user/service_user.go -s Service -i IServiceUser -p service  -o service/user.go
+
+  mock:
+    desc: generate mock code
+    dir: forum
+    cmds:
+      - mockery --config repository/mockery.yaml
+      - mockery --config service/mockery.yaml
+  build:
+    desc: build forum
+    dir: forum
+    deps:
+      - ifacemaker
+    cmds:
+      - go build -o forum

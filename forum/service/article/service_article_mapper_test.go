@@ -1,11 +1,12 @@
 package article
 
 import (
-	. "forum/model"
 	"reflect"
 	"schema/entity"
 	"testing"
 	"time"
+
+	. "forum/model"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/volatiletech/null/v8"

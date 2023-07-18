@@ -1,0 +1,47 @@
+version: 3
+env:
+  CGO_ENABLED: 0
+  GOOS: "linux"
+  GOARCH: "amd64"
+  GOPROXY: https://proxy.golang.org,direct
+
+vars:
+  LD_FLAGS: "-s -w"
+
+includes:
+  schema: schema/Taskfile.yml
+  forum: forum/Taskfile.yml
+
+tasks:
+  tools:
+    desc: Go develop tools
+    cmds:
+      - go install mvdan.cc/gofumpt@latest
+      - go install github.com/volatiletech/sqlboiler/v4@latest
+      - go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
+      - go install github.com/vektra/mockery/v2@latest
+      - go install github.com/vburenin/ifacemaker@latest
+      - go install github.com/mailru/easyjson/...@latest
+      - curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $GOPATH/bin v1.50.1
+  dbimport:
+    desc: build db import tool
+    cmds:
+      - go build -o bin/dbimport   tools/dbimport/main.go
+  schema:
+    desc: Run schema code gen task
+    cmds:
+      - task: schema:codegen
+
+  format:
+    desc: format code
+    cmds:
+      - gofumpt -l -w ./
+
+
+  default:
+    cmds:
+      - task -l
+    silent: true
+
+
+

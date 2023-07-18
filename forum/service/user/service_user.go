@@ -1,10 +1,11 @@
 package user
 
 import (
+	"schema/entity"
+
 	"forum/model"
 	"forum/repository"
 	"forum/service"
-	"schema/entity"
 
 	"github.com/rs/zerolog/log"
 )

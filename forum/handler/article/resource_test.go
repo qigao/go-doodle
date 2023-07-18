@@ -4,15 +4,16 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"forum/mock/service"
-	"forum/model"
-	"forum/utils"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"schema/entity"
 	"strings"
 	"testing"
+
+	"forum/mock/service"
+	"forum/model"
+	"forum/utils"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
@@ -443,6 +444,7 @@ func TestArticleResource_Favorite(t *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, rec.Code)
 	})
 }
+
 func TestArticleResource_UnFavorite(t *testing.T) {
 	t.Run("when unFavorite article return ok", func(t *testing.T) {
 		// Setup

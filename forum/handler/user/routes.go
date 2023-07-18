@@ -1,7 +1,8 @@
 package user
 
 import (
-	"forum/utils"
+	"http/utils"
+
 	"github.com/labstack/echo/v4"
 )
 
@@ -13,5 +14,4 @@ func (h *Handler) Register(v *echo.Group) {
 
 	user := v.Group("/user", jwtMiddleware)
 	user.PUT("", h.UpdateUser)
-
 }

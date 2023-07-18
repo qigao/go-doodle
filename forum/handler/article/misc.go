@@ -1,9 +1,10 @@
 package article
 
 import (
+	"schema/entity"
+
 	"forum/model"
 	"forum/service"
-	"schema/entity"
 
 	"github.com/volatiletech/null/v8"
 )

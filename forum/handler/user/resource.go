@@ -1,10 +1,11 @@
 package user
 
 import (
+	http_error "http/error"
+	"net/http"
+
 	"forum/handler"
 	"forum/model"
-	"http/http_error"
-	"net/http"
 
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"

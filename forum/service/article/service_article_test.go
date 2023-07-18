@@ -2,9 +2,10 @@ package article
 
 import (
 	"fmt"
-	mockRepo "forum/mock/repository"
 	"schema/entity"
 	"testing"
+
+	mockRepo "forum/mock/repository"
 
 	"github.com/stretchr/testify/mock"
 	"github.com/volatiletech/null/v8"
@@ -159,7 +160,6 @@ func TestArticle_FindArticleByAuthor(t *testing.T) {
 		assert.NilError(t, err)
 		assert.Equal(t, n, int64(1))
 	})
-
 }
 
 func TestArticle_FindArticles(t *testing.T) {
@@ -378,7 +378,6 @@ func TestArticle_AddCommentToArticle(t *testing.T) {
 		err := ServiceArticleMock.AddCommentToArticle("test-slug", commentFoo)
 		assert.NilError(t, err)
 	})
-
 }
 
 func TestArticle_DeleteCommentFromArticle(t *testing.T) {

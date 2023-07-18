@@ -11,10 +11,10 @@ type IRepoArticle interface {
 	FindArticleBySlug(s string) (*entity.Article, error)
 	FindArticleByAuthorIDAndSlug(userID uint64, slug string) (*entity.Article, error)
 	CreateArticle(article *entity.Article) error
-	//UpdateArticle  update article
+	// UpdateArticle  update article
 	UpdateArticle(article *entity.Article) error
 	DeleteArticle(article *entity.Article) error
-	//FindArticles all the articles with pagination
+	// FindArticles all the articles with pagination
 	FindArticles(offset, limit int) ([]*entity.Article, int64, error)
 	ListArticlesByTag(tagStr string, offset, limit int) ([]*entity.Article, int64, error)
 	ListArticlesByAuthor(user *entity.User, offset, limit int) ([]*entity.Article, int64, error)

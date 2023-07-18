@@ -43,6 +43,7 @@ func TestArticle_Create(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
+
 func TestArticle_Update(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
@@ -73,6 +74,7 @@ func TestArticle_Update(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
+
 func TestArtcile_DeleteArticle(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
@@ -196,6 +198,7 @@ func TestArticle_DeleteCommentByArticle(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
+
 func TestArticle_CreateTag(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
@@ -581,7 +584,6 @@ func TestArticle_ListArticlesByAuthor(t *testing.T) {
 		assert.Equal(t, int64(0), n)
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
-
 }
 
 func TestArticle_FindAuthorBySlug(t *testing.T) {

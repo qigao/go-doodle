@@ -1,9 +1,10 @@
 package user
 
 import (
-	"forum/model"
 	"schema/entity"
 	"testing"
+
+	"forum/model"
 
 	"github.com/stretchr/testify/assert"
 )

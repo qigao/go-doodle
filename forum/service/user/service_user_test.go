@@ -2,9 +2,10 @@ package user
 
 import (
 	"fmt"
+	"testing"
+
 	. "forum/mock/repository"
 	"forum/model"
-	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -53,7 +54,7 @@ func TestUser_CreateUser(t *testing.T) {
 		mockRequestUser := NewUserService(userMock)
 
 		// When
-		//userMock.On("CreateUser", mock.Anything).Return(nil)
+		// userMock.On("CreateUser", mock.Anything).Return(nil)
 		// Then
 		err := mockRequestUser.CreateUser(&model.RegisterUser{Username: "foo", Email: "foo@foo.com", Password: ""})
 		assert.Errorf(t, err, "password should not be empty")
@@ -97,7 +98,6 @@ func TestUser_FollowUser(t *testing.T) {
 		err := mockRequestUser.FollowUserByUserName(1, "foo")
 		assert.EqualError(t, err, "find user by id error")
 	})
-
 }
 
 func TestUser_GetUser(t *testing.T) {
@@ -134,7 +134,6 @@ func TestUser_GetUser(t *testing.T) {
 		_, err := mockRequestUser.GetUserByUserName("foo")
 		assert.NoError(t, err)
 	})
-
 }
 
 func TestUser_UnFollowUser(t *testing.T) {
@@ -174,7 +173,6 @@ func TestUser_UnFollowUser(t *testing.T) {
 		err := mockRequestUser.UnFollowUserByUserName(1, "foo")
 		assert.EqualError(t, err, "unfollow user error")
 	})
-
 }
 
 func TestUser_GetFollowers(t *testing.T) {
@@ -202,6 +200,7 @@ func TestUser_GetFollowers(t *testing.T) {
 		assert.EqualError(t, err, "get followers error")
 	})
 }
+
 func TestUserGetFollowingUser(t *testing.T) {
 	t.Run("when FindUserByID return error", func(t *testing.T) {
 		// Given

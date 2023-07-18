@@ -1,9 +1,10 @@
-go 1.18
+go 1.20
 
 use (
-	./shared/http
-	./shared/logger
-	./shared/tools
-	./forum
-	./schema/forum
-)
+	forum
+	shared/http
+	shared/logger
+	shared/db
+	tools/dbimport
+	schema
+ )

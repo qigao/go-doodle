@@ -3,8 +3,9 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"schema/entity"
+
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/null/v8"
@@ -58,7 +59,7 @@ func (a *ArticleRepo) CreateArticle(article *entity.Article) error {
 	return nil
 }
 
-//UpdateArticle  update article
+// UpdateArticle  update article
 func (a *ArticleRepo) UpdateArticle(article *entity.Article) error {
 	ctx := context.Background()
 	tx, err := a.Db.BeginTx(ctx, nil)
@@ -93,7 +94,7 @@ func (a *ArticleRepo) DeleteArticle(article *entity.Article) error {
 	return nil
 }
 
-//FindArticles all the articles with pagination
+// FindArticles all the articles with pagination
 func (a *ArticleRepo) FindArticles(offset, limit int) ([]*entity.Article, int64, error) {
 	articles, err := entity.Articles(qm.Limit(limit), qm.Offset(offset)).All(context.Background(), a.Db)
 	if err != nil {
@@ -133,7 +134,7 @@ func (a *ArticleRepo) FindAuthorByArticle(article *entity.Article) (*entity.User
 }
 
 func (a *ArticleRepo) ListFeed(userID uint, offset, limit int) ([]*entity.Article, int64, error) {
-	//TODO implement me
+	// TODO implement me
 	panic("implement me")
 }
 
