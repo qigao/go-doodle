@@ -3,14 +3,15 @@ package mysql
 import (
 	"context"
 	"database/sql"
-	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"schema/entity"
+
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 
 	"github.com/rs/zerolog/log"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 )
 
-//UserRepo is a repository for user
+// UserRepo is a repository for user
 type UserRepo struct {
 	Db *sql.DB
 }
@@ -21,6 +22,7 @@ func NewUserRepo(db *sql.DB) *UserRepo {
 		Db: db,
 	}
 }
+
 func (u *UserRepo) FindUserByID(uid uint) (*entity.User, error) {
 	user, err := entity.Users(qm.Where("id = ?", uid)).One(context.Background(), u.Db)
 	if err != nil {

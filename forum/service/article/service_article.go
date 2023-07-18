@@ -1,9 +1,10 @@
 package article
 
 import (
-	"forum/repository"
 	"schema/entity"
 	"sort"
+
+	"forum/repository"
 
 	"github.com/rs/zerolog/log"
 )

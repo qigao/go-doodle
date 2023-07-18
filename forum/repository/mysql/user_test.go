@@ -14,7 +14,6 @@ import (
 )
 
 func TestUserRepo_CreateUser(t *testing.T) {
-
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -46,7 +45,6 @@ func TestUserRepo_CreateUser(t *testing.T) {
 }
 
 func TestUserRepo_UpdateUser(t *testing.T) {
-
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -79,7 +77,6 @@ func TestUserRepo_UpdateUser(t *testing.T) {
 }
 
 func TestUserRepo_AddFollower(t *testing.T) {
-
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -111,7 +108,6 @@ func TestUserRepo_AddFollower(t *testing.T) {
 }
 
 func TestUerRepo_RemoveFollower(t *testing.T) {
-
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -142,7 +138,6 @@ func TestUerRepo_RemoveFollower(t *testing.T) {
 }
 
 func TestUserRepo_IsFollower(t *testing.T) {
-
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -169,8 +164,8 @@ func TestUserRepo_IsFollower(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
-func TestUerRepo_GetFollowers(t *testing.T) {
 
+func TestUerRepo_GetFollowers(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -196,8 +191,8 @@ func TestUerRepo_GetFollowers(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
-func TestUerRepo_GetFollowingUsers(t *testing.T) {
 
+func TestUerRepo_GetFollowingUsers(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -223,8 +218,8 @@ func TestUerRepo_GetFollowingUsers(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
-func TestUserRepo_FindByID(t *testing.T) {
 
+func TestUserRepo_FindByID(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -251,7 +246,6 @@ func TestUserRepo_FindByID(t *testing.T) {
 }
 
 func TestUserRepo_FindByEmail(t *testing.T) {
-
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
@@ -276,8 +270,8 @@ func TestUserRepo_FindByEmail(t *testing.T) {
 		require.NoError(t, mock.ExpectationsWereMet())
 	})
 }
-func TestUserRepo_FindByUserName(t *testing.T) {
 
+func TestUserRepo_FindByUserName(t *testing.T) {
 	db, mock, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()

@@ -1,9 +1,10 @@
 package grpc
 
 import (
-	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"path"
+
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type LogCtl struct {

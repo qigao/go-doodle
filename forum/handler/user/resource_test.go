@@ -2,14 +2,15 @@ package user
 
 import (
 	"fmt"
-	"forum/mock/service"
-	"forum/utils"
-	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"forum/mock/service"
+	"forum/utils"
+	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"

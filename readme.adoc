@@ -16,25 +16,8 @@ $ go mod init  demo
 
 [source,go]
 --
-go 1.18
+go 1.20
 use(
 	./demo
 	)
 --
-
-* use demo from another module,then import from source
-
-[source,go]
---
-module test
-go 1.18
-require ( demo v0.0.0)
-replace (
-	demo v0.0.0 => ../demo
-	)
---
-
-== Roadmap ==
-
-* `[x]` Restful API
-* `[]` Event Bus
