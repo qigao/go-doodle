@@ -3,6 +3,16 @@ tasks:
   checkDb:
     desc: check db
     cmds:
+<<<<<<< HEAD
+      - schema/docker/wait-for-it.sh -t 5 localhost:3306
+  importSql:
+    desc: import sql script
+    cmds:
+      - bin/dbimport -db schema/sql -path schema
+  codegen:
+    desc: Schema generation
+    dir: schema
+=======
       -  schema/forum/docker/wait-for-it.sh -t 5 localhost:3306
   dbimport:
     desc: import sql script
@@ -11,12 +21,27 @@ tasks:
   codegen:
     desc: Schema generation
     dir:  schema/forum
+>>>>>>> b5fc29b0b15db70dc0902a7465943ab4d1efd826
     deps:
       - checkDb
     cmds:
       - sqlboiler mysql
+<<<<<<< HEAD
+  start-mysql:
+    desc: start mysql docker
+    dir: schema
+    cmds:
+      - podman-compose -f docker/docker-compose.yml  up -d
+
+  stop-mysql:
+    desc: stop mysql docker
+    dir: schema
+    cmds:
+      - podman-compose  -f docker/docker-compose.yml down
+=======
   podman:
     desc: start mysql docker
     dir: schema/forum
     cmds:
       - podman-compose up -d
+>>>>>>> b5fc29b0b15db70dc0902a7465943ab4d1efd826
