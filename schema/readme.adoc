@@ -1,0 +1,87 @@
+== Getting started
+
+=== Golang Dev Environment Prepare
+
+==== Install Golang (go1.11+)
+
+Please check the official golang installation guide before you start. https://golang.org/doc/install[Official Documentation]
+Also make sure you have installed a go1.18 version.
+
+==== Environment Config
+
+For more info and detailed instructions please check this guide: https://github.com/golang/go/wiki/SettingGOPATH[Setting GOPATH]
+
+=== Dev Preparation
+
+==== Docker Preparation
+
+install docker and docker-compose
+[source,bash]
+
+----
+➜  sudo apt-get install docker docker-compose
+----
+
+enable docker service then add current user to docker group
+
+==== Edit .env
+
+prepare .env for mysql server to generate db schemas
+[source,dotenv]
+
+----
+DB_HOST=localhost
+DB_NAME=gforum
+DB_PORT=3306
+DB_USER=forum
+DB_PASSWORD=secret
+----
+
+load .env file
+[source,bash]
+
+----
+export $(grep -v '^#' .env | xargs)
+----
+
+==== Prepare Database Schema
+
+sqlboiler is used to generate the database models.
+[source,toml]
+
+----
+output   = "../entity"
+wipe     = true
+pkgname  = "entity"
+
+[mysql]
+DB_HOST=localhost
+DB_NAME=gforum
+DB_PORT=3306
+DB_USER=forum
+DB_PASSWORD=secret
+
+----
+
+WARNING: mysql connection info should be identical to the one in the database docker.
+
+=== Install dependencies
+
+[source,bash]
+----
+➜  go install github.com/volatiletech/sqlboiler/v4@latest
+➜  go install github.com/volatiletech/sqlboiler/v4/drivers/sqlboiler-mysql@latest
+➜  go mod download
+
+----
+
+=== Run
+
+[source,bash]
+----
+➜ make start-mysql
+➜ make gen-schema # for dev purpose only
+➜ make gen-orm
+➜ make stop-mysql
+
+----

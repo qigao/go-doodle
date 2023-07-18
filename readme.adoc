@@ -14,6 +14,7 @@ $ go mod init  demo
 
 * update go.work
 
+<<<<<<< HEAD
 
 == How to build ==
 
@@ -59,3 +60,12 @@ task tools
 ----
 task forum:build
 ----
+=======
+[source,go]
+--
+go 1.20
+use(
+	./demo
+	)
+--
+>>>>>>> b5fc29b0b15db70dc0902a7465943ab4d1efd826
