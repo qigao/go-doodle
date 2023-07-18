@@ -13,8 +13,7 @@ $ go mod init  demo
 --
 
 * update go.work
-
-
+ 
 == How to build ==
 
 * install podman/podman-compose
