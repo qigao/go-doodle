@@ -13,7 +13,7 @@ import (
 
 	"forum/mock/service"
 	"forum/model"
-	"forum/utils"
+	"http/utils"
 
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
