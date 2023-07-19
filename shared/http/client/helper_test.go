@@ -3,6 +3,7 @@ package client
 import (
 	"bytes"
 	"context"
+	http_request "http/request"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -11,7 +12,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
-	"http/http_request"
 )
 
 func TestApiURL(t *testing.T) {

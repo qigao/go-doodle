@@ -2,10 +2,10 @@ package client
 
 import (
 	"context"
+	http_request "http/request"
+	http_utils "http/utils"
 
 	"github.com/go-resty/resty/v2"
-	"http/http_request"
-	"http/http_utils"
 )
 
 const applicationJSONMediaType = "application/json"

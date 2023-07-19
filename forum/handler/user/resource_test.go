@@ -8,7 +8,8 @@ import (
 	"testing"
 
 	"forum/mock/service"
-	"forum/utils"
+	"http/utils"
+
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 

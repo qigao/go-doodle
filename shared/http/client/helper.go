@@ -8,8 +8,9 @@ import (
 	"net/url"
 	"strings"
 
+	http_request "http/request"
+
 	"github.com/pkg/errors"
-	"http/http_request"
 )
 
 func apiURL(baseURL, path string, queryParams url.Values) (*url.URL, error) {
